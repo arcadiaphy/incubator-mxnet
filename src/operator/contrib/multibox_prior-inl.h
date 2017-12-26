@@ -53,7 +53,7 @@ struct clip_zero_one {
 }  // namespace mshadow_op
 
 namespace mboxprior_enum {
-enum MultiBoxPriorOpInputs {kData};
+enum MultiBoxPriorOpInputs {kData, kImage};
 enum MultiBoxPriorOpOutputs {kOut};
 }  // namespace mboxprior_enum
 
@@ -102,7 +102,7 @@ class MultiBoxPriorOp : public Operator {
                        const std::vector<TBlob> &aux_args) {
     using namespace mshadow;
     using namespace mshadow::expr;
-    CHECK_EQ(static_cast<int>(in_data.size()), 1);
+    CHECK_EQ(static_cast<int>(in_data.size()), 2);
     CHECK_EQ(out_data.size(), 1);
     Stream<xpu> *s = ctx.get_stream<xpu>();
     Tensor<xpu, 2, DType> out;
@@ -114,6 +114,8 @@ class MultiBoxPriorOp : public Operator {
     const int num_anchors = num_sizes - 1 + num_ratios;  // anchors per location
     int in_height = in_data[mboxprior_enum::kData].size(2);
     int in_width = in_data[mboxprior_enum::kData].size(3);
+    int img_height = in_data[mboxprior_enum::kImage].size(2);
+    int img_width = in_data[mboxprior_enum::kImage].size(3);
     Shape<2> oshape = Shape2(num_anchors * in_width * in_height, 4);
     out = out_data[mboxprior_enum::kOut].get_with_shape<xpu, 2, DType>(oshape, s);
     CHECK_GE(steps_[0] * steps_[1], 0) << "Must specify both step_y and step_x";
@@ -122,7 +124,7 @@ class MultiBoxPriorOp : public Operator {
       steps_[0] = 1.f / in_height;
       steps_[1] = 1.f / in_width;
     }
-    MultiBoxPriorForward(out, sizes_, ratios_, in_width, in_height, steps_, offsets_);
+    MultiBoxPriorForward(out, sizes_, ratios_, in_width, in_height, img_width, img_height, steps_, offsets_);
 
     if (clip_) {
       Assign(out, req[mboxprior_enum::kOut], F<mshadow_op::clip_zero_one>(out));
@@ -166,16 +168,18 @@ class MultiBoxPriorProp: public OperatorProperty {
   }
 
   std::vector<std::string> ListArguments() const override {
-    return {"data"};
+    return {"data", "image"};
   }
 
   bool InferShape(std::vector<TShape> *in_shape,
                   std::vector<TShape> *out_shape,
                   std::vector<TShape> *aux_shape) const override {
     using namespace mshadow;
-    CHECK_EQ(in_shape->size(), 1) << "Inputs: [data]" << in_shape->size();
+    CHECK_EQ(in_shape->size(), 1) << "Inputs: [data, image]" << in_shape->size();
     TShape dshape = in_shape->at(mboxprior_enum::kData);
     CHECK_GE(dshape.ndim(), 4) << "Input data should be 4D: batch-channel-y-x";
+    TShape ishape = in_shape->at(mboxprior_enum::kImage);
+    CHECK_GE(ishape.ndim(), 4) << "Input image should be 4D: batch-channel-y-x";
     int in_height = dshape[2];
     CHECK_GT(in_height, 0) << "Input height should > 0";
     int in_width = dshape[3];

@@ -39,9 +39,10 @@ namespace cuda {
 template<typename DType>
 __global__ void AssignPriors(DType *out, const float size,
                              const float sqrt_ratio, const int in_width,
-                             const int in_height, const float step_x,
-                             const float step_y, const float center_offy,
-                             const float center_offx, const int stride,
+                             const int in_height, const int img_width,
+                             const int img_height, const float step_x,
+                             const float step_y, const float center_offx,
+                             const float center_offy, const int stride,
                              const int offset) {
   int index = blockIdx.x * blockDim.x + threadIdx.x;
   if (index >= in_width * in_height) return;
@@ -49,8 +50,8 @@ __global__ void AssignPriors(DType *out, const float size,
   int c = index % in_width;
   float center_x = (c + center_offx) * step_x;
   float center_y = (r + center_offy) * step_y;
-  float w = size * in_height / in_width * sqrt_ratio / 2;  // half width
-  float h = size / sqrt_ratio / 2;  // half height
+  float w = size / img_width * sqrt_ratio / 2;  // half width
+  float h = size / img_height / sqrt_ratio / 2;  // half height
   DType *ptr = out + index * stride + 4 * offset;
   *(ptr++) = center_x - w;  // xmin
   *(ptr++) = center_y - h;  // ymin
@@ -64,6 +65,7 @@ inline void MultiBoxPriorForward(const Tensor<gpu, 2, DType> &out,
                             const std::vector<float> &sizes,
                             const std::vector<float> &ratios,
                             const int in_width, const int in_height,
+                            const int img_width, const int img_height,
                             const std::vector<float> &steps,
                             const std::vector<float> &offsets) {
   CHECK_EQ(out.CheckContiguous(), true);
@@ -86,7 +88,8 @@ inline void MultiBoxPriorForward(const Tensor<gpu, 2, DType> &out,
   // ratio = 1, various sizes
   for (int i = 0; i < num_sizes; ++i) {
     cuda::AssignPriors<DType><<<dimGrid, dimBlock, 0, stream>>>(out_ptr,
-      sizes[i], 1.f, in_width, in_height, step_x, step_y, offset_y, offset_x, stride, offset);
+      sizes[i], 1.f, in_width, in_height, img_width, img_height, step_x, step_y,
+      offset_x, offset_y, stride, offset);
     ++offset;
   }
   MULTIBOXPRIOR_CUDA_CHECK(cudaPeekAtLastError());
@@ -94,8 +97,8 @@ inline void MultiBoxPriorForward(const Tensor<gpu, 2, DType> &out,
   // size = sizes[0], various ratios
   for (int j = 1; j < num_ratios; ++j) {
     cuda::AssignPriors<DType><<<dimGrid, dimBlock, 0, stream>>>(out_ptr,
-      sizes[0], sqrtf(ratios[j]), in_width, in_height, step_x, step_y,
-       offset_y, offset_x, stride, offset);
+      sizes[0], sqrtf(ratios[j]), in_width, in_height, img_width, img_height, step_x, step_y,
+      offset_x, offset_y, stride, offset);
     ++offset;
   }
   MULTIBOXPRIOR_CUDA_CHECK(cudaPeekAtLastError());

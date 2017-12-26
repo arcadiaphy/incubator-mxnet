@@ -32,6 +32,7 @@ inline void MultiBoxPriorForward(const Tensor<cpu, 2, DType> &out,
                             const std::vector<float> &sizes,
                             const std::vector<float> &ratios,
                             const int in_width, const int in_height,
+                            const int img_width, const int img_height,
                             const std::vector<float> &steps,
                             const std::vector<float> &offsets) {
   const float step_x = steps[1];
@@ -47,8 +48,8 @@ inline void MultiBoxPriorForward(const Tensor<cpu, 2, DType> &out,
       // ratio = 1, various sizes
       for (int i = 0; i < num_sizes; ++i) {
         float size = sizes[i];
-        float w = size * in_height / in_width / 2;
-        float h = size / 2;
+        float w = size / img_width / 2;
+        float h = size / img_height / 2;
         out[count][0] = center_x - w;  // xmin
         out[count][1] = center_y - h;  // ymin
         out[count][2] = center_x + w;  // xmax
@@ -59,8 +60,8 @@ inline void MultiBoxPriorForward(const Tensor<cpu, 2, DType> &out,
       float size = sizes[0];
       for (int j = 1; j < num_ratios; ++j) {
         float ratio = sqrtf(ratios[j]);
-        float w = size * in_height / in_width * ratio / 2;
-        float h = size / ratio / 2;
+        float w = size / img_width * ratio / 2;
+        float h = size / img_height / ratio / 2;
         out[count][0] = center_x - w;  // xmin
         out[count][1] = center_y - h;  // ymin
         out[count][2] = center_x + w;  // xmax
