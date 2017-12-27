@@ -175,7 +175,7 @@ class MultiBoxPriorProp: public OperatorProperty {
                   std::vector<TShape> *out_shape,
                   std::vector<TShape> *aux_shape) const override {
     using namespace mshadow;
-    CHECK_EQ(in_shape->size(), 1) << "Inputs: [data, image]" << in_shape->size();
+    CHECK_EQ(in_shape->size(), 2) << "Inputs: [data, image]" << in_shape->size();
     TShape dshape = in_shape->at(mboxprior_enum::kData);
     CHECK_GE(dshape.ndim(), 4) << "Input data should be 4D: batch-channel-y-x";
     TShape ishape = in_shape->at(mboxprior_enum::kImage);
@@ -184,6 +184,10 @@ class MultiBoxPriorProp: public OperatorProperty {
     CHECK_GT(in_height, 0) << "Input height should > 0";
     int in_width = dshape[3];
     CHECK_GT(in_width, 0) << "Input width should > 0";
+    int img_height = ishape[2];
+    CHECK_GT(img_height, 0) << "Input image height should > 0";
+    int img_width = ishape[3];
+    CHECK_GT(img_width, 0) << "Input image width should > 0";
     // since input sizes are same in each batch, we could share MultiBoxPrior
     TShape oshape = TShape(3);
     int num_sizes = param_.sizes.ndim();
