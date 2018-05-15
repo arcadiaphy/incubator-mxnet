@@ -53,13 +53,14 @@ struct clip_zero_one {
 }  // namespace mshadow_op
 
 namespace mboxprior_enum {
-enum MultiBoxPriorOpInputs {kData};
+enum MultiBoxPriorOpInputs {kData, kImage};
 enum MultiBoxPriorOpOutputs {kOut};
 }  // namespace mboxprior_enum
 
 struct MultiBoxPriorParam : public dmlc::Parameter<MultiBoxPriorParam> {
   nnvm::Tuple<float> sizes;
   nnvm::Tuple<float> ratios;
+  nnvm::Tuple<int> densities;
   bool clip;
   nnvm::Tuple<float> steps;
   nnvm::Tuple<float> offsets;
@@ -68,6 +69,8 @@ struct MultiBoxPriorParam : public dmlc::Parameter<MultiBoxPriorParam> {
     .describe("List of sizes of generated MultiBoxPriores.");
     DMLC_DECLARE_FIELD(ratios).set_default({1.0f})
     .describe("List of aspect ratios of generated MultiBoxPriores.");
+    DMLC_DECLARE_FIELD(densities).set_default({1, 1})
+    .describe("List of densities of generated MultiBoxPriores.");
     DMLC_DECLARE_FIELD(clip).set_default(false)
     .describe("Whether to clip out-of-boundary boxes.");
     DMLC_DECLARE_FIELD(steps).set_default({-1.f, -1.f})
@@ -83,10 +86,12 @@ class MultiBoxPriorOp : public Operator {
   explicit MultiBoxPriorOp(MultiBoxPriorParam param)
     : clip_(param.clip), sizes_(param.sizes.begin(), param.sizes.end()),
     ratios_(param.ratios.begin(), param.ratios.end()),
+    densities_(param.densities.begin(), param.densities.end()),
     steps_(param.steps.begin(), param.steps.end()),
     offsets_(param.offsets.begin(), param.offsets.end()) {
       CHECK_GT(sizes_.size(), 0);
       CHECK_GT(ratios_.size(), 0);
+      CHECK_EQ(densities_.size(), 2);
       CHECK_EQ(steps_.size(), 2);
       CHECK_EQ(offsets_.size(), 2);
       CHECK_GE(offsets_[0], 0.f);
@@ -102,7 +107,7 @@ class MultiBoxPriorOp : public Operator {
                        const std::vector<TBlob> &aux_args) {
     using namespace mshadow;
     using namespace mshadow::expr;
-    CHECK_EQ(static_cast<int>(in_data.size()), 1);
+    CHECK_EQ(static_cast<int>(in_data.size()), 2);
     CHECK_EQ(out_data.size(), 1);
     Stream<xpu> *s = ctx.get_stream<xpu>();
     Tensor<xpu, 2, DType> out;
@@ -111,18 +116,15 @@ class MultiBoxPriorOp : public Operator {
     // since input sizes are same in each batch, we could share MultiBoxPrior
     const int num_sizes = static_cast<int>(sizes_.size());
     const int num_ratios = static_cast<int>(ratios_.size());
-    const int num_anchors = num_sizes - 1 + num_ratios;  // anchors per location
+    const int num_anchors = (num_sizes - 1 + num_ratios) * densities_[0] * densities_[1];  // anchors per location
     int in_height = in_data[mboxprior_enum::kData].size(2);
     int in_width = in_data[mboxprior_enum::kData].size(3);
+    int img_height = in_data[mboxprior_enum::kImage].size(2);
+    int img_width = in_data[mboxprior_enum::kImage].size(3);
     Shape<2> oshape = Shape2(num_anchors * in_width * in_height, 4);
     out = out_data[mboxprior_enum::kOut].get_with_shape<xpu, 2, DType>(oshape, s);
     CHECK_GE(steps_[0] * steps_[1], 0) << "Must specify both step_y and step_x";
-    if (steps_[0] <= 0 || steps_[1] <= 0) {
-      // estimate using layer shape
-      steps_[0] = 1.f / in_height;
-      steps_[1] = 1.f / in_width;
-    }
-    MultiBoxPriorForward(out, sizes_, ratios_, in_width, in_height, steps_, offsets_);
+    MultiBoxPriorForward(out, sizes_, ratios_, densities_, in_width, in_height, img_width, img_height, steps_, offsets_);
 
     if (clip_) {
       Assign(out, req[mboxprior_enum::kOut], F<mshadow_op::clip_zero_one>(out));
@@ -147,6 +149,7 @@ class MultiBoxPriorOp : public Operator {
   bool clip_;
   std::vector<float> sizes_;
   std::vector<float> ratios_;
+  std::vector<int> densities_;
   std::vector<float> steps_;
   std::vector<float> offsets_;
 };  // class MultiBoxPriorOp
@@ -166,26 +169,33 @@ class MultiBoxPriorProp: public OperatorProperty {
   }
 
   std::vector<std::string> ListArguments() const override {
-    return {"data"};
+    return {"data", "image"};
   }
 
   bool InferShape(std::vector<TShape> *in_shape,
                   std::vector<TShape> *out_shape,
                   std::vector<TShape> *aux_shape) const override {
     using namespace mshadow;
-    CHECK_EQ(in_shape->size(), 1) << "Inputs: [data]" << in_shape->size();
+    CHECK_EQ(in_shape->size(), 2) << "Inputs: [data, image]" << in_shape->size();
     TShape dshape = in_shape->at(mboxprior_enum::kData);
     CHECK_GE(dshape.ndim(), 4) << "Input data should be 4D: batch-channel-y-x";
     int in_height = dshape[2];
     CHECK_GT(in_height, 0) << "Input height should > 0";
     int in_width = dshape[3];
     CHECK_GT(in_width, 0) << "Input width should > 0";
+    TShape ishape = in_shape->at(mboxprior_enum::kImage);
+    CHECK_GE(ishape.ndim(), 4) << "Input image should be 4D: batch-channel-y-x";
+    int img_height = ishape[2];
+    CHECK_GT(img_height, 0) << "Input image height should > 0";
+    int img_width = ishape[3];
+    CHECK_GT(img_width, 0) << "Input image width should > 0";
     // since input sizes are same in each batch, we could share MultiBoxPrior
     TShape oshape = TShape(3);
     int num_sizes = param_.sizes.ndim();
     int num_ratios = param_.ratios.ndim();
+    int density_multiplier = param_.densities[0] * param_.densities[1];
     oshape[0] = 1;
-    oshape[1] = in_height * in_width * (num_sizes + num_ratios - 1);
+    oshape[1] = in_height * in_width * (num_sizes + num_ratios - 1) * density_multiplier;
     oshape[2] = 4;
     out_shape->clear();
     out_shape->push_back(oshape);
