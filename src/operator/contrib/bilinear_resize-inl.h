@@ -50,11 +50,14 @@ namespace op {
 struct BilinearSampleParam : public dmlc::Parameter<BilinearSampleParam> {
   int height;
   int width;
+  int scale;
   DMLC_DECLARE_PARAMETER(BilinearSampleParam) {
-    DMLC_DECLARE_FIELD(height).set_range(1, 10000)
-    .describe("output height (required)");
-    DMLC_DECLARE_FIELD(width).set_range(1, 10000)
-    .describe("output width (required)");
+    DMLC_DECLARE_FIELD(height).set_default(-1)
+    .describe("output height (required if not set upsampling scale)");
+    DMLC_DECLARE_FIELD(width).set_default(-1)
+    .describe("output width (required if not set upsampling scale)");
+    DMLC_DECLARE_FIELD(scale).set_default(0).set_range(0, 1000)
+    .describe("upsampling scale");
   }
 };
 
@@ -127,10 +130,19 @@ static bool BilinearSampleOpInferShape(const nnvm::NodeAttrs& attrs,
   CHECK_EQ(in_shape->size(), 1U) << "Input:[data]";
   CHECK_EQ(out_shape->size(), 1U) << "Output:[data]";
   const BilinearSampleParam& param = nnvm::get<BilinearSampleParam>(attrs.parsed);
-  TShape dshape(in_shape->at(0));
+  TShape ishape = in_shape->at(0);
+  TShape dshape(ishape);
   if (dshape.ndim() == 0) return false;
-  dshape[2] = param.height;
-  dshape[3] = param.width;
+  if (param.scale > 0) {
+    dshape[2] = ishape[2] * param.scale;
+    dshape[3] = ishape[3] * param.scale;
+  }
+  else {
+    CHECK_GT(param.width, 0) << "output width should be > 0";
+    CHECK_GT(param.height, 0) << "output height should be > 0";
+    dshape[2] = param.height;
+    dshape[3] = param.width;
+  }
   out_shape->clear();
   out_shape->push_back(dshape);
   return true;
