@@ -133,7 +133,7 @@ class IFFTOp : public Operator {
       cufftDestroy(plan_remain);
     }
     // commenting this out to be consistant with caffe
-    // out /= dim_;
+    out /= dim_;
   }
   virtual void Backward(const OpContext &ctx,
                         const std::vector<TBlob> &out_grad,
@@ -194,7 +194,7 @@ class IFFTOp : public Operator {
       cufftDestroy(plan_remain);
     }
     // commenting this out to be consistant with caffe
-    // gdata /= dim_;
+    gdata /= dim_;
   }
 
  private:
