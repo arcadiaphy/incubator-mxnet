@@ -30,7 +30,7 @@ blacklist = [
     'opencv2/opencv.hpp', 'sys/stat.h', 'sys/types.h', 'cuda.h', 'cuda_fp16.h', 'omp.h',
     'onnx/onnx.pb.h', 'execinfo.h', 'packet/sse-inl.h', 'emmintrin.h', 'thrust/device_vector.h',
     'cusolverDn.h', 'internal/concurrentqueue_internal_debug.h', 'relacy/relacy_std.hpp',
-    'relacy_shims.h', 'ittnotify.h', 'shared_mutex'
+    'relacy_shims.h', 'ittnotify.h', 'shared_mutex', "ps/ps.h", "x86intrin.h",
     ]
 
 minimum = int(sys.argv[6]) if len(sys.argv) > 5 else 0
@@ -96,6 +96,8 @@ re1 = re.compile('<([./a-zA-Z0-9_-]*)>')
 re2 = re.compile('"([./a-zA-Z0-9_-]*)"')
 
 sysheaders = []
+if platform.system() != 'Darwin':
+    sysheaders.append("endian.h")
 history = set([])
 out = BytesIO()
 

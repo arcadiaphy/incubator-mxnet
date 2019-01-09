@@ -44,6 +44,8 @@
 #define DMLC_LOG_STACK_TRACE 0
 
 
+#include "src/common/utils.cc"
+
 #include "src/ndarray/ndarray_function.cc"
 #include "src/ndarray/ndarray.cc"
 
@@ -55,6 +57,7 @@
 
 #include "src/profiler/profiler.cc"
 
+
 #include "src/executor/graph_executor.cc"
 #include "src/executor/attach_op_execs_pass.cc"
 #include "src/executor/attach_op_resource_pass.cc"
@@ -65,6 +68,8 @@
 
 #include "src/operator/operator.cc"
 #include "src/operator/operator_util.cc"
+#include "src/operator/slice_channel.cc"
+
 #include "src/operator/nn/activation.cc"
 #include "src/operator/nn/batch_norm.cc"
 #include "src/operator/nn/concat.cc"
@@ -72,10 +77,13 @@
 #include "src/operator/nn/deconvolution.cc"
 #include "src/operator/nn/dropout.cc"
 #include "src/operator/nn/fully_connected.cc"
-#include "src/operator/leaky_relu.cc"
 #include "src/operator/nn/pooling.cc"
 #include "src/operator/nn/softmax_activation.cc"
+#include "src/operator/nn/softmax.cc"
+
 #include "src/operator/softmax_output.cc"
+#include "src/operator/leaky_relu.cc"
+
 #include "src/operator/tensor/elemwise_binary_broadcast_op_basic.cc"
 #include "src/operator/tensor/elemwise_binary_op.cc"
 #include "src/operator/tensor/elemwise_binary_op_basic.cc"
@@ -83,6 +91,15 @@
 #include "src/operator/tensor/elemwise_unary_op_basic.cc"
 #include "src/operator/tensor/elemwise_unary_op_trig.cc"
 #include "src/operator/tensor/matrix_op.cc"
+#include "src/operator/tensor/init_op.cc"
+#include "src/operator/tensor/dot.cc"
+#include "src/operator/tensor/elemwise_sum.cc"
+#include "src/operator/tensor/elemwise_binary_scalar_op_logic.cc"
+#include "src/operator/tensor/control_flow_op.cc"
+
+#include "src/operator/contrib/multibox_detection.cc"
+#include "src/operator/contrib/multibox_prior.cc"
+#include "src/operator/contrib/bounding_box.cc"
 
 #include "src/storage/storage.cc"
 
@@ -94,3 +111,11 @@
 #include "src/c_api/c_api_ndarray.cc"
 #include "src/c_api/c_api_error.cc"
 
+#include "../3rdparty/dmlc-core/src/io/filesys.cc"
+#include "../src/executor/infer_graph_attr_pass.cc"
+#include "../src/executor/graph_executor.cc"
+#include "../src/c_api/c_api_profile.cc"
+#include "../src/imperative/imperative_utils.cc"
+#include "../src/nnvm/graph_editor.cc"
+#include "../src/profiler/aggregate_stats.cc"
+#include "../src/engine/openmp.cc"

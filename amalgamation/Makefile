@@ -23,6 +23,9 @@ ifndef OPENBLAS_ROOT
     export OPENBLAS_ROOT=/usr/local/opt/openblas
 endif
 
+INCPATH=-I. -I.. -I../include -I${TPARTYDIR}/dmlc-core/include -I${TPARTYDIR}/tvm/nnvm/include -I${TPARTYDIR}/mshadow \
+		-I${TPARTYDIR}/dlpack/include -I${TPARTYDIR}/tvm/nnvm
+
 # Whether use minimum build without blas and SSE, this will make the library super slow
 ifndef MIN
 	export MIN=0
@@ -50,7 +53,7 @@ endif
 
 DEFS+=-DMSHADOW_USE_CUDA=0 -DMSHADOW_USE_MKL=0 -DMSHADOW_RABIT_PS=0 -DMSHADOW_DIST_PS=0 -DDMLC_LOG_STACK_TRACE=0
 DEFS+=-DMSHADOW_FORCE_STREAM -DMXNET_USE_OPENCV=0 -DMXNET_PREDICT_ONLY=1
-CFLAGS=-std=c++11 -Wno-unknown-pragmas -Wall $(DEFS)
+CFLAGS=-std=c++11 -Wno-unknown-pragmas -Wall $(DEFS) ${INCPATH}
 
 # if architecture of the CPU supports F16C instruction set, enable USE_F16C for fast fp16 computation on CPU
 ifeq ($(USE_F16C), 1)
@@ -115,12 +118,12 @@ ifneq ($(ANDROID), 1)
         android:
 else
         CFLAGS+=  -mhard-float -D_NDK_MATH_NO_SOFTFP=1 -O3
-        LDFLAGS+=  -Wl,--no-warn-mismatch -lm_hard
+        LDFLAGS+=  -Wl,--no-warn-mismatch -lm -static-libstdc++
         android: jni_libmxnet_predict.so
 endif
 
 libmxnet_predict.js: mxnet_predict-all.cc
-	${EMCC} -std=c++11 -O2 $(DEFS) -DMSHADOW_USE_SSE=0 -D__MXNET_JS__  -o $@ $+ \
+	${EMCC} -std=c++11 -O3 $(DEFS) -DMSHADOW_USE_SSE=0 -D__MXNET_JS__  -o $@ $+ \
 	-s EXPORTED_FUNCTIONS="['_MXPredCreate', \
 	                        '_MXPredGetOutputShape', \
 	                        '_MXPredSetInput', \
