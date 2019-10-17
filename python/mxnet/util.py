@@ -61,14 +61,14 @@ def get_gpu_memory(gpu_dev_id):
 
 def set_np_shape(active):
     """
-    Turns on/off NumPy shape semantics, in which `()` represents the shape of scalar tensors,
-    and tuples with `0` elements, for example, `(0,)`, `(1, 0, 2)`, represent the shapes
+    Turns on/off NumPy shape semantics, in which ``()`` represents the shape of scalar tensors,
+    and tuples with ``0`` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent the shapes
     of zero-size tensors. This is turned off by default for keeping backward compatibility.
 
     Please note that this is designed as an infrastructure for the incoming
     MXNet-NumPy operators. Legacy operators registered in the modules
-    `mx.nd` and `mx.sym` are not guaranteed to behave like their counterparts
-    in NumPy within this semantics.
+    :class:`mxnet.ndarray` and :class:`mxnet.symbol` are not guaranteed to behave like their
+    counterparts in NumPy within this semantics.
 
     Parameters
     ----------
@@ -79,14 +79,14 @@ def set_np_shape(active):
     -------
         A bool value indicating the previous state of NumPy shape semantics.
 
-    Example
-    -------
-    >>> import mxnet as mx
-    >>> prev_state = mx.set_np_shape(True)
-    >>> print(prev_state)
-    False
-    >>> print(mx.is_np_shape())
-    True
+    Example::
+
+        >>> import mxnet as mx
+        >>> prev_state = mx.set_np_shape(True)
+        >>> print(prev_state)
+        False
+        >>> print(mx.is_np_shape())
+        True
     """
     if active:
         import logging
@@ -106,32 +106,32 @@ def set_np_shape(active):
 
 def is_np_shape():
     """Checks whether the NumPy shape semantics is currently turned on.
-    In NumPy shape semantics, `()` represents the shape of scalar tensors,
-    and tuples with `0` elements, for example, `(0,)`, `(1, 0, 2)`, represent
+    In NumPy shape semantics, ``()`` represents the shape of scalar tensors,
+    and tuples with `0` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
     the shapes of zero-size tensors. This is turned off by default for keeping
     backward compatibility.
 
-    In the NumPy shape semantics, `-1` indicates an unknown size. For example,
-    `(-1, 2, 2)` means that the size of the first dimension is unknown. Its size
+    In the NumPy shape semantics, ``-1`` indicates an unknown size. For example,
+    ``(-1, 2, 2)`` means that the size of the first dimension is unknown. Its size
     may be inferred during shape inference.
 
     Please note that this is designed as an infrastructure for the incoming
     MXNet-NumPy operators. Legacy operators registered in the modules
-    `mx.nd` and `mx.sym` are not guaranteed to behave like their counterparts
-    in NumPy within this semantics.
+    :class:`mxnet.ndarray` and :class:`mxnet.symbol` are not guaranteed to behave
+    like their counterparts in NumPy within this semantics.
 
     Returns
     -------
         A bool value indicating whether the NumPy shape semantics is currently on.
 
-    Example
-    -------
-    >>> import mxnet as mx
-    >>> prev_state = mx.set_np_shape(True)
-    >>> print(prev_state)
-    False
-    >>> print(mx.is_np_shape())
-    True
+    Example::
+
+        >>> import mxnet as mx
+        >>> prev_state = mx.set_np_shape(True)
+        >>> print(prev_state)
+        False
+        >>> print(mx.is_np_shape())
+        True
     """
     curr = ctypes.c_bool()
     check_call(_LIB.MXIsNumpyShape(ctypes.byref(curr)))
@@ -140,13 +140,13 @@ def is_np_shape():
 
 class _NumpyShapeScope(object):
     """Scope for managing NumPy shape semantics.
-    In NumPy shape semantics, `()` represents the shape of scalar tensors,
-    and tuples with `0` elements, for example, `(0,)`, `(1, 0, 2)`, represent
+    In NumPy shape semantics, ``()`` represents the shape of scalar tensors,
+    and tuples with ``0`` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
     the shapes of zero-size tensors.
 
-    Do not use this class directly. Use `np_shape(active)` instead.
+    Do not use this class directly. Use ``np_shape(active)`` instead.
 
-    Example::
+    .. code-block:: python
 
         with _NumpyShapeScope(True):
             y = model(x)
@@ -167,26 +167,15 @@ class _NumpyShapeScope(object):
 
 
 def np_shape(active=True):
-    """Returns an activated/deactivated NumPy shape scope to be used in 'with' statement
+    """Returns an activated/deactivated NumPy shape scope to be used in ``with`` statement
     and captures code that needs the NumPy shape semantics, i.e. support of scalar and
     zero-size tensors.
 
-    Please note that this is designed as an infrastructure for the incoming
-    MXNet-NumPy operators. Legacy operators registered in the modules
-    `mx.nd` and `mx.sym` are not guaranteed to behave like their counterparts
-    in NumPy even within this scope.
+    Please note that this is designed as an infrastructure for the incoming MXNet-NumPy operators.
+    Legacy operators registered in the modules :class:`mxnet.ndarray` and :class:`mxnet.symbol`
+    are not guaranteed to behave like their counterparts in NumPy even within this scope.
 
-    Parameters
-    ----------
-    active : bool
-        Indicates whether to activate NumPy-shape semantics.
-
-    Returns
-    -------
-    _NumpyShapeScope
-        A scope object for wrapping the code w/ or w/o NumPy-shape semantics.
-
-    Example::
+    .. code-block:: python
 
         with mx.np_shape(active=True):
             # A scalar tensor's shape is `()`, whose `ndim` is `0`.
@@ -231,12 +220,22 @@ def np_shape(active=True):
             arg_shapes, out_shapes, _ = ret.infer_shape_partial()
             assert arg_shapes[0] == ()
             assert out_shapes[0] == ()
+
+    Parameters
+    ----------
+    active : bool
+        Indicates whether to activate NumPy-shape semantics.
+
+    Returns
+    -------
+    _NumpyShapeScope
+        A scope object for wrapping the code w/ or w/o NumPy-shape semantics.
     """
     return _NumpyShapeScope(active)
 
 
 def wraps_safely(wrapped, assigned=functools.WRAPPER_ASSIGNMENTS):
-    """This function is safe version of `functools.wraps` in Python2 which skips wrapping functions
+    """This function is safe version of ``functools.wraps`` in Python2 which skips wrapping functions
     for the attributes that do not exist."""
     if sys.version_info[0] > 2:
         return functools.wraps(wrapped)
@@ -248,12 +247,13 @@ def wraps_safely(wrapped, assigned=functools.WRAPPER_ASSIGNMENTS):
 
 def use_np_shape(func):
     """A decorator wrapping a function or class with activated NumPy-shape semantics.
-    When `func` is a function, this ensures that the execution of the function is scoped with NumPy
+    When ``func`` is a function, this ensures that the execution of the function is scoped with NumPy
     shape semantics, such as the support for zero-dim and zero size tensors. When
-    `func` is a class, it ensures that all the methods, static functions, and properties
+    ``func`` is a class, it ensures that all the methods, static functions, and properties
     of the class are executed with the NumPy shape semantics.
 
-    Example::
+    .. code-block:: python
+
         import mxnet as mx
         @mx.use_np_shape
         def scalar_one():
@@ -330,7 +330,7 @@ def _sanity_check_params(func_name, unsupported_params, param_dict):
 def set_module(module):
     """Decorator for overriding __module__ on a function or class.
 
-    Example usage::
+    .. code-block:: python
 
         @set_module('mxnet.numpy')
         def example():
@@ -347,10 +347,10 @@ def set_module(module):
 
 class _NumpyArrayScope(object):
     """Scope for managing NumPy array creation. This is often used
-    with `is_np_array=True` in initializer to enforce array creation
-    as type `mxnet.numpy.ndarray`, instead of `mx.nd.NDArray` in Gluon.
+    with ``is_np_array=True`` in initializer to enforce array creation
+    as type :class:`mxnet.numpy.ndarray`, instead of :class:`mxnet.ndarray.NDArray` in Gluon.
 
-    Do not use this class directly. Use `np_array(active)` instead.
+    Do not use this class directly. Use ``np_array(active)`` instead.
     """
     _current = threading.local()
 
@@ -371,19 +371,19 @@ class _NumpyArrayScope(object):
 
 
 def np_array(active=True):
-    """Returns an activated/deactivated NumPy-array scope to be used in 'with' statement
+    """Returns an activated/deactivated NumPy-array scope to be used in ``with`` statement
     and captures code that needs the NumPy-array semantics.
 
-    Currently, this is used in Gluon to enforce array creation in `Block`s as type
-    `mxnet.numpy.ndarray`, instead of `mx.nd.NDArray`.
+    Currently, this is used in Gluon to enforce array creation in :class:`~mxnet.gluon.Block`
+    as type :class:`mxnet.numpy.ndarray`, instead of :class:`mxnet.ndarray.NDArray`.
 
-    It is recommended to use the decorator `use_np_array` to decorate the classes
-    that need this semantics, instead of using this function in a `with` statement
+    It is recommended to use the decorator ``use_np_array`` to decorate the classes
+    that need this semantics, instead of using this function in a ``with`` statement
     unless you know exactly what has been scoped by this semantics.
 
     Please note that this is designed as an infrastructure for the incoming
     MXNet-NumPy operators. Legacy operators registered in the modules
-    `mx.nd` and `mx.sym` are not guaranteed to behave like their counterparts
+    :class:`mxnet.ndarray` and :class:`mxnet.symbol` are not guaranteed to behave like their counterparts
     in NumPy even within this scope.
 
     Parameters
@@ -401,18 +401,19 @@ def np_array(active=True):
 
 def is_np_array():
     """Checks whether the NumPy-array semantics is currently turned on.
-    This is currently used in Gluon for checking whether an array of type `mxnet.numpy.ndarray`
-    or `mx.nd.NDArray` should be created. For example, at the time when a parameter
-    is created in a `Block`, an `mxnet.numpy.ndarray` is created if this returns true; else
-    an `mx.nd.NDArray` is created.
+    This is currently used in Gluon for checking whether an array of type
+    :class:`mxnet.numpy.ndarray` or :class:`mxnet.ndarray.NDArray` should be created.
+    For example, at the time when a parameter is created in a :class:`~mxnet.gluon.Block`,
+    an :class:`mxnet.numpy.ndarray` is created if this returns true; else an
+    :class:`mxnet.ndarray.NDArray` is created.
 
     Normally, users are not recommended to use this API directly unless you known exactly
     what is going on under the hood.
 
     Please note that this is designed as an infrastructure for the incoming
-    MXNet-NumPy operators. Legacy operators registered in the modules
-    `mx.nd` and `mx.sym` are not guaranteed to behave like their counterparts
-    in NumPy within this semantics.
+    MXNet-NumPy operators. Legacy operators registered in the modules :class:`mxnet.ndarray`
+    and :class:`mxnet.symbol` are not guaranteed to behave like their counterparts in NumPy
+    within this semantics.
 
     Returns
     -------
@@ -423,13 +424,15 @@ def is_np_array():
 
 
 def use_np_array(func):
-    """A decorator wrapping Gluon `Block`s and all its methods, properties, and static functions
-    with the semantics of NumPy-array, which means that where ndarrays are created,
-    `mxnet.numpy.ndarray`s should be created, instead of legacy ndarrays of type `mx.nd.NDArray`.
-    For example, at the time when a parameter is created in a `Block`, an `mxnet.numpy.ndarray`
-    is created if it's decorated with this decorator.
+    """A decorator wrapping Gluon :class:`~mxnet.gluon.Block` and all its methods, properties,
+    and static functions with the semantics of NumPy-array, which means that where ndarrays
+    are created, :class:`mxnet.numpy.ndarray` should be created, instead of legacy ndarrays
+    of type :class:`mxnet.ndarray.NDArray`. For example, at the time when a parameter is
+    created in a :class:`~mxnet.gluon.Block`, an :class:`mxnet.numpy.ndarray` is created if it's
+    decorated with this decorator.
 
-    Example::
+    .. code-block:: python
+
         import mxnet as mx
         from mxnet import gluon, np
 
@@ -506,13 +509,14 @@ def use_np_array(func):
 
 def use_np(func):
     """A convenience decorator for wrapping user provided functions and classes in the scope of
-    both NumPy-shape and NumPy-array semantics, which means that (1) empty tuples `()` and tuples
-    with zeros, such as `(0, 1)`, `(1, 0, 2)`, will be treated as scalar tensors' shapes and
+    both NumPy-shape and NumPy-array semantics, which means that (1) empty tuples ``()`` and tuples
+    with zeros, such as ``(0, 1)``, ``(1, 0, 2)``, will be treated as scalar tensors' shapes and
     zero-size tensors' shapes in shape inference functions of operators, instead of as unknown
-    in legacy mode; (2) ndarrays of type `mxnet.numpy.ndarray` should be created instead of
-    `mx.nd.NDArray`.
+    in legacy mode; (2) ndarrays of type :class:`mxnet.numpy.ndarray` should be created instead of
+    :class:`mxnet.ndarray.NDArray`.
 
-    Example::
+    .. code-block:: python
+
         import mxnet as mx
         from mxnet import gluon, np
 
@@ -668,8 +672,9 @@ def wrap_np_binary_func(func):
 
 
 def _set_np_array(active):
-    """Turns on/off NumPy array semantics for the current thread in which `mxnet.numpy.ndarray`
-    is expected to be created, instead of the legacy `mx.nd.NDArray`.
+    """Turns on/off NumPy array semantics for the current thread in which
+    :class:`mxnet.numpy.ndarray` is expected to be created, instead of the legacy
+    :class:`mxnet.ndarray.NDArray`.
 
     Parameters
     ---------
@@ -717,7 +722,7 @@ _CUDA_SUCCESS = 0
 
 
 def get_cuda_compute_capability(ctx):
-    """Returns the cuda compute capability of the input `ctx`.
+    """Returns the cuda compute capability of the input ``ctx``.
 
     Parameters
     ----------
@@ -727,7 +732,7 @@ def get_cuda_compute_capability(ctx):
     Returns
     -------
     cuda_compute_capability : int
-        CUDA compute capability. For example, it returns 70 for CUDA arch equal to `sm_70`.
+        CUDA compute capability. For example, it returns 70 for CUDA arch equal to ``sm_70``.
 
     References
     ----------
