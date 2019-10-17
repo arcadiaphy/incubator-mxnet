@@ -31,9 +31,9 @@ from ..ndarray import NDArray, zeros_like, _GRAD_REQ_MAP
 
 def set_is_training(is_train):
     """Set status to training/not training. When training, graph will be constructed
-    for gradient computation. Operators will also run with ctx.is_train=True. For example,
-    Dropout will drop inputs randomly when is_train=True while simply passing through
-    if is_train=False.
+    for gradient computation. Operators will also run with ``is_train=True``. For example,
+    Dropout will drop inputs randomly when ``is_train=True`` while simply passing through
+    if ``is_train=False``.
 
     Parameters
     ----------
@@ -54,7 +54,8 @@ def set_is_training(is_train):
 class TrainingStateScope(object):
     """Scope for managing training state.
 
-    Example::
+    .. code-block:: python
+
         with TrainingStateScope(True):
             y = model(x)
             compute_gradient([y])
@@ -72,10 +73,11 @@ class TrainingStateScope(object):
 
 
 def train_section():
-    """Returns a training scope context to be used in 'with' statement
+    """Returns a training scope context to be used in ``with`` statement
     and captures training code.
 
-    Example::
+    .. code-block:: python
+
         with autograd.train_section():
             y = model(x)
             compute_gradient([y])
@@ -86,10 +88,11 @@ def train_section():
 
 
 def test_section():
-    """Returns a testing scope context to be used in 'with' statement
+    """Returns a testing scope context to be used in ``with`` statement
     and captures testing code.
 
-    Example::
+    .. code-block:: python
+
         with autograd.train_section():
             y = model(x)
             compute_gradient([y])
@@ -156,7 +159,7 @@ def backward(outputs, out_grads=None, retain_graph=False):
 
 
 def compute_gradient(outputs):
-    """Deprecated. Please use backward"""
+    """Deprecated. Please use :meth:`backward`."""
     backward(outputs)
 
 
@@ -195,6 +198,22 @@ def grad_and_loss(func, argnum=None):
 def grad(func, argnum=None):
     """Return function that computes gradient of arguments.
 
+    Examples::
+
+    >>> # autograd supports dynamic graph which is changed
+    >>> # every instance
+    >>> def func(x):
+    >>>     r = random.randint(0, 1)
+    >>>     if r % 2:
+    >>>         return x ** 2
+    >>>     else:
+    >>>         return x / 3
+    >>> # use `grad(func)` to get the gradient function
+    >>> for x in range(10):
+    >>>     grad_func = grad(func)
+    >>>     inputs = nd.array([[1, 2, 3], [4, 5, 6]])
+    >>>     grad_vals = grad_func(inputs)
+
     Parameters
     ----------
     func: a python function
@@ -206,22 +225,6 @@ def grad(func, argnum=None):
     -------
     grad_func: a python function
         A function that would compute the gradient of arguments.
-
-    Examples
-    --------
-    >>> # autograd supports dynamic graph which is changed
-    >>> # every instance
-    >>> def func(x):
-    >>>     r = random.randint(0, 1)
-    >>>     if r % 2:
-    >>>         return x**2
-    >>>     else:
-    >>>         return x/3
-    >>> # use `grad(func)` to get the gradient function
-    >>> for x in range(10):
-    >>>     grad_func = grad(func)
-    >>>     inputs = nd.array([[1, 2, 3], [4, 5, 6]])
-    >>>     grad_vals = grad_func(inputs)
     """
     grad_with_loss_func = grad_and_loss(func, argnum)
     @functools.wraps(grad_with_loss_func)
