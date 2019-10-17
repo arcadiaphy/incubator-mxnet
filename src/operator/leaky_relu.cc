@@ -144,19 +144,45 @@ inline static bool BackwardLeakyReLUStorageType(const nnvm::NodeAttrs& attrs,
 NNVM_REGISTER_OP(LeakyReLU)
 .describe(R"code(Applies Leaky rectified linear unit activation element-wise to the input.
 
-Leaky ReLUs attempt to fix the "dying ReLU" problem by allowing a small `slope`
+Leaky ReLUs attempt to fix the "dying ReLU" problem by allowing a small ``slope``
 when the input is negative and has a slope of one when input is positive.
 
 The following modified ReLU Activation functions are supported:
 
-- *elu*: Exponential Linear Unit. `y = x > 0 ? x : slope * (exp(x)-1)`
-- *selu*: Scaled Exponential Linear Unit. `y = lambda * (x > 0 ? x : alpha * (exp(x) - 1))` where
-  *lambda = 1.0507009873554804934193349852946* and *alpha = 1.6732632423543772848170429916717*.
-- *leaky*: Leaky ReLU. `y = x > 0 ? x : slope * x`
-- *prelu*: Parametric ReLU. This is same as *leaky* except that `slope` is learnt during training.
-- *rrelu*: Randomized ReLU. same as *leaky* but the `slope` is uniformly and randomly chosen from
-  *[lower_bound, upper_bound)* for training, while fixed to be
-  *(lower_bound+upper_bound)/2* for inference.
+- **elu**: Exponential Linear Unit.
+
+.. math::
+    \text{elu}(x) =
+    \begin{cases}
+    x, & \text{if} x > 0 \\
+    \text{slope} * (\exp(x) - 1), & \text{ otherwise }
+    \end{cases}
+
+- **selu**: Scaled Exponential Linear Unit. Suppose
+  :math:`\text{scale} = 1.0507009873554804934193349852946`
+  and :math:`\alpha = 1.6732632423543772848170429916717`,
+
+.. math::
+    \text{selu}(x) =
+    \begin{cases}
+    \text{scale} * x, & \text{if} x > 0 \\
+    \text{scale} * \alpha (\exp(x) - 1), & \text{ otherwise }
+    \end{cases}
+
+- **leaky**: Leaky ReLU.
+
+.. math::
+    \text{leaky}(x) =
+    \begin{cases}
+    x, & \text{if} x > 0 \\
+    \text{slope} * x, & \text{ otherwise }
+    \end{cases}
+
+- **prelu**: Parametric ReLU. Same as **leaky** but the ``slope`` is learnt during training.
+
+- **rrelu**: Randomized ReLU. Same as **leaky** but the ``slope`` is uniformly and randomly chosen from
+  :math:`[\text{lower_bound}, \text{upper_bound})` for training, while fixed to be
+  :math:`(\text{lower_bound} + \text{upper_bound}) / 2` for inference.
 
 )code" ADD_FILELINE)
 .add_alias("_npx_leaky_relu")
