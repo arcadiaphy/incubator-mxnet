@@ -198,21 +198,21 @@ def grad_and_loss(func, argnum=None):
 def grad(func, argnum=None):
     """Return function that computes gradient of arguments.
 
-    Examples::
+    .. code-block:: python
 
-    >>> # autograd supports dynamic graph which is changed
-    >>> # every instance
-    >>> def func(x):
-    >>>     r = random.randint(0, 1)
-    >>>     if r % 2:
-    >>>         return x ** 2
-    >>>     else:
-    >>>         return x / 3
-    >>> # use `grad(func)` to get the gradient function
-    >>> for x in range(10):
-    >>>     grad_func = grad(func)
-    >>>     inputs = nd.array([[1, 2, 3], [4, 5, 6]])
-    >>>     grad_vals = grad_func(inputs)
+        # autograd supports dynamic graph which is changed every instance
+        def func(x):
+            r = random.randint(0, 1)
+            if r % 2:
+                return x ** 2
+            else:
+                return x / 3
+
+        # use `grad(func)` to get the gradient function
+        for x in range(10):
+            grad_func = grad(func)
+            inputs = nd.array([[1, 2, 3], [4, 5, 6]])
+            grad_vals = grad_func(inputs)
 
     Parameters
     ----------
