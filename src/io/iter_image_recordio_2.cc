@@ -883,7 +883,7 @@ MXNET_REGISTER_IO_ITER(ImageRecordIter)
 Reads batches of images from .rec RecordIO files. One can use ``im2rec.py`` tool
 (in tools/) to pack raw image files into RecordIO files. This iterator is less
 flexible to customization but is fast and has lot of language bindings. To
-iterate over raw images directly use ``ImageIter`` instead (in Python).
+iterate over raw images directly use :class:``~mxnet.image.ImageIter`` instead (in Python).
 
 Example::
 
@@ -893,7 +893,7 @@ Example::
     batch_size=4, # Number of items per batch.
     resize=256 # Resize the shorter edge to 256 before cropping.
     # You can specify more augmentation options. Use help(mx.io.ImageRecordIter) to see all the options.
-    )
+  )
   # You can now use the data_iter to access batches of images.
   batch = data_iter.next() # first batch.
   images = batch.data[0] # This will contain 4 (=batch_size) images each of 3x227x227.
@@ -933,7 +933,7 @@ the data type instead of ``float``.
 MXNET_REGISTER_IO_ITER(ImageRecordInt8Iter)
 .describe(R"code(Iterating on image RecordIO files
 
-.. note:: ``ImageRecordInt8Iter`` is deprecated. Use ImageRecordIter(dtype='int8') instead.
+.. note:: ``ImageRecordInt8Iter`` is deprecated. Use ``ImageRecordIter(dtype='int8')`` instead.
 
 This iterator is identical to ``ImageRecordIter`` except for using ``int8`` as
 the data type instead of ``float``.

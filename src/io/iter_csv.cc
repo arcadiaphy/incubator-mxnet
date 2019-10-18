@@ -218,92 +218,86 @@ DMLC_REGISTER_PARAMETER(CSVIterParam);
 MXNET_REGISTER_IO_ITER(CSVIter)
 .describe(R"code(Returns the CSV file iterator.
 
-In this function, the `data_shape` parameter is used to set the shape of each line of the input data.
-If a row in an input file is `1,2,3,4,5,6`` and `data_shape` is (3,2), that row
-will be reshaped, yielding the array [[1,2],[3,4],[5,6]] of shape (3,2).
+In this function, the ``data_shape`` parameter is used to set the shape of each line of
+the input data. If a row in an input file is ``1,2,3,4,5,6`` and ``data_shape=(3,2)``, that row
+will be reshaped, yielding the array ``[[1,2],[3,4],[5,6]]`` of shape ``(3,2)``.
 
-By default, the `CSVIter` has `round_batch` parameter set to ``True``. So, if `batch_size`
-is 3 and there are 4 total rows in CSV file, 2 more examples
-are consumed at the first round. If `reset` function is called after first round,
-the call is ignored and remaining examples are returned in the second round.
+By default, the :class:`CSVIter` has ``round_batch`` parameter set to ``True``. So, if
+``batch_size=3`` and there are 4 total rows in CSV file, 2 more examples
+are consumed at the first round. If ``reset`` function is called after first round,
+the call is ignored and remaining examples are returned in the second round. The ``reset``
+is expected to be called only after a complete pass of data.
 
-If one wants all the instances in the second round after calling `reset`, make sure
-to set `round_batch` to False.
+If one wants all the instances in the second round after calling ``reset``, make sure
+to set ``round_batch`` to ``False``.
 
-If ``data_csv = 'data/'`` is set, then all the files in this directory will be read.
+If ``data_csv='data/'`` is set, then all the files in this directory will be read.
 
-``reset()`` is expected to be called only after a complete pass of data.
+By default, the :class:`CSVIter` parses all entries in the data file as float32 data type,
+if ``dtype`` argument is set to be 'int32' or 'int64' then CSVIter will parse all entries in
+the file as int32 or int64 data type accordingly.
 
-By default, the CSVIter parses all entries in the data file as float32 data type,
-if `dtype` argument is set to be 'int32' or 'int64' then CSVIter will parse all entries in the file
-as int32 or int64 data type accordingly.
+Example::
 
-Examples::
+    # Contents of CSV file 'data/data.csv':
+    1,2,3
+    2,3,4
+    3,4,5
+    4,5,6
 
-  // Contents of CSV file ``data/data.csv``.
-  1,2,3
-  2,3,4
-  3,4,5
-  4,5,6
+    >>> it = mx.io.CSVIter(data_csv='data/data.csv', data_shape=(3,), batch_size=2)
+    >>> it.next().data[0]  # first batch
+    [[1. 2. 3.]
+     [2. 3. 4.]]
+    <NDArray 2x3 @cpu(0)>
+    >>> it.next().data[0]  # second batch
+    [[3. 4. 5.]
+     [4. 5. 6.]]
+    <NDArray 2x3 @cpu(0)>
 
-  // Creates a `CSVIter` with `batch_size`=2 and default `round_batch`=True.
-  CSVIter = mx.io.CSVIter(data_csv = 'data/data.csv', data_shape = (3,),
-  batch_size = 2)
+    >>> it = mx.io.CSVIter(data_csv='data/data.csv', data_shape=(3,), batch_size=3)
+    >>> it.next().data[0]  # first batch
+    [[1. 2. 3.]
+     [2. 3. 4.]
+     [3. 4. 5.]]
+    <NDArray 3x3 @cpu(0)>
+    >>> it.next().data[0]  # second batch
+    [[4. 5. 6.]
+     [1. 2. 3.]
+     [2. 3. 4.]]
+    <NDArray 3x3 @cpu(0)>
+    >>> it.reset()
+    >>> it.next().data[0]
+    [[3. 4. 5.]
+     [4. 5. 6.]
+     [1. 2. 3.]]
+    <NDArray 3x3 @cpu(0)>
 
-  // Two batches read from the above iterator are as follows:
-  [[ 1.  2.  3.]
-  [ 2.  3.  4.]]
-  [[ 3.  4.  5.]
-  [ 4.  5.  6.]]
+    >>> it = mx.io.CSVIter(data_csv='data/data.csv', data_shape=(3,), batch_size=3,
+    ... round_batch=False)
+    >>> it.next().data[0]  # first batch
+    [[1. 2. 3.]
+     [2. 3. 4.]
+     [3. 4. 5.]]
+    <NDArray 3x3 @cpu(0)>
+    >>> it.next().data[0]  # second batch
+    [[4. 5. 6.]
+     [2. 3. 4.]
+     [3. 4. 5.]]
+    <NDArray 3x3 @cpu(0)>
 
-  // Creates a `CSVIter` with default `round_batch` set to True.
-  CSVIter = mx.io.CSVIter(data_csv = 'data/data.csv', data_shape = (3,),
-  batch_size = 3)
-
-  // Two batches read from the above iterator in the first pass are as follows:
-  [[1.  2.  3.]
-  [2.  3.  4.]
-  [3.  4.  5.]]
-
-  [[4.  5.  6.]
-  [1.  2.  3.]
-  [2.  3.  4.]]
-
-  // Now, `reset` method is called.
-  CSVIter.reset()
-
-  // Batch read from the above iterator in the second pass is as follows:
-  [[ 3.  4.  5.]
-  [ 4.  5.  6.]
-  [ 1.  2.  3.]]
-
-  // Creates a `CSVIter` with `round_batch`=False.
-  CSVIter = mx.io.CSVIter(data_csv = 'data/data.csv', data_shape = (3,),
-  batch_size = 3, round_batch=False)
-
-  // Contents of two batches read from the above iterator in both passes, after calling
-  // `reset` method before second pass, is as follows:
-  [[1.  2.  3.]
-  [2.  3.  4.]
-  [3.  4.  5.]]
-
-  [[4.  5.  6.]
-  [2.  3.  4.]
-  [3.  4.  5.]]
-
-  // Creates a 'CSVIter' with `dtype`='int32'
-  CSVIter = mx.io.CSVIter(data_csv = 'data/data.csv', data_shape = (3,),
-  batch_size = 3, round_batch=False, dtype='int32')
-
-  // Contents of two batches read from the above iterator in both passes, after calling
-  // `reset` method before second pass, is as follows:
-  [[1  2  3]
-  [2  3  4]
-  [3  4  5]]
-
-  [[4  5  6]
-  [2  3  4]
-  [3  4  5]]
+    >>> it = mx.io.CSVIter(data_csv='data/data.csv', data_shape=(3,), batch_size=3,
+    ... round_batch=False, dtype='int32')
+    >>> it.next().data[0]  # first batch
+    [[1 2 3]
+     [2 3 4]
+     [3 4 5]]
+    <NDArray 3x3 @cpu(0)>
+    >>> it.next().data[0]  # second batch
+    [[4 5 6]
+     [2 3 4]
+     [3 4 5]]
+    <NDArray 3x3 @cpu(0)>
 
 )code" ADD_FILELINE)
 .add_arguments(CSVIterParam::__FIELDS__())
@@ -313,7 +307,7 @@ Examples::
     return new PrefetcherIter(
         new BatchLoader(
             new CSVIter()));
-  });
+});
 
 }  // namespace io
 }  // namespace mxnet
