@@ -19,7 +19,6 @@ gluon.Constant
 ==============
 
 
-.. autoclass:: mxnet.gluon.Constant
+.. autoclass:: mxnet.gluon.parameter.Constant
     :members:
-    :inherited-members:
     :autosummary:

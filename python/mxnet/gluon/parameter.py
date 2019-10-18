@@ -48,9 +48,9 @@ class DeferredInitializationError(MXNetError):
 class Parameter(object):
     """A Container holding parameters (weights) of Blocks.
 
-    :py:class:`Parameter` holds a copy of the parameter on each :py:class:`Context` after
-    it is initialized with ``Parameter.initialize(...)``. If :py:attr:`grad_req` is
-    not ``'null'``, it will also hold a gradient array on each :py:class:`Context`::
+    :class:`Parameter` holds a copy of the parameter on each :class:`~mxnet.context.Context`
+    after it is initialized with ``Parameter.initialize(...)``. If :attr:`grad_req` is
+    not ``'null'``, it will also hold a gradient array on each :class:`~mxnet.context.Context`::
 
         ctx = mx.gpu(0)
         x = mx.nd.zeros((16, 100), ctx=ctx)
@@ -67,16 +67,16 @@ class Parameter(object):
     grad_req : {'write', 'add', 'null'}, default 'write'
         Specifies how to update gradient to grad arrays.
 
-        - ``'write'`` means everytime gradient is written to grad :py:class:`NDArray`.
-        - ``'add'`` means everytime gradient is added to the grad :py:class:`NDArray`. You need
-          to manually call ``zero_grad()`` to clear the gradient buffer before each
+        - ``'write'`` means everytime gradient is written to grad :class:`~mxnet.ndarray.NDArray`.
+        - ``'add'`` means everytime gradient is added to the grad :class:`~mxnet.ndarray.NDArray`.
+          You need to manually call :meth:`zero_grad` to clear the gradient buffer before each
           iteration when using this option.
-        - 'null' means gradient is not requested for this parameter. gradient arrays
+        - ``'null'`` means gradient is not requested for this parameter. gradient arrays
           will not be allocated.
     shape : int or tuple of int, default None
         Shape of this parameter. By default shape is not specified. Parameter with
-        unknown shape can be used for :py:class:`Symbol` API, but ``init`` will throw an error
-        when using :py:class:`NDArray` API.
+        unknown shape can be used for class:`~mxnet.symbol.Symbol` API, but ``init`` will
+        throw an error when using :class:`~mxnet.ndarray.NDArray` API.
     dtype : numpy.dtype or str, default 'float32'
         Data type of this parameter. For example, ``numpy.float32`` or ``'float32'``.
     lr_mult : float, default 1.0
@@ -263,7 +263,7 @@ class Parameter(object):
         ----------
         data : NDArray
             The data to load
-        ctx : Context or list of Context
+        ctx : :class:`~mxnet.context.Context or list of :class:`~mxnet.context.Context`
             Context(s) initialize loaded parameters on.
         cast_dtype : bool, default False
             Cast the data type of the parameter
@@ -397,24 +397,23 @@ class Parameter(object):
 
     def initialize(self, init=None, ctx=None, default_init=initializer.Uniform(),
                    force_reinit=False):
-        """Initializes parameter and gradient arrays. Only used for :py:class:`NDArray` API.
+        """Initializes parameter and gradient arrays. Only used for :class:`~.mxnet.ndarray.NDArray` API.
 
         Parameters
         ----------
         init : Initializer
-            The initializer to use. Overrides :py:meth:`Parameter.init` and default_init.
-        ctx : Context or list of Context, defaults to :py:meth:`context.current_context()`.
-            Initialize Parameter on given context. If ctx is a list of Context, a
-            copy will be made for each context.
+            The initializer to use. Overrides ``Parameter.init`` and default_init.
+        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
+            Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
+            a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
 
             .. note::
                 Copies are independent arrays. User is responsible for keeping
                 their values consistent when updating.
-                Normally :py:class:`gluon.Trainer` does this for you.
+                Normally :class:`~mxnet.gluon.Trainer` does this for you.
 
         default_init : Initializer
-            Default initializer is used when both :py:func:`init`
-            and :py:meth:`Parameter.init` are ``None``.
+            Default initializer is used when both ``init`` and ``Parameter.init`` are ``None``.
         force_reinit : bool, default False
             Whether to force re-initialization if parameter is already initialized.
 
@@ -464,13 +463,13 @@ class Parameter(object):
         self._finish_deferred_init()
 
     def reset_ctx(self, ctx):
-        """Re-assign Parameter to other contexts.
+        """Re-assign all Parameters to other contexts.
 
         Parameters
         ----------
-        ctx : Context or list of Context, default ``context.current_context()``.
-            Assign Parameter to given context. If ctx is a list of Context, a
-            copy will be made for each context.
+        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
+             Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
+             a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
         """
         if ctx is None:
             ctx = [context.current_context()]
@@ -548,7 +547,7 @@ class Parameter(object):
     def data(self, ctx=None):
         """Returns a copy of this parameter on one context. Must have been
         initialized on this context before. For sparse parameters, use
-        :py:meth:`Parameter.row_sparse_data` instead.
+        :meth:`Parameter.row_sparse_data` instead.
 
         Parameters
         ----------
@@ -567,7 +566,7 @@ class Parameter(object):
 
     def list_data(self):
         """Returns copies of this parameter on all contexts, in the same order
-        as creation. For sparse parameters, use :py:meth:`Parameter.list_row_sparse_data`
+        as creation. For sparse parameters, use :meth:`Parameter.list_row_sparse_data`
         instead.
 
         Returns
@@ -596,7 +595,7 @@ class Parameter(object):
 
     def list_grad(self):
         """Returns gradient buffers on all contexts, in the same order
-        as :py:meth:`values`."""
+        as :meth:`~mxnet.gluon.parameter.Parameter.list_data`."""
         if self._data is not None and self._grad is None:
             raise RuntimeError(
                 "Cannot get gradient array for Parameter '%s' " \
@@ -649,12 +648,11 @@ class Parameter(object):
 
 
 class Constant(Parameter):
-    """A constant parameter for holding immutable tensors.
-    `Constant`s are ignored by `autograd` and `Trainer`, thus their values
-    will not change during training. But you can still update their values
-    manually with the `set_data` method.
+    """A constant parameter for holding immutable tensors. :class:`Constant` is ignored
+    by ``autograd`` and ``Trainer``, thus their values will not change during training.
+    But you can still update their values manually with the :meth:`~Parameter.set_data` method.
 
-    `Constant` s can be created with either::
+    :class:`Constant` can be created with either::
 
         const = mx.gluon.Constant('const', [[1,2],[3,4]])
 
@@ -711,7 +709,7 @@ class ParameterDict(object):
     prefix : str, default ``''``
         The prefix to be prepended to all Parameters' names created by this dict.
     shared : ParameterDict or None
-        If not ``None``, when this dict's :py:meth:`get` method creates a new parameter, will
+        If not ``None``, when this dict's :meth:`get` method creates a new parameter, will
         first try to retrieve it from "shared" dict. Usually used for sharing
         parameters with another Block.
     """
@@ -744,8 +742,8 @@ class ParameterDict(object):
 
     @property
     def prefix(self):
-        """Prefix of this dict. It will be prepended to :py:class:`Parameter`s' name created
-        with :py:func:`get`."""
+        """Prefix of this dict. It will be prepended to the name of :class:`Parameter` created
+        with :func:`get`."""
         return self._prefix
 
     def _get_impl(self, name):
@@ -757,9 +755,9 @@ class ParameterDict(object):
         return None
 
     def get(self, name, **kwargs):
-        """Retrieves a :py:class:`Parameter` with name ``self.prefix+name``. If not found,
-        :py:func:`get` will first try to retrieve it from "shared" dict. If still not
-        found, :py:func:`get` will create a new :py:class:`Parameter` with key-word arguments and
+        """Retrieves a :class:`~mxnet.gluon.parameter.Parameter` with name ``self.prefix + name``.
+        If not found, :func:`get` will first try to retrieve it from "shared" dict. If still not
+        found, :func:`get` will create a new :class:`Parameter` with key-word arguments and
         insert it to self.
 
         Parameters
@@ -768,12 +766,12 @@ class ParameterDict(object):
             Name of the desired Parameter. It will be prepended with this dictionary's
             prefix.
         **kwargs : dict
-            The rest of key-word arguments for the created :py:class:`Parameter`.
+            The rest of key-word arguments for the created :class:`Parameter`.
 
         Returns
         -------
         Parameter
-            The created or retrieved :py:class:`Parameter`.
+            The created or retrieved :class:`Parameter`.
         """
         name = self.prefix + name
         param = self._get_impl(name)
@@ -814,23 +812,23 @@ class ParameterDict(object):
         return param
 
     def get_constant(self, name, value=None):
-        """Retrieves a :py:class:`.Constant` with name ``self.prefix+name``. If not found,
-        :py:func:`get` will first try to retrieve it from "shared" dict. If still not
-        found, :py:func:`get` will create a new :py:class:`.Constant` with key-word
+        """Retrieves a :class:`~mxnet.gluon.parameter.Constant` with name ``self.prefix + name``.
+        If not found, :func:`get` will first try to retrieve it from "shared" dict.
+        If still not found, :func:`get` will create a new :class:`Constant` with key-word
         arguments and insert it to self.
 
         Parameters
         ----------
         name : str
-            Name of the desired Constant. It will be prepended with this dictionary's
-            prefix.
+            Name of the desired :class:`Constant`. It will be prepended with this
+            dictionary's prefix.
         value : array-like
             Initial value of constant.
 
         Returns
         -------
-        :py:class:`.Constant`
-            The created or retrieved :py:class:`.Constant`.
+        :class:`Constant`
+            The created or retrieved :class:`Constant`.
         """
         name = self.prefix + name
         param = self._get_impl(name)
@@ -866,15 +864,16 @@ class ParameterDict(object):
 
     def initialize(self, init=initializer.Uniform(), ctx=None, verbose=False,
                    force_reinit=False):
-        """Initializes all Parameters managed by this dictionary to be used for :py:class:`NDArray`
-        API. It has no effect when using :py:class:`Symbol` API.
+        """Initializes all Parameters managed by this dictionary to be used for
+        :class:`~mxnet.ndarray.NDArray` API. It has no effect when using
+        :class:`~mxnet.symbol.symbol.Symbol` API.
 
         Parameters
         ----------
         init : Initializer
-            Global default Initializer to be used when :py:meth:`Parameter.init` is ``None``.
-            Otherwise, :py:meth:`Parameter.init` takes precedence.
-        ctx : Context or list of Context
+            Global default Initializer to be used when ``Parameter.init`` is ``None``.
+            Otherwise, ``Parameter.init`` takes precedence.
+        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
             Keeps a copy of Parameters on one or many context(s).
         verbose : bool, default False
             Whether to verbosely print out details on initialization.
@@ -910,9 +909,9 @@ class ParameterDict(object):
 
         Parameters
         ----------
-        ctx : Context or list of Context, default :py:meth:`context.current_context()`.
-            Assign Parameter to given context. If ctx is a list of Context, a
-            copy will be made for each context.
+        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`,
+            Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
+            a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
         """
         for i in self.values():
             i.reset_ctx(ctx)
@@ -981,13 +980,13 @@ class ParameterDict(object):
         ----------
         filename : str
             Path to parameter file.
-        ctx : Context or list of Context
+        ctx : :class:`~mxnet.context.Context or list of :class:`~mxnet.context.Context`
             Context(s) initialize loaded parameters on.
         allow_missing : bool, default False
             Whether to silently skip loading parameters not represents in the file.
         ignore_extra : bool, default False
             Whether to silently ignore parameters from the file that are not
-            present in this ParameterDict.
+            present in this :class:`ParameterDict`.
         restore_prefix : str, default ''
             prepend prefix to names of stored parameters before loading.
         cast_dtype : bool, default False
@@ -1015,13 +1014,13 @@ class ParameterDict(object):
         ----------
         param_dict : dict
             Dictionary containing model parameters, preprended with arg: and aux: names
-        ctx : Context or list of Context
+        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
             Context(s) initialize loaded parameters on.
         allow_missing : bool, default False
             Whether to silently skip loading parameters not represented in the file.
         ignore_extra : bool, default False
             Whether to silently ignore parameters from the file that are not
-            present in this ParameterDict.
+            present in this :class:`ParameterDict`.
         restore_prefix : str, default ''
             prepend prefix to names of stored parameters before loading
         filename : str, default None

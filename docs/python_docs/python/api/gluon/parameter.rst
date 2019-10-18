@@ -19,7 +19,6 @@ gluon.Parameter
 ===============
 
 
-.. autoclass:: mxnet.gluon.Parameter
+.. autoclass:: mxnet.gluon.parameter.Parameter
     :members:
-    :inherited-members:
     :autosummary:

@@ -19,7 +19,6 @@ gluon.ParameterDict
 ===================
 
 
-.. autoclass:: mxnet.gluon.ParameterDict
+.. autoclass:: mxnet.gluon.parameter.ParameterDict
     :members:
-    :inherited-members:
     :autosummary:
