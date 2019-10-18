@@ -99,13 +99,13 @@ Training
 
    .. card::
       :title: gluon.Parameter
-      :link: mxnet.gluon.Parameter.html
+      :link: parameter.html
 
       Parameter getting and setting functions.
 
    .. card::
       :title: gluon.Trainer
-      :link: mxnet.gluon.Trainer.html
+      :link: trainer.html
 
       Functions for applying an optimizer on a set of parameters.
 
@@ -118,17 +118,11 @@ Data
       :title: gluon.data
       :link: data/index.html
 
-      Dataset utilities.
-
-   .. card::
-      :title: gluon.data.vision
-      :link: data/vision/index.html
-
-      Image dataset utilities.
+      Data utilities.
 
    .. card::
       :title: gluon.model_zoo.vision
-      :link: model_zoo/index.vision.html
+      :link: model_zoo/index.html
 
       A module for loading pre-trained neural network models.
 
