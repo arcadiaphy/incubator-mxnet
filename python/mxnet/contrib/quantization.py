@@ -152,7 +152,7 @@ def _quantize_symbol(sym, ctx, excluded_symbols=None, excluded_operators=None,
     calib_layer = [py_str(calib_str[i]) for i in range(size.value)]
     return Symbol(out), calib_layer
 
-def combine_histogram(old_hist, arr, new_min, new_max, new_th):
+def _combine_histogram(old_hist, arr, new_min, new_max, new_th):
     """ Collect layer histogram for arr and combine it with old histogram.
     """
     (old_hist, old_hist_edges, old_min, old_max, old_th) = old_hist
@@ -194,7 +194,7 @@ class _LayerHistogramCollector(object):
         max_range = np.max(arr)
         th = max(abs(min_range), abs(max_range))
         if name in self.hist_dict:
-            self.hist_dict[name] = combine_histogram(self.hist_dict[name], arr, min_range, max_range, th)
+            self.hist_dict[name] = _combine_histogram(self.hist_dict[name], arr, min_range, max_range, th)
         else:
             hist, hist_edges = np.histogram(arr, bins=self.num_bins, range=(-th, th))
             self.hist_dict[name] = (hist, hist_edges, min_range, max_range, th)
