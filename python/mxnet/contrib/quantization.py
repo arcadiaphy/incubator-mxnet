@@ -444,7 +444,7 @@ def quantize_model(sym, arg_params, aux_params,
                    data_names=('data',), label_names=('softmax_label',),
                    ctx=cpu(), excluded_sym_names=None, excluded_op_names=None, calib_mode='entropy',
                    calib_data=None, num_calib_examples=None,
-                   quantized_dtype='int8', quantize_mode='smart', logger=logging):
+                   quantized_dtype='int8', quantize_mode='smart', logger=None):
     """User-level API for generating a quantized model from a FP32 model w/ or w/o calibration.
     The backend quantized operators are only enabled for Linux systems. Please do not run
     inference using the quantized models on Windows for now.
@@ -508,6 +508,9 @@ def quantize_model(sym, arg_params, aux_params,
     tuple
         A tuple of quantized symbol, quantized ``arg_params``, and ``aux_params``.
     """
+    if logger is None:
+        logger = logging
+
     if excluded_sym_names is None:
         excluded_sym_names = []
     if not isinstance(excluded_sym_names, list):
@@ -576,7 +579,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
                           data_names=('data',), label_names=('softmax_label',),
                           ctx=cpu(), excluded_sym_names=None, excluded_op_names=None,
                           calib_mode='entropy', calib_data=None, num_calib_examples=None,
-                          quantized_dtype='int8', logger=logging):
+                          quantized_dtype='int8', logger=None):
     """User-level API for generating a fusion + quantized model from a FP32 model
     w/ or w/o calibration with Intel MKL-DNN.
     The backend quantized operators are only enabled for Linux systems. Please do not run
@@ -584,13 +587,61 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
 
     Parameters
     ----------
-    same with quantize_model
+    sym : str or :class:`~mxnet.symbol.Symbol`
+        Defines the structure of a neural network for FP32 data types.
+    arg_params : dict
+        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+    aux_params : dict
+        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+    data_names : a list of strs
+        Data names required for creating a Module object to run forward propagation on the
+        calibration dataset.
+    label_names : a list of strs
+        Label names required for creating a Module object to run forward propagation on the
+        calibration dataset.
+    ctx : :class:`~mxnet.context.Context`
+        Defines the device that users want to run forward propagation on the calibration
+        dataset for collecting layer output statistics. Currently, only supports single context.
+    excluded_sym_names : list of strings
+        A list of strings representing the names of the symbols that users want to excluding
+        from being quantized.
+    excluded_op_names : list of strings
+        A list of strings representing the names of the operators that users want to excluding
+        from being quantized.
+    calib_mode : str
+        If calib_mode='none', no calibration will be used and the thresholds for
+        requantization after the corresponding layers will be calculated at runtime by
+        calling min and max operators. The quantized models generated in this
+        mode are normally 10-20% slower than those with calibrations during inference.
+        If calib_mode='naive', the min and max values of the layer outputs from a calibration
+        dataset will be directly taken as the thresholds for quantization.
+        If calib_mode='entropy' (default mode), the thresholds for quantization will be
+        derived such that the KL divergence between the distributions of FP32 layer outputs and
+        quantized layer outputs is minimized based upon the calibration dataset.
+    calib_data : :class:`~mxnet.io.DataIter`
+        A data iterator initialized by the calibration dataset.
+    num_calib_examples : int or None
+        The maximum number of examples that user would like to use for calibration. If not provided,
+        the whole calibration dataset will be used.
+    quantized_dtype : str
+        The quantized destination type for input data. Currently support 'int8', 'uint8' and 'auto'.
+        'auto' means automatically select output type according to calibration result.
+        Default value is 'int8'.
+    quantize_mode : str
+        The mode that quantization pass to apply. Support 'full' and 'smart'.
+        'full' means quantize all operator if possible.
+        'smart' means quantization pass will smartly choice which operator should be quantized.
+    logger : Object
+        A logging object for printing information during the process of quantization.
 
     Returns
     -------
     tuple
-        A tuple of quantized symbol, quantized arg_params, and aux_params.
+        A tuple of quantized symbol, quantized ``arg_params``, and ``aux_params``.
     """
+    if logger is None:
+        logger = logging
+
     if ctx != cpu():
         raise ValueError(
             'quantize_model_mkldnn only support Intel cpu platform with MKL-DNN Backend')
@@ -611,7 +662,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
 
 def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
                    excluded_sym_names=None, excluded_op_names=None, calib_mode='entropy',
-                   quantized_dtype='int8', logger=logging):
+                   quantized_dtype='int8', logger=None):
     """User-level API for generating a quantized model from a FP32 model w/o calibration
     and a collector for naive or entropy calibration.
     The backend quantized operators are only enabled for Linux systems. Please do not run
@@ -655,6 +706,9 @@ def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
     tuple
         A tuple of quantized symbol, quantized ``arg_params``, ``aux_params`` and ``collector``.
     """
+    if logger is None:
+        logger = logging
+
     if excluded_sym_names is None:
         excluded_sym_names = []
     if not isinstance(excluded_sym_names, list):
@@ -698,7 +752,7 @@ def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
     return qsym, qarg_params, aux_params, collector
 
 def calib_graph(qsym, arg_params, aux_params, collector,
-                calib_mode='entropy', quantized_dtype='int8', logger=logging):
+                calib_mode='entropy', quantized_dtype='int8', logger=None):
     """User-level API for calibrating a quantized model using a filled collector.
     The backend quantized operators are only enabled for Linux systems. Please do not run
     inference using the quantized models on Windows for now.
@@ -735,6 +789,9 @@ def calib_graph(qsym, arg_params, aux_params, collector,
     tuple
         A tuple of calibrated symbol, quantized ``arg_params``, ``aux_params``.
     """
+    if logger is None:
+        logger = logging
+
     th_dict = {}
     if calib_mode is not None and calib_mode != 'none':
         if calib_mode == 'entropy':
@@ -758,7 +815,7 @@ def calib_graph(qsym, arg_params, aux_params, collector,
 def quantize_net(network, quantized_dtype='auto',
                  exclude_layers=None, exclude_layers_match=None, exclude_operators=None,
                  calib_data=None, data_shapes=None, calib_mode='none',
-                 num_calib_examples=None, ctx=cpu(), logger=logging):
+                 num_calib_examples=None, ctx=cpu(), logger=None):
     """User-level API for Gluon users to generate a quantized :class:`~mxnet.gluon.SymbolBlock`
     from a FP32 :class:`~mxnet.gluon.HybridBlock` w/ or w/o calibration. The backend quantized
     operators are only enabled for Linux systems.  Please do not run inference using the
@@ -807,6 +864,8 @@ def quantize_net(network, quantized_dtype='auto',
     network : :class:`~mxnet.gluon.HybridBlock`
         Defines the structure of a neural network for INT8 data types.
     """
+    if logger is None:
+        logger = logging
 
     logger.info('Export HybridBlock')
     network.hybridize()
