@@ -927,7 +927,7 @@ def _make_io_iterator(handle):
                '-------\n' +
                'MXDataIter\n'+
                '    The result iterator.')
-    doc_str = doc_str % (desc.value, param_str)
+    doc_str = doc_str % (py_str(desc.value), param_str)
 
     def creator(*args, **kwargs):
         """Create an iterator.
