@@ -22,7 +22,7 @@ The following tutorials will help you learn how to deploy MXNet on various
 platforms and in different language environments.
 
 Export_
-------
+----------
 The following tutorials will help you learn export MXNet models.
 
 .. container:: cards
@@ -39,7 +39,7 @@ The following tutorials will help you learn export MXNet models.
       How to export models trained with MXNet GluonCV.
 
 Inference_
----------
+----------
 The following tutorials will help you learn how to deploy MXNet models for inference applications.
 
 .. container:: cards
@@ -69,7 +69,7 @@ The following tutorials will help you learn how to deploy MXNet models for infer
       How to use quantized GluonCV models for inference on Intel Xeon Processors to gain higher performance.
 
 Cloud_
------
+----------
 The following tutorials will show you how to use MXNet on AWS.
 
 .. container:: cards

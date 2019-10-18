@@ -40,7 +40,7 @@ Basic Image Tutorials
       How to use pretrained models to recognize what is in an image.
 
 Advanced Image Tutorials
----------------------
+------------------------
 
 .. container:: cards
 
