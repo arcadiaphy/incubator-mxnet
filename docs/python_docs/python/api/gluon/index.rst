@@ -49,7 +49,7 @@ Tutorials
 
    .. card::
       :title: Gluon Guide
-      :link: ../../guide/packages/gluon/
+      :link: ../../tutorials/packages/gluon/index.html
 
       The Gluon guide. Start here!
 
