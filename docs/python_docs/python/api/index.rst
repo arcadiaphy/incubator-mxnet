@@ -229,5 +229,4 @@ Advanced modules
    symbol/index
    module/index
    contrib/index
-   image/index
    mxnet/index

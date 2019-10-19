@@ -21,11 +21,11 @@ The following tutorials will help you learn how to use backend tools to boost pe
 
 .. container:: cards
 
-   .. card::
-      :title: TensorRT
-      :link: tensorrt/index.html
+  .. card::
+     :title: TensorRT
+     :link: tensorrt/index.html
 
-      How to use NVIDIA's TensorRT to boost inference performance.
+     How to use NVIDIA's TensorRT to boost inference performance.
 
   .. card::
      :title: MKL-DNN
