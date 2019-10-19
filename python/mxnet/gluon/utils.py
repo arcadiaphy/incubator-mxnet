@@ -40,8 +40,8 @@ from .. import numpy as _mx_np  # pylint: disable=reimported
 
 
 def split_data(data, num_slice, batch_axis=0, even_split=True):
-    """Splits an NDArray into `num_slice` slices along `batch_axis`.
-    Usually used for data parallelism where each slices is sent
+    """Splits an :class:`~mxnet.ndarray.NDArray` into :attr:`num_slice` slices along
+    :attr:`batch_axis`.  Usually used for data parallelism where each slices is sent
     to one device (i.e. GPU).
 
     Parameters
@@ -54,13 +54,13 @@ def split_data(data, num_slice, batch_axis=0, even_split=True):
         The axis along which to slice.
     even_split : bool, default True
         Whether to force all slices to have the same number of elements.
-        If `True`, an error will be raised when `num_slice` does not evenly
-        divide `data.shape[batch_axis]`.
+        If ``True``, an error will be raised when :attr:`num_slice` does not evenly
+        divide ``data.shape[batch_axis]``.
 
     Returns
     -------
     list of NDArray
-        Return value is a list even if `num_slice` is 1.
+        Return value is a list even if :attr:`num_slice` is 1.
     """
     size = data.shape[batch_axis]
     if even_split and size % num_slice != 0:
@@ -98,8 +98,8 @@ def split_data(data, num_slice, batch_axis=0, even_split=True):
 
 
 def split_and_load(data, ctx_list, batch_axis=0, even_split=True):
-    """Splits an NDArray into `len(ctx_list)` slices along `batch_axis` and loads
-    each slice to one context in `ctx_list`.
+    """Splits an :class:`~mxnet.ndarray.NDArray` into ``len(ctx_list)`` slices along
+    :attr:`batch_axis` and loads each slice to one context in :attr:`ctx_list`.
 
     Parameters
     ----------
@@ -115,7 +115,7 @@ def split_and_load(data, ctx_list, batch_axis=0, even_split=True):
     Returns
     -------
     list of NDArrays or ndarrays
-        Each corresponds to a context in `ctx_list`.
+        Each corresponds to a context in :attr:`ctx_list`.
     """
     array_fn = _mx_np.array if is_np_array() else ndarray.array
     if not isinstance(data, ndarray.NDArray):
@@ -128,21 +128,22 @@ def split_and_load(data, ctx_list, batch_axis=0, even_split=True):
 
 
 def clip_global_norm(arrays, max_norm, check_isfinite=True):
-    """Rescales NDArrays so that the sum of their 2-norm is smaller than `max_norm`.
+    """Rescales :class:`~mxnet.ndarray.NDArray` so that the sum of their 2-norm is smaller
+    than :attr:`max_norm`.
 
     Parameters
     ----------
     arrays : list of NDArray
     max_norm : float
     check_isfinite : bool, default True
-         If True, check that the total_norm is finite (not nan or inf). This
-         requires a blocking .asscalar() call.
+         If ``True``, check that the total_norm is finite (not nan or inf). This
+         requires a blocking :meth:`~mxnet.ndarray.NDArray.asscalar` call.
 
     Returns
     -------
     NDArray or float
-      Total norm. Return type is NDArray of shape (1,) if check_isfinite is
-      False. Otherwise a float is returned.
+      Total norm. Return type is :class:`~mxnet.ndarray.NDArray` of shape :math:`(1,)`
+      if :attr:`check_isfinite` is ``False``. Otherwise a float is returned.
 
     """
     def _norm(array):
