@@ -38,58 +38,50 @@ NNVM_REGISTER_OP(_contrib_box_nms)
 .add_alias("_contrib_box_non_maximum_suppression")
 .describe(R"code(Apply non-maximum suppression to input.
 
-The output will be sorted in descending order according to `score`. Boxes with
-overlaps larger than `overlap_thresh`, smaller scores and background boxes
-will be removed and filled with -1, the corresponding position will be recorded
+The output will be sorted in descending order according to box score/confidence.
+Boxes with overlaps larger than :attr:`overlap_thresh`, smaller scores and background
+boxes will be removed and filled with -1, the corresponding position will be recorded
 for backward propogation.
 
 During back-propagation, the gradient will be copied to the original
 position according to the input index. For positions that have been suppressed,
-the in_grad will be assigned 0.
-In summary, gradients are sticked to its boxes, will either be moved or discarded
-according to its original index in input.
+the in_grad will be assigned 0. In summary, gradients are sticked to its boxes,
+will either be moved or discarded according to its original index in input.
 
-Input requirements::
+Input tensor have at least 2 dimensions :math:`(n, k)`, where :math:`n` is the
+number of boxes in each batch and :math:`k` is the width of each box item. Any
+higher dims will be regarded as batch, e.g. :math:`(a, b, c, d, n, k) == (a * b * c * d, n, k)`.
 
-  1. Input tensor have at least 2 dimensions, (n, k), any higher dims will be regarded
-  as batch, e.g. (a, b, c, d, n, k) == (a*b*c*d, n, k)
-  2. n is the number of boxes in each batch
-  3. k is the width of each box item.
+By default, a box is :math:`[\text{id}, \text{score}, x_{min}, y_{min}, x_{max}, y_{max}, \dots]`,
+additional elements are allowed:
 
-By default, a box is [id, score, xmin, ymin, xmax, ymax, ...],
-additional elements are allowed.
+- :attr:`id_index` optional, use -1 to ignore, useful if ``force_suppress = False``, which means
+  we will skip highly overlapped boxes if one is 'apple' while the other is 'car'.
 
-- `id_index`: optional, use -1 to ignore, useful if `force_suppress=False`, which means
-  we will skip highly overlapped boxes if one is `apple` while the other is `car`.
+- :attr:`background_id` optional, defaults to -1, class id for background boxes, useful
+  when ``id_index >= 0`` which means boxes with background id will be filtered before nms.
 
-- `background_id`: optional, default=-1, class id for background boxes, useful
-  when `id_index >= 0` which means boxes with background id will be filtered before nms.
+- :attr:`coord_start` optional, defaults to 2, the starting index of the 4 coordinates.
 
-- `coord_start`: required, default=2, the starting index of the 4 coordinates.
-  Two formats are supported:
+- :attr:`score_index` optional, defaults to 1, box score/confidence. When two boxes overlap
+  IOU > :attr:`overlap_thresh`, the one with smaller score will be suppressed.
 
-    - `corner`: [xmin, ymin, xmax, ymax]
-
-    - `center`: [x, y, width, height]
-
-- `score_index`: required, default=1, box score/confidence.
-  When two boxes overlap IOU > `overlap_thresh`, the one with smaller score will be suppressed.
-
-- `in_format` and `out_format`: default='corner', specify in/out box formats.
+- :attr:`in_format`/:attr:`out_format` optional, defaults to 'corner', specify input/output
+  box encoding formats.
 
 Examples::
 
-  x = [[0, 0.5, 0.1, 0.1, 0.2, 0.2], [1, 0.4, 0.1, 0.1, 0.2, 0.2],
-       [0, 0.3, 0.1, 0.1, 0.14, 0.14], [2, 0.6, 0.5, 0.5, 0.7, 0.8]]
-  box_nms(x, overlap_thresh=0.1, coord_start=2, score_index=1, id_index=0,
-      force_suppress=True, in_format='corner', out_typ='corner') =
-      [[2, 0.6, 0.5, 0.5, 0.7, 0.8], [0, 0.5, 0.1, 0.1, 0.2, 0.2],
-       [-1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1]]
-  out_grad = [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
-              [0.3, 0.3, 0.3, 0.3, 0.3, 0.3], [0.4, 0.4, 0.4, 0.4, 0.4, 0.4]]
-  # exe.backward
-  in_grad = [[0.2, 0.2, 0.2, 0.2, 0.2, 0.2], [0, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]
+    x = [[0, 0.5, 0.1, 0.1, 0.2, 0.2], [1, 0.4, 0.1, 0.1, 0.2, 0.2],
+         [0, 0.3, 0.1, 0.1, 0.14, 0.14], [2, 0.6, 0.5, 0.5, 0.7, 0.8]]
+    box_nms(x, overlap_thresh=0.1, coord_start=2, score_index=1, id_index=0,
+        force_suppress=True, in_format='corner', out_typ='corner') =
+        [[2, 0.6, 0.5, 0.5, 0.7, 0.8], [0, 0.5, 0.1, 0.1, 0.2, 0.2],
+         [-1, -1, -1, -1, -1, -1], [-1, -1, -1, -1, -1, -1]]
+    out_grad = [[0.1, 0.1, 0.1, 0.1, 0.1, 0.1], [0.2, 0.2, 0.2, 0.2, 0.2, 0.2],
+                [0.3, 0.3, 0.3, 0.3, 0.3, 0.3], [0.4, 0.4, 0.4, 0.4, 0.4, 0.4]]
+    # exe.backwar
+    in_grad = [[0.2, 0.2, 0.2, 0.2, 0.2, 0.2], [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0], [0.1, 0.1, 0.1, 0.1, 0.1, 0.1]]
 
 )code" ADD_FILELINE)
 .set_num_inputs(1)
@@ -116,23 +108,26 @@ NNVM_REGISTER_OP(_backward_contrib_box_nms)
 .add_arguments(BoxNMSParam::__FIELDS__());
 
 NNVM_REGISTER_OP(_contrib_box_iou)
-.describe(R"doc(Bounding box overlap of two arrays.
-  The overlap is defined as Intersection-over-Union, aka, IOU.
-  - lhs: (a_1, a_2, ..., a_n, 4) array
-  - rhs: (b_1, b_2, ..., b_n, 4) array
-  - output: (a_1, a_2, ..., a_n, b_1, b_2, ..., b_n) array
+.describe(R"code(Bounding box overlap of two arrays.
 
-  Note::
+The overlap is defined as Intersection-over-Union, aka, IOU. Input arrays' last dimension
+should be 4 to encode boxes. Any higher dimensions are regarded as batch:
 
-    Zero gradients are back-propagated in this op for now.
+- :attr:`lhs` shape :math:`(a_1, a_2, ..., a_n, 4)`
+- :attr:`rhs` shape :math:`(b_1, b_2, ..., b_n, 4)`
+- :attr:`output` shape :math:`(a_1, a_2, ..., a_n, b_1, b_2, ..., b_n)`
 
-  Example::
+Example::
 
-    x = [[0.5, 0.5, 1.0, 1.0], [0.0, 0.0, 0.5, 0.5]]
-    y = [[0.25, 0.25, 0.75, 0.75]]
-    box_iou(x, y, format='corner') = [[0.1428], [0.1428]]
+  x = [[0.5, 0.5, 1.0, 1.0], [0.0, 0.0, 0.5, 0.5]]
+  y = [[0.25, 0.25, 0.75, 0.75]]
+  box_iou(x, y, format='corner') = [[0.1428], [0.1428]]
 
-)doc" ADD_FILELINE)
+.. Note::
+
+  Zero gradients are back-propagated in this op for now.
+
+)code" ADD_FILELINE)
 .set_num_inputs(2)
 .set_num_outputs(1)
 .set_attr_parser(ParamParser<BoxOverlapParam>)
@@ -157,28 +152,29 @@ NNVM_REGISTER_OP(_backward_contrib_box_iou)
 .add_arguments(BoxOverlapParam::__FIELDS__());
 
 NNVM_REGISTER_OP(_contrib_bipartite_matching)
-.describe(R"doc(Compute bipartite matching.
-  The matching is performed on score matrix with shape [B, N, M]
-  - B: batch_size
-  - N: number of rows to match
-  - M: number of columns as reference to be matched against.
+.describe(R"code(Compute bipartite matching.
 
-  Returns:
-  x : matched column indices. -1 indicating non-matched elements in rows.
-  y : matched row indices.
+The matching is performed on score matrix with shape :math:`[B, N, M]`, where
+:math:`B` is the batch size, :math:`N` is the number of rows to match, and
+:math:`M` is the number of columns as reference to be matched against.
 
-  Note::
+Returns:
 
-    Zero gradients are back-propagated in this op for now.
+- :attr:`x` matched column indices in which -1 indicating non-matched elements in rows.
+- :attr:`y` matched row indices.
 
-  Example::
+Example::
 
-    s = [[0.5, 0.6], [0.1, 0.2], [0.3, 0.4]]
-    x, y = bipartite_matching(x, threshold=1e-12, is_ascend=False)
-    x = [1, -1, 0]
-    y = [2, 0]
+  s = [[0.5, 0.6], [0.1, 0.2], [0.3, 0.4]]
+  x, y = bipartite_matching(x, threshold=1e-12, is_ascend=False)
+  x = [1, -1, 0]
+  y = [2, 0]
 
-)doc" ADD_FILELINE)
+.. Note::
+
+  Zero gradients are back-propagated in this op for now.
+
+)code" ADD_FILELINE)
 .set_num_inputs(1)
 .set_num_outputs(2)
 .set_attr_parser(ParamParser<BipartiteMatchingParam>)
@@ -203,9 +199,11 @@ NNVM_REGISTER_OP(_backward_contrib_bipartite_matching)
 .add_arguments(BipartiteMatchingParam::__FIELDS__());
 
 NNVM_REGISTER_OP(_contrib_box_encode)
-.describe(R"doc(Encode bounding boxes training target with normalized center offsets.
-    Input bounding boxes are using corner type: `x_{min}, y_{min}, x_{max}, y_{max}`.) array
-)doc" ADD_FILELINE)
+.describe(R"code(Encode bounding boxes training target with normalized center offsets.
+
+Input bounding boxes are using corner type: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`.
+
+)code" ADD_FILELINE)
 .set_num_inputs(6)
 .set_num_outputs(2)
 .set_attr<nnvm::FListInputNames>("FListInputNames",
@@ -225,10 +223,12 @@ NNVM_REGISTER_OP(_contrib_box_encode)
 .add_argument("stds", "NDArray-or-Symbol", "(4,) Std value to be divided from encoded values");
 
 NNVM_REGISTER_OP(_contrib_box_decode)
-.describe(R"doc(Decode bounding boxes training target with normalized center offsets.
-    Input bounding boxes are using corner type: `x_{min}, y_{min}, x_{max}, y_{max}`
-    or center type: `x, y, width, height.) array
-)doc" ADD_FILELINE)
+.describe(R"code(Decode bounding boxes training target with normalized center offsets.
+
+Input bounding boxes are using corner type: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`
+or center type: :math:`[x_{center}, y_{center}, \text{width}, \text{height}]`.
+
+)code" ADD_FILELINE)
 .set_num_inputs(2)
 .set_num_outputs(1)
 .set_attr_parser(ParamParser<BoxDecodeParam>)

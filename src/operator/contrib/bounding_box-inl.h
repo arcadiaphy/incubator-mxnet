@@ -72,19 +72,19 @@ struct BoxNMSParam : public dmlc::Parameter<BoxNMSParam> {
     .describe("Optional, id of the background class which will be ignored in nms.");
     DMLC_DECLARE_FIELD(force_suppress).set_default(false)
     .describe("Optional, if set false and id_index is provided, nms will only apply"
-    " to boxes belongs to the same category");
+        " to boxes belongs to the same category");
     DMLC_DECLARE_FIELD(in_format).set_default(box_common_enum::kCorner)
     .add_enum("corner", box_common_enum::kCorner)
     .add_enum("center", box_common_enum::kCenter)
-    .describe("The input box encoding type. \n"
-        " \"corner\" means boxes are encoded as [xmin, ymin, xmax, ymax],"
-        " \"center\" means boxes are encodes as [x, y, width, height].");
+    .describe("The input box encoding type:"
+        " 'corner' means: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`;"
+        " 'center' means: :math:`[x_{center}, y_{center}, \\text{width}, \\text{height}]`.");
     DMLC_DECLARE_FIELD(out_format).set_default(box_common_enum::kCorner)
     .add_enum("corner", box_common_enum::kCorner)
     .add_enum("center", box_common_enum::kCenter)
-    .describe("The output box encoding type. \n"
-        " \"corner\" means boxes are encoded as [xmin, ymin, xmax, ymax],"
-        " \"center\" means boxes are encodes as [x, y, width, height].");
+    .describe("The output box encoding type:"
+        " 'corner' means: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`;"
+        " 'center' means: :math:`[x_{center}, y_{center}, \\text{width}, \\text{height}]`.");
   }
 };  // BoxNMSParam
 
@@ -527,9 +527,9 @@ struct BoxOverlapParam : public dmlc::Parameter<BoxOverlapParam> {
     DMLC_DECLARE_FIELD(format).set_default(box_common_enum::kCorner)
     .add_enum("corner", box_common_enum::kCorner)
     .add_enum("center", box_common_enum::kCenter)
-    .describe("The box encoding type. \n"
-        " \"corner\" means boxes are encoded as [xmin, ymin, xmax, ymax],"
-        " \"center\" means boxes are encodes as [x, y, width, height].");
+    .describe("The box encoding type:"
+        " 'corner' means: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`;"
+        " 'center' means: :math:`[x_{center}, y_{center}, \\text{width}, \\text{height}]`.");
   }
 };  // BoxOverlapParam
 
@@ -941,9 +941,9 @@ struct BoxDecodeParam : public dmlc::Parameter<BoxDecodeParam> {
     DMLC_DECLARE_FIELD(format).set_default(box_common_enum::kCenter)
     .add_enum("corner", box_common_enum::kCorner)
     .add_enum("center", box_common_enum::kCenter)
-    .describe("The box encoding type. \n"
-              " \"corner\" means boxes are encoded as [xmin, ymin, xmax, ymax],"
-              " \"center\" means boxes are encodes as [x, y, width, height].");
+    .describe("The box encoding type:"
+        " 'corner' means: :math:`[x_{min}, y_{min}, x_{max}, y_{max}]`;"
+        " 'center' means: :math:`[x_{center}, y_{center}, \\text{width}, \\text{height}]`.");
   }
 };  // BoxDecodeParam
 
