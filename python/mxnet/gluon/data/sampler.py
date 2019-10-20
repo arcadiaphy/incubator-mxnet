@@ -25,7 +25,7 @@ import numpy as np
 class Sampler(object):
     """Base class for samplers.
 
-    All samplers should subclass `Sampler` and define `__iter__` and `__len__`
+    All samplers should subclass :class:`Sampler` and define ``__iter__`` and ``__len__``
     methods.
     """
     def __iter__(self):
@@ -36,7 +36,7 @@ class Sampler(object):
 
 
 class SequentialSampler(Sampler):
-    """Samples elements from [start, start+length) sequentially.
+    r"""Samples elements from :math:`[\text{start}, \text{start} + \text{length})` sequentially.
 
     Parameters
     ----------
@@ -56,7 +56,7 @@ class SequentialSampler(Sampler):
         return self._length
 
 class RandomSampler(Sampler):
-    """Samples elements from [0, length) randomly without replacement.
+    r"""Samples elements from :math:`[0, \text{length})` randomly without replacement.
 
     Parameters
     ----------
@@ -75,7 +75,7 @@ class RandomSampler(Sampler):
         return self._length
 
 class FilterSampler(Sampler):
-    """Samples elements from a Dataset for which `fn` returns True.
+    """Samples elements from a Dataset for which :attr:`fn` returns True.
 
     Parameters
     ----------
@@ -97,7 +97,7 @@ class FilterSampler(Sampler):
 
 
 class BatchSampler(Sampler):
-    """Wraps over another `Sampler` and return mini-batches of samples.
+    """Wraps over another :class:`~mxnet.gluon.data.Sampler` and return mini-batches of samples.
 
     Parameters
     ----------

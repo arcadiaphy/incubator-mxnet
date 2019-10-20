@@ -500,7 +500,7 @@ class _MultiWorkerIter(object):
 
 
 class DataLoader(object):
-    """Loads data from a dataset and returns mini-batches of data.
+    r"""Loads data from a dataset and returns mini-batches of data.
 
     Parameters
     ----------
@@ -518,14 +518,17 @@ class DataLoader(object):
         `len(dataset)`.
 
         keep - A batch with less samples than previous batches is returned.
+
         discard - The last batch is discarded if its incomplete.
+
         rollover - The remaining samples are rolled over to the next epoch.
     batch_sampler : Sampler
-        A sampler that returns mini-batches. Do not specify batch_size,
-        shuffle, sampler, and last_batch if batch_sampler is specified.
+        A sampler that returns mini-batches. Do not specify :attr:`batch_size`,
+        :attr:`shuffle`, :attr:`sampler`, and :attr:`last_batch` if
+        :attr:`batch_sampler` is specified.
     batchify_fn : callable
         Callback function to allow users to specify how to merge samples
-        into a batch. Defaults to `default_batchify_fn`::
+        into a batch. Defaults to ``default_batchify_fn``::
 
             def default_batchify_fn(data):
                 if isinstance(data[0], nd.NDArray):
@@ -544,24 +547,24 @@ class DataLoader(object):
         before returning them. Copying from CPU pinned memory to GPU is faster
         than from normal CPU memory.
     pin_device_id : int, default 0
-        The device id to use for allocating pinned memory if pin_memory is ``True``
-    prefetch : int, default is `num_workers * 2`
-        The number of prefetching batches only works if `num_workers` > 0.
-        If `prefetch` > 0, it allow worker process to prefetch certain batches before
+        The device id to use for allocating pinned memory if :attr:`pin_memory` is ``True``
+    prefetch : int, default is num_workers * 2
+        The number of prefetching batches only works if :attr:`num_workers` > 0.
+        If :attr:`prefetch` > 0, it allow worker process to prefetch certain batches before
         acquiring data from iterators.
+
         Note that using large prefetching batch will provide smoother bootstrapping performance,
         but will consume more shared_memory. Using smaller number may forfeit the purpose of using
-        multiple worker processes, try reduce `num_workers` in this case.
-        By default it defaults to `num_workers * 2`.
+        multiple worker processes, try reduce :attr:`num_workers` in this case.
     thread_pool : bool, default False
         If ``True``, use threading pool instead of multiprocessing pool. Using threadpool
-        can avoid shared memory usage. If `DataLoader` is more IO bounded or GIL is not a killing
+        can avoid shared memory usage. If DataLoader is more IO bounded or GIL is not a killing
         problem, threadpool version may achieve better performance than multiprocessing.
     timeout : int, default is 120
         The timeout in seconds for each worker to fetch a batch data. Only modify this number
         unless you are experiencing timeout and you know it's due to slow data loading.
-        Sometimes full `shared_memory` will cause all workers to hang and causes timeout. In these
-        cases please reduce `num_workers` or increase system `shared_memory` size instead.
+        Sometimes full shared_memory will cause all workers to hang and causes timeout. In these
+        cases please reduce :attr:`num_workers` or increase system shared_memory size instead.
     """
     def __init__(self, dataset, batch_size=None, shuffle=False, sampler=None,
                  last_batch=None, batch_sampler=None, batchify_fn=None,

@@ -36,10 +36,10 @@ class Compose(Sequential):
 
 
     Inputs:
-        - **data**: input tensor with shape of the first transform Block requires.
+        - :attr:`data` input tensor with shape of the first transform Block requires.
 
     Outputs:
-        - **out**: output tensor with shape of the last transform Block produces.
+        - :attr:`out` output tensor with shape of the last transform Block produces.
 
     Examples
     --------
@@ -83,10 +83,10 @@ class Cast(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape and dtype.
+        - :attr:`data` input tensor with arbitrary shape and dtype.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data` and data type as dtype.
+        - :attr:`out` output tensor with the same shape as :attr:`data` and data type as dtype.
     """
     def __init__(self, dtype='float32'):
         super(Cast, self).__init__()
@@ -101,18 +101,18 @@ class Cast(HybridBlock):
 class ToTensor(HybridBlock):
     """Converts an image NDArray or batch of image NDArray to a tensor NDArray.
 
-    Converts an image NDArray of shape (H x W x C) in the range
-    [0, 255] to a float32 tensor NDArray of shape (C x H x W) in
-    the range [0, 1].
+    Converts an image NDArray of shape :math:`(H,  W,  C)` in the range
+    :math:`[0, 255]` to a float32 tensor NDArray of shape :math:`(C, H, W)` in
+    the range :math:`[0, 1]`.
 
-    If batch input, converts a batch image NDArray of shape (N x H x W x C) in the
-    range [0, 255] to a float32 tensor NDArray of shape (N x C x H x W).
+    If batch input, converts a batch image NDArray of shape :math:`(N, H, W, C)` in the
+    range :math:`[0, 255]` to a float32 tensor NDArray of shape :math:`(N, C, H, W)`.
 
     Inputs:
-        - **data**: input tensor with (H x W x C) or (N x H x W x C) shape and uint8 type.
+        - :attr:`data` input tensor :math:`(H,  W,  C)` or :math:`(N, H, W, C)` shape and uint8 type.
 
     Outputs:
-        - **out**: output tensor with (C x H x W) or (N x C x H x W) shape and float32 type.
+        - :attr:`out` output tensor with :math:`(C, H, W)` or :math:`(N, C, H, W)` shape and float32 type.
 
     Examples
     --------
@@ -143,15 +143,16 @@ class ToTensor(HybridBlock):
 
 
 class Normalize(HybridBlock):
-    """Normalize an tensor of shape (C x H x W) or (N x C x H x W) with mean and
+    r"""Normalize an tensor of shape :math:`(C, H, W)` or :math:`(N, C, H, W)` with mean and
     standard deviation.
 
-    Given mean `(m1, ..., mn)` and std `(s1, ..., sn)` for `n` channels,
-    this transform normalizes each channel of the input tensor with::
+    Given :attr:`mean` :math:`(m_1, \dots, m_n)` and :attr:`std` :math:`(s_1, \dots, s_n)`
+    for :math:`n` channels, this transform normalizes each channel of the input tensor with:
 
-        output[i] = (input[i] - mi) / si
+    .. math::
+        \text{output}[i] = (\text{input}[i] - m_i) / s_i
 
-    If mean or std is scalar, the same value will be applied to all channels.
+    If :attr:`mean` or :attr:`std` is scalar, the same value will be applied to all channels.
 
     Parameters
     ----------
@@ -162,10 +163,10 @@ class Normalize(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with (C x H x W) or (N x C x H x W) shape.
+        - :attr:`data` input tensor with :math:`(C, H, W)` or :math:`(N, C, H, W)` shape.
 
     Outputs:
-        - **out**: output tensor with the shape as `data`.
+        - :attr:`out` output tensor with the shape as :attr:`data`.
 
     Examples
     --------
@@ -209,7 +210,7 @@ class RandomResizedCrop(Block):
     size : int or tuple of (W, H)
         Size of the final output.
     scale : tuple of two floats
-        If scale is `(min_area, max_area)`, the cropped image's area will
+        If scale is (min_area, max_area), the cropped image's area will
         range from min_area to max_area of the original image's area
     ratio : tuple of two floats
         Range of aspect ratio of the cropped image before resizing.
@@ -219,10 +220,10 @@ class RandomResizedCrop(Block):
 
 
     Inputs:
-        - **data**: input tensor with (Hi x Wi x C) shape.
+        - :attr:`data` input tensor with :math:`(H_{in}, W_{in}, C)` shape.
 
     Outputs:
-        - **out**: output tensor with (H x W x C) shape.
+        - :attr:`out` output tensor with :math:`(H_{out}, W_{out}, C)` shape.
     """
     def __init__(self, size, scale=(0.08, 1.0), ratio=(3.0/4.0, 4.0/3.0),
                  interpolation=1):
@@ -255,7 +256,7 @@ class CropResize(HybridBlock):
     interpolation : int, optional
         Interpolation method for resizing. By default uses bilinear
         interpolation. See OpenCV's resize function for available choices.
-        https://docs.opencv.org/2.4/modules/imgproc/doc/geometric_transformations.html?highlight=resize#resize
+
         Note that the Resize on gpu use contrib.bilinearResize2D operator
         which only support bilinear interpolation(1). The result would be slightly
         different on gpu compared to cpu. OpenCV tend to align center while bilinearResize2D
@@ -263,10 +264,12 @@ class CropResize(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) or (N x H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H_{in}, W_{in}, C)`
+          or :math:`(N, H_{in}, W_{in}, C)` shape.
 
     Outputs:
-        - **out**: input tensor with (H x W x C) or (N x H x W x C) shape.
+        - :attr:`out` input tensor with :math:`(H_{out}, W_{out}, C)`
+          or :math:`(N, H_{out}, W_{out}, C)` shape.
 
     Examples
     --------
@@ -297,9 +300,9 @@ class CropResize(HybridBlock):
         return out
 
 class CenterCrop(Block):
-    """Crops the image `src` to the given `size` by trimming on all four
-    sides and preserving the center of the image. Upsamples if `src` is
-    smaller than `size`.
+    """Crops the image to the given :attr:`size` by trimming on all four
+    sides and preserving the center of the image. Upsamples if the image is
+    smaller than :attr:`size`.
 
     Parameters
     ----------
@@ -311,10 +314,10 @@ class CenterCrop(Block):
 
 
     Inputs:
-        - **data**: input tensor with (Hi x Wi x C) shape.
+        - :attr:`data` input tensor with :math:`(H_{in}, W_{in}, C)` shape.
 
     Outputs:
-        - **out**: output tensor with (H x W x C) shape.
+        - :attr:`out` output tensor with :math:`(H_{out}, W_{out}, C)` shape.
 
     Examples
     --------
@@ -335,7 +338,7 @@ class CenterCrop(Block):
 
 class Resize(HybridBlock):
     """Resize an image or a batch of image NDArray to the given size.
-    Should be applied before `mxnet.gluon.data.vision.transforms.ToTensor`.
+    Should be applied before :class:`ToTensor`.
 
     Parameters
     ----------
@@ -347,6 +350,7 @@ class Resize(HybridBlock):
     interpolation : int
         Interpolation method for resizing. By default uses bilinear
         interpolation. See OpenCV's resize function for available choices.
+
         Note that the Resize on gpu use contrib.bilinearResize2D operator
         which only support bilinear interpolation(1). The result would be slightly
         different on gpu compared to cpu. OpenCV tend to align center while bilinearResize2D
@@ -354,10 +358,12 @@ class Resize(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) or (N x H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H_{in}, W_{in}, C)`
+          or :math:`(N, H_{in}, W_{in}, C)` shape.
 
     Outputs:
-        - **out**: output tensor with (H x W x C) or (N x H x W x C) shape.
+        - :attr:`out` input tensor with :math:`(H_{out}, W_{out}, C)`
+          or :math:`(N, H_{out}, W_{out}, C)` shape.
 
     Examples
     --------
@@ -384,11 +390,12 @@ class RandomFlipLeftRight(HybridBlock):
     """Randomly flip the input image left to right with a probability
     of 0.5.
 
+
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self):
         super(RandomFlipLeftRight, self).__init__()
@@ -403,11 +410,12 @@ class RandomFlipTopBottom(HybridBlock):
     """Randomly flip the input image top to bottom with a probability
     of 0.5.
 
+
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self):
         super(RandomFlipTopBottom, self).__init__()
@@ -419,21 +427,21 @@ class RandomFlipTopBottom(HybridBlock):
 
 
 class RandomBrightness(HybridBlock):
-    """Randomly jitters image brightness with a factor
-    chosen from `[max(0, 1 - brightness), 1 + brightness]`.
+    r"""Randomly jitters image brightness with a factor
+    chosen from :math:`[\max(0, 1 - \text{brightness}), 1 + \text{brightness}]`.
 
     Parameters
     ----------
     brightness: float
-        How much to jitter brightness. brightness factor is randomly
-        chosen from `[max(0, 1 - brightness), 1 + brightness]`.
+        How much to jitter brightness. The brightness factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{brightness}), 1 + \text{brightness}]`.
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, brightness):
         super(RandomBrightness, self).__init__()
@@ -446,21 +454,21 @@ class RandomBrightness(HybridBlock):
 
 
 class RandomContrast(HybridBlock):
-    """Randomly jitters image contrast with a factor
-    chosen from `[max(0, 1 - contrast), 1 + contrast]`.
+    r"""Randomly jitters image contrast with a factor
+    chosen from :math:`[\max(0, 1 - \text{contrast}), 1 + \text{contrast}]`.
 
     Parameters
     ----------
     contrast: float
-        How much to jitter contrast. contrast factor is randomly
-        chosen from `[max(0, 1 - contrast), 1 + contrast]`.
+        How much to jitter contrast. The contrast factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{contrast}), 1 + \text{contrast}]`.
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, contrast):
         super(RandomContrast, self).__init__()
@@ -473,21 +481,21 @@ class RandomContrast(HybridBlock):
 
 
 class RandomSaturation(HybridBlock):
-    """Randomly jitters image saturation with a factor
-    chosen from `[max(0, 1 - saturation), 1 + saturation]`.
+    r"""Randomly jitters image saturation with a factor
+    chosen from :math:`[\max(0, 1 - \text{saturation}), 1 + \text{saturation}]`.
 
     Parameters
     ----------
     saturation: float
-        How much to jitter saturation. saturation factor is randomly
-        chosen from `[max(0, 1 - saturation), 1 + saturation]`.
+        How much to jitter saturation. The saturation factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{saturation}), 1 + \text{saturation}]`.
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, saturation):
         super(RandomSaturation, self).__init__()
@@ -500,21 +508,21 @@ class RandomSaturation(HybridBlock):
 
 
 class RandomHue(HybridBlock):
-    """Randomly jitters image hue with a factor
-    chosen from `[max(0, 1 - hue), 1 + hue]`.
+    r"""Randomly jitters image hue with a factor
+    chosen from :math:`[\max(0, 1 - \text{hue}), 1 + \text{hue}]`.
 
     Parameters
     ----------
     hue: float
-        How much to jitter hue. hue factor is randomly
-        chosen from `[max(0, 1 - hue), 1 + hue]`.
+        How much to jitter hue. The hue factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{hue}), 1 + \text{hue}]`.
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, hue):
         super(RandomHue, self).__init__()
@@ -527,30 +535,30 @@ class RandomHue(HybridBlock):
 
 
 class RandomColorJitter(HybridBlock):
-    """Randomly jitters the brightness, contrast, saturation, and hue
+    r"""Randomly jitters the brightness, contrast, saturation, and hue
     of an image.
 
     Parameters
     ----------
     brightness : float
-        How much to jitter brightness. brightness factor is randomly
-        chosen from `[max(0, 1 - brightness), 1 + brightness]`.
-    contrast : float
-        How much to jitter contrast. contrast factor is randomly
-        chosen from `[max(0, 1 - contrast), 1 + contrast]`.
-    saturation : float
-        How much to jitter saturation. saturation factor is randomly
-        chosen from `[max(0, 1 - saturation), 1 + saturation]`.
-    hue : float
-        How much to jitter hue. hue factor is randomly
-        chosen from `[max(0, 1 - hue), 1 + hue]`.
+        How much to jitter brightness. The brightness factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{brightness}), 1 + \text{brightness}]`.
+    contrast: float
+        How much to jitter contrast. The contrast factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{contrast}), 1 + \text{contrast}]`.
+    saturation: float
+        How much to jitter saturation. The saturation factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{saturation}), 1 + \text{saturation}]`.
+    hue: float
+        How much to jitter hue. The hue factor is randomly
+        chosen from :math:`[\max(0, 1 - \text{hue}), 1 + \text{hue}]`.
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, brightness=0, contrast=0, saturation=0, hue=0):
         super(RandomColorJitter, self).__init__()
@@ -572,10 +580,10 @@ class RandomLighting(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with (H x W x C) shape.
+        - :attr:`data` input tensor with :math:`(H, W, C)` shape.
 
     Outputs:
-        - **out**: output tensor with same shape as `data`.
+        - :attr:`out` output tensor with same shape as :attr:`data`.
     """
     def __init__(self, alpha):
         super(RandomLighting, self).__init__()

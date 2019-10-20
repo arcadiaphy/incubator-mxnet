@@ -25,7 +25,7 @@ APIs and the specific APIs for image data are listed according to their categori
 Dataset
 --------------
 
-.. currentmodule:: mxnet.gluon.data.dataset
+.. currentmodule:: mxnet.gluon.data
 
 .. autosummary::
     :nosignatures:
@@ -38,8 +38,6 @@ Dataset
 
 Sampler
 ----------------------------
-
-.. currentmodule:: mxnet.gluon.data.sampler
 
 .. autosummary::
     :nosignatures:
@@ -54,8 +52,6 @@ Sampler
 Dataloader
 ------------------------
 
-.. currentmodule:: mxnet.gluon.data.dataloader
-
 .. autosummary::
     :nosignatures:
 
@@ -65,7 +61,7 @@ Dataloader
 Image Dataset
 --------------
 
-.. currentmodule:: mxnet.gluon.data.vision.datasets
+.. currentmodule:: mxnet.gluon.data.vision
 
 .. autosummary::
     :nosignatures:
@@ -107,17 +103,13 @@ API Reference
 -------------
 
 
-.. automodule:: mxnet.gluon.data.dataset
+.. automodule:: mxnet.gluon.data
     :members:
+    :imported-members:
 
-.. automodule:: mxnet.gluon.data.sampler
+.. automodule:: mxnet.gluon.data.vision
     :members:
-
-.. automodule:: mxnet.gluon.data.dataloader
-    :members:
-
-.. automodule:: mxnet.gluon.data.vision.datasets
-    :members:
+    :imported-members:
 
 .. automodule:: mxnet.gluon.data.vision.transforms
     :members:

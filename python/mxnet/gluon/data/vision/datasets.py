@@ -49,7 +49,8 @@ class MNIST(dataset._DownloadedDataset):
     transform : function, default None
         A user defined callback that transforms each sample. For example::
 
-            transform=lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
 
     """
     def __init__(self, root=os.path.join(base.data_dir(), 'datasets', 'mnist'),
@@ -112,7 +113,8 @@ class FashionMNIST(MNIST):
     transform : function, default None
         A user defined callback that transforms each sample. For example::
 
-            transform=lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
 
     """
     def __init__(self, root=os.path.join(base.data_dir(), 'datasets', 'fashion-mnist'),
@@ -144,7 +146,8 @@ class CIFAR10(dataset._DownloadedDataset):
     transform : function, default None
         A user defined callback that transforms each sample. For example::
 
-            transform=lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
 
     """
     def __init__(self, root=os.path.join(base.data_dir(), 'datasets', 'cifar10'),
@@ -209,7 +212,8 @@ class CIFAR100(CIFAR10):
     transform : function, default None
         A user defined callback that transforms each sample. For example::
 
-            transform=lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
 
     """
     def __init__(self, root=os.path.join(base.data_dir(), 'datasets', 'cifar100'),
@@ -240,12 +244,13 @@ class ImageRecordDataset(dataset.RecordFileDataset):
     filename : str
         Path to rec file.
     flag : {0, 1}, default 1
-        If 0, always convert images to greyscale. \
+        If 0, always convert images to greyscale.
         If 1, always convert images to colored (RGB).
     transform : function, default None
         A user defined callback that transforms each sample. For example::
 
-            transform=lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
 
     """
     def __init__(self, filename, flag=1, transform=None):
@@ -262,9 +267,9 @@ class ImageRecordDataset(dataset.RecordFileDataset):
 
 
 class ImageFolderDataset(dataset.Dataset):
-    """A dataset for loading image files stored in a folder structure.
+    r"""A dataset for loading image files stored in a folder structure.
 
-    like::
+    Like::
 
         root/car/0001.jpg
         root/car/xxxa.jpg
@@ -283,14 +288,16 @@ class ImageFolderDataset(dataset.Dataset):
     transform : callable, default None
         A function that takes data and label and transforms them::
 
-            transform = lambda data, label: (data.astype(np.float32)/255, label)
+            transform = lambda data, label:
+                (data.astype(np.float32)/255, label)
+
 
     Attributes
     ----------
     synsets : list
-        List of class names. `synsets[i]` is the name for the integer label `i`
+        List of class names. :math:`\text{synsets}[i]` is the name for the integer label :math:`i`
     items : list of tuples
-        List of all images in (filename, label) pairs.
+        List of all images in ``(filename, label)`` pairs.
     """
     def __init__(self, root, flag=1, transform=None):
         self._root = os.path.expanduser(root)

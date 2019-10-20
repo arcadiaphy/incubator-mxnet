@@ -29,8 +29,8 @@ from ... import recordio, ndarray
 class Dataset(object):
     """Abstract dataset class. All datasets should have this interface.
 
-    Subclasses need to override `__getitem__`, which returns the i-th
-    element, and `__len__`, which returns the total number elements.
+    Subclasses need to override ``__getitem__``, which returns the i-th
+    element, and ``__len__``, which returns the total number elements.
 
     .. note:: An mxnet or numpy array can be directly used as a dataset.
     """
@@ -42,10 +42,10 @@ class Dataset(object):
 
     def filter(self, fn):
         """Returns a new dataset with samples filtered by the
-        filter function `fn`.
+        filter function :attr:`fn`.
 
         Note that if the Dataset is the result of a lazily transformed one with
-        transform(lazy=False), the filter is eagerly applied to the transformed
+        ``transform(lazy=False)``, the filter is eagerly applied to the transformed
         samples without materializing the transformed result. That is, the
         transformation will be applied again whenever a sample is retrieved after
         filter().
@@ -65,7 +65,7 @@ class Dataset(object):
         return _SampledDataset(self, FilterSampler(fn, self))
 
     def shard(self, num_shards, index):
-        """Returns a new dataset includes only 1/num_shards of this dataset.
+        r"""Returns a new dataset includes only :math:`1/\text{num_shards}` of this dataset.
 
         For distributed training, be sure to shard before you randomize the dataset
         (such as shuffle), if you want each worker to reach a unique subset.
@@ -96,7 +96,7 @@ class Dataset(object):
         return _SampledDataset(self, SequentialSampler(end - start, start))
 
     def take(self, count):
-        """Returns a new dataset with at most `count` number of samples in it.
+        """Returns a new dataset with at most :attr:`count` number of samples in it.
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class Dataset(object):
 
     def transform(self, fn, lazy=True):
         """Returns a new dataset with each sample transformed by the
-        transformer function `fn`.
+        transformer function :attr:`fn`.
 
         Parameters
         ----------
@@ -146,7 +146,7 @@ class Dataset(object):
             returns the transformed sample.
         lazy : bool, default True
             If False, transforms all samples at once. Otherwise,
-            transforms each sample on demand. Note that if `fn`
+            transforms each sample on demand. Note that if :attr:`fn`
             is stochastic, you must set lazy to True or you will
             get the same result on all epochs.
 
@@ -162,7 +162,7 @@ class Dataset(object):
 
     def transform_first(self, fn, lazy=True):
         """Returns a new dataset with the first element of each sample
-        transformed by the transformer function `fn`.
+        transformed by the transformer function :attr:`fn`.
 
         This is useful, for example, when you only want to transform data
         while keeping label as is.
@@ -174,7 +174,7 @@ class Dataset(object):
             as input and returns the transformed element.
         lazy : bool, default True
             If False, transforms all samples at once. Otherwise,
-            transforms each sample on demand. Note that if `fn`
+            transforms each sample on demand. Note that if :attr:`fn`
             is stochastic, you must set lazy to True or you will
             get the same result on all epochs.
 
@@ -192,7 +192,7 @@ class SimpleDataset(Dataset):
     Parameters
     ----------
     data : dataset-like object
-        Any object that implements `len()` and `[]`.
+        Any object that implements ``__len__`` and ``__getitem__``.
     """
     def __init__(self, data):
         self._data = data
@@ -259,7 +259,7 @@ class ArrayDataset(Dataset):
     """A dataset that combines multiple dataset-like objects, e.g.
     Datasets, lists, arrays, etc.
 
-    The i-th sample is defined as `(x1[i], x2[i], ...)`.
+    The *i*-th sample is defined as :math:`(x_1[i], x_2[i], ...)`.
 
     Parameters
     ----------
