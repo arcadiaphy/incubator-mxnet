@@ -75,7 +75,7 @@ class Parameter(object):
           will not be allocated.
     shape : int or tuple of int, default None
         Shape of this parameter. By default shape is not specified. Parameter with
-        unknown shape can be used for class:`~mxnet.symbol.Symbol` API, but ``init`` will
+        unknown shape can be used for :class:`~mxnet.symbol.Symbol` API, but ``init`` will
         throw an error when using :class:`~mxnet.ndarray.NDArray` API.
     dtype : numpy.dtype or str, default 'float32'
         Data type of this parameter. For example, ``numpy.float32`` or ``'float32'``.
@@ -263,7 +263,7 @@ class Parameter(object):
         ----------
         data : NDArray
             The data to load
-        ctx : :class:`~mxnet.context.Context or list of :class:`~mxnet.context.Context`
+        ctx : Context or list of Context
             Context(s) initialize loaded parameters on.
         cast_dtype : bool, default False
             Cast the data type of the parameter
@@ -403,9 +403,9 @@ class Parameter(object):
         ----------
         init : Initializer
             The initializer to use. Overrides ``Parameter.init`` and default_init.
-        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
-            Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
-            a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
+        ctx : Context or list of Context
+            Assign Parameter to given context. If ctx is a list of Context, a copy will be made for
+            each context. Default to :meth:`~mxnet.context.current_context`.
 
             .. note::
                 Copies are independent arrays. User is responsible for keeping
@@ -467,9 +467,9 @@ class Parameter(object):
 
         Parameters
         ----------
-        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
-             Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
-             a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
+        ctx : Context or list of Context
+             Assign Parameter to given context. If ctx is a list of Context, a copy will be made
+             for each context. Default to :meth:`~mxnet.context.current_context`.
         """
         if ctx is None:
             ctx = [context.current_context()]
@@ -547,7 +547,7 @@ class Parameter(object):
     def data(self, ctx=None):
         """Returns a copy of this parameter on one context. Must have been
         initialized on this context before. For sparse parameters, use
-        :meth:`Parameter.row_sparse_data` instead.
+        :meth:`~Parameter.row_sparse_data` instead.
 
         Parameters
         ----------
@@ -595,7 +595,7 @@ class Parameter(object):
 
     def list_grad(self):
         """Returns gradient buffers on all contexts, in the same order
-        as :meth:`~mxnet.gluon.parameter.Parameter.list_data`."""
+        as :meth:`~mxnet.gluon.Parameter.list_data`."""
         if self._data is not None and self._grad is None:
             raise RuntimeError(
                 "Cannot get gradient array for Parameter '%s' " \
@@ -755,7 +755,7 @@ class ParameterDict(object):
         return None
 
     def get(self, name, **kwargs):
-        """Retrieves a :class:`~mxnet.gluon.parameter.Parameter` with name ``self.prefix + name``.
+        """Retrieves a :class:`~mxnet.gluon.Parameter` with name ``self.prefix + name``.
         If not found, :func:`get` will first try to retrieve it from "shared" dict. If still not
         found, :func:`get` will create a new :class:`Parameter` with key-word arguments and
         insert it to self.
@@ -812,7 +812,7 @@ class ParameterDict(object):
         return param
 
     def get_constant(self, name, value=None):
-        """Retrieves a :class:`~mxnet.gluon.parameter.Constant` with name ``self.prefix + name``.
+        """Retrieves a :class:`~mxnet.gluon.Constant` with name ``self.prefix + name``.
         If not found, :func:`get` will first try to retrieve it from "shared" dict.
         If still not found, :func:`get` will create a new :class:`Constant` with key-word
         arguments and insert it to self.
@@ -827,7 +827,7 @@ class ParameterDict(object):
 
         Returns
         -------
-        :class:`Constant`
+        Constant
             The created or retrieved :class:`Constant`.
         """
         name = self.prefix + name
@@ -866,14 +866,14 @@ class ParameterDict(object):
                    force_reinit=False):
         """Initializes all Parameters managed by this dictionary to be used for
         :class:`~mxnet.ndarray.NDArray` API. It has no effect when using
-        :class:`~mxnet.symbol.symbol.Symbol` API.
+        :class:`~mxnet.symbol.Symbol` API.
 
         Parameters
         ----------
         init : Initializer
             Global default Initializer to be used when ``Parameter.init`` is ``None``.
             Otherwise, ``Parameter.init`` takes precedence.
-        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
+        ctx : Context or list of Context
             Keeps a copy of Parameters on one or many context(s).
         verbose : bool, default False
             Whether to verbosely print out details on initialization.
@@ -909,9 +909,9 @@ class ParameterDict(object):
 
         Parameters
         ----------
-        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`,
-            Assign Parameter to given context. If ctx is a list of :class:`~mxnet.context.Context`,
-            a copy will be made for each context. Default to :meth:`~mxnet.context.current_context`.
+        ctx : Context or list of Context,
+            Assign Parameter to given context. If ctx is a list of Context, a copy will be made
+            for each context. Default to :meth:`~mxnet.context.current_context`.
         """
         for i in self.values():
             i.reset_ctx(ctx)
@@ -980,13 +980,13 @@ class ParameterDict(object):
         ----------
         filename : str
             Path to parameter file.
-        ctx : :class:`~mxnet.context.Context or list of :class:`~mxnet.context.Context`
+        ctx : Context or list of Context
             Context(s) initialize loaded parameters on.
         allow_missing : bool, default False
             Whether to silently skip loading parameters not represents in the file.
         ignore_extra : bool, default False
             Whether to silently ignore parameters from the file that are not
-            present in this :class:`ParameterDict`.
+            present in this ParameterDict.
         restore_prefix : str, default ''
             prepend prefix to names of stored parameters before loading.
         cast_dtype : bool, default False
@@ -1014,13 +1014,13 @@ class ParameterDict(object):
         ----------
         param_dict : dict
             Dictionary containing model parameters, preprended with arg: and aux: names
-        ctx : :class:`~mxnet.context.Context` or list of :class:`~mxnet.context.Context`
+        ctx : Context or list of Context
             Context(s) initialize loaded parameters on.
         allow_missing : bool, default False
             Whether to silently skip loading parameters not represented in the file.
         ignore_extra : bool, default False
             Whether to silently ignore parameters from the file that are not
-            present in this :class:`ParameterDict`.
+            present in this ParameterDict.
         restore_prefix : str, default ''
             prepend prefix to names of stored parameters before loading
         filename : str, default None

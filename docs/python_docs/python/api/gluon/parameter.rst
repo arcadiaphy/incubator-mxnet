@@ -19,6 +19,6 @@ gluon.Parameter
 ===============
 
 
-.. autoclass:: mxnet.gluon.parameter.Parameter
+.. autoclass:: mxnet.gluon.Parameter
     :members:
     :autosummary:

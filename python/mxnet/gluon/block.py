@@ -265,7 +265,7 @@ class Block(object):
         `naming tutorial </api/python/docs/tutorials/packages/gluon/blocks/naming.html>`_
         for more info on prefix and naming.
     params : ParameterDict or None
-        :class:`~mxnet.gluon.parameter.ParameterDict` for sharing weights with the new :class:`Block`.
+        :class:`~mxnet.gluon.ParameterDict` for sharing weights with the new :class:`Block`.
         For example, if you want ``dense1`` to share ``dense0``'s weights, you can do::
 
             dense0 = nn.Dense(20)
@@ -370,9 +370,9 @@ class Block(object):
         return self._params
 
     def collect_params(self, select=None):
-        """Returns a :class:`~mxnet.gluon.parameter.ParameterDict` containing this Block
+        """Returns a :class:`~mxnet.gluon.ParameterDict` containing this Block
         and all of its children's Parameters(default), also can returns the select
-        :class:`~mxnet.gluon.parameter.ParameterDict` which match some given regular expressions.
+        :class:`~mxnet.gluon.ParameterDict` which match some given regular expressions.
 
         For example, collect the specified parameters in ``['conv1_weight', 'conv1_bias', 'fc_weight',
         'fc_bias']``::
@@ -391,7 +391,7 @@ class Block(object):
 
         Returns
         -------
-        The selected :class:`~mxnet.gluon.parameter.ParameterDict`
+        The selected :class:`~mxnet.gluon.ParameterDict`
         """
         # We need to check here because blocks inside containers are not supported.
         self._check_container_with_block()
@@ -620,7 +620,7 @@ class Block(object):
 
     def initialize(self, init=initializer.Uniform(), ctx=None, verbose=False,
                    force_reinit=False):
-        """Initializes :class:`~mxnet.gluon.parameter.Parameter` of this Block
+        """Initializes :class:`~mxnet.gluon.Parameter` of this Block
         and its children. Equivalent to ``block.collect_params().initialize(...)``
 
         Parameters
