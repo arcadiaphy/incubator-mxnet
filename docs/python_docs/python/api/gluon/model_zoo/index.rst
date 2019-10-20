@@ -18,8 +18,7 @@
 gluon.model_zoo.vision
 ======================
 
-.. automodule:: mxnet.gluon.model_zoo.vision
-   :noindex:
+.. currentmodule:: mxnet.gluon.model_zoo.vision
 
 .. autosummary::
 
@@ -157,5 +156,3 @@ API Reference
 .. automodule:: mxnet.gluon.model_zoo.vision
     :members:
     :imported-members:
-    :autosummary:
-
