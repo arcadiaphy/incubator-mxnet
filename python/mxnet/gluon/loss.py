@@ -96,7 +96,7 @@ class Loss(HybridBlock):
         return s.format(name=self.__class__.__name__, **self.__dict__)
 
     def hybrid_forward(self, F, x, *args, **kwargs):
-        """Overrides to construct symbolic graph for this `Block`.
+        """Overrides to construct symbolic graph for this Block.
 
         Parameters
         ----------
@@ -111,11 +111,11 @@ class Loss(HybridBlock):
 
 
 class L2Loss(Loss):
-    r"""Calculates the mean squared error between `label` and `pred`.
+    r"""Calculates the mean squared error between :attr:`label` and :attr:`pred`.
 
-    .. math:: L = \frac{1}{2} \sum_i \vert {label}_i - {pred}_i \vert^2.
+    .. math:: L = \frac{1}{2} \sum_i \vert \text{label}_i - \text{pred}_i \vert^2.
 
-    `label` and `pred` can have arbitrary shape as long as they have the same
+    :attr:`label` and :attr:`pred` can have arbitrary shape as long as they have the same
     number of elements.
 
     Parameters
@@ -127,15 +127,15 @@ class L2Loss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **label**: target tensor with the same size as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`label` target tensor with the same size as pred.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -156,11 +156,11 @@ class L2Loss(Loss):
 
 
 class L1Loss(Loss):
-    r"""Calculates the mean absolute error between `label` and `pred`.
+    r"""Calculates the mean absolute error between :attr:`label` and :attr:`pred`.
 
-    .. math:: L = \sum_i \vert {label}_i - {pred}_i \vert.
+    .. math:: L = \sum_i \vert \text{label}_i - \text{pred}_i \vert.
 
-    `label` and `pred` can have arbitrary shape as long as they have the same
+    :attr:`label` and :attr:`pred` can have arbitrary shape as long as they have the same
     number of elements.
 
     Parameters
@@ -172,15 +172,15 @@ class L1Loss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **label**: target tensor with the same size as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`label` target tensor with the same size as pred.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -208,29 +208,30 @@ class SigmoidBinaryCrossEntropyLoss(Loss):
 
     .. math::
 
-        prob = \frac{1}{1 + \exp(-{pred})}
+        \text{prob} = \frac{1}{1 + \exp(-\text{pred})}
 
-        L = - \sum_i {label}_i * \log({prob}_i) * pos\_weight +
-            (1 - {label}_i) * \log(1 - {prob}_i)
+    .. math::
+        L = - \sum_i \text{label}_i * \log(\text{prob}_i) * \text{pos_weight} +
+            (1 - \text{label}_i) * \log(1 - \text{prob}_i)
 
-    If `from_sigmoid` is True, this loss computes:
+    If :attr:`from_sigmoid` is ``True``, this loss computes:
 
     .. math::
 
-        L = - \sum_i {label}_i * \log({pred}_i) * pos\_weight +
-            (1 - {label}_i) * \log(1 - {pred}_i)
+        L = - \sum_i \text{label}_i * \log(\text{pred}_i) * \text{pos_weight} +
+            (1 - \text{label}_i) * \log(1 - \text{pred}_i)
 
-    A tensor `pos_weight > 1` decreases the false negative count, hence increasing
+    A tensor :math:`\text{pos_weight} > 1` decreases the false negative count, hence increasing
     the recall.
-    Conversely setting `pos_weight < 1` decreases the false positive count and
+    Conversely setting :math:`\text{pos_weight} < 1` decreases the false positive count and
     increases the precision.
 
-    `pred` and `label` can have arbitrary shape as long as they have the same
+    :attr:`pred` and :attr:`label` can have arbitrary shape as long as they have the same
     number of elements.
 
     Parameters
     ----------
-    from_sigmoid : bool, default is `False`
+    from_sigmoid : bool, default is False
         Whether the input is from the output of sigmoid. Set this to false will make
         the loss calculate sigmoid and BCE together, which is more numerically
         stable through log-sum-exp trick.
@@ -241,19 +242,19 @@ class SigmoidBinaryCrossEntropyLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **label**: target tensor with values in range `[0, 1]`. Must have the
-          same size as `pred`.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`label` target tensor with values in range :math:`[0, 1]`. Must have the
+          same size as :attr:`pred`.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
-        - **pos_weight**: a weighting tensor of positive examples. Must be a vector with length
-          equal to the number of classes.For example, if pred has shape (64, 10),
+        - :attr:`pos_weight` a weighting tensor of positive examples. Must be a vector with length
+          equal to the number of classes. For example, if pred has shape (64, 10),
           pos_weight should have shape (1, 10).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -311,29 +312,21 @@ SigmoidBCELoss = SigmoidBinaryCrossEntropyLoss
 class SoftmaxCrossEntropyLoss(Loss):
     r"""Computes the softmax cross entropy loss. (alias: SoftmaxCELoss)
 
-    If `sparse_label` is `True` (default), label should contain integer
+    If :attr:`sparse_label` is ``True`` (default), label should contain integer
     category indicators:
 
-    .. math::
+    .. math:: p = \text{softmax}(\text{pred})
+    .. math:: L = -\sum_i \log p_{i,\text{label}_i}
 
-        \DeclareMathOperator{softmax}{softmax}
-
-        p = \softmax({pred})
-
-        L = -\sum_i \log p_{i,{label}_i}
-
-    `label`'s shape should be `pred`'s shape with the `axis` dimension removed.
-    i.e. for `pred` with shape (1,2,3,4) and `axis = 2`, `label`'s shape should
+    :attr:`label`'s shape should be :attr:`pred`'s shape with the axis dimension removed.
+    i.e. for :attr:`pred` with shape (1,2,3,4) and ``axis = 2``, :attr:`label`'s shape should
     be (1,2,4).
 
-    If `sparse_label` is `False`, `label` should contain probability distribution
-    and `label`'s shape should be the same with `pred`:
+    If :attr:`sparse_label` is ``False`` :attr:`label` should contain probability distribution
+    and :attr:`label`'s shape should be the same with :attr:`pred`:
 
-    .. math::
-
-        p = \softmax({pred})
-
-        L = -\sum_i \sum_j {label}_j \log p_{ij}
+    .. math:: p = \text{softmax}(\text{pred})
+    .. math:: L = -\sum_i \sum_j \text{label}_j \log p_{ij}
 
     Parameters
     ----------
@@ -351,22 +344,22 @@ class SoftmaxCrossEntropyLoss(Loss):
 
 
     Inputs:
-        - **pred**: the prediction tensor, where the `batch_axis` dimension
-          ranges over batch size and `axis` dimension ranges over the number
+        - :attr:`pred` the prediction tensor, where the batch_axis dimension
+          ranges over batch size and axis dimension ranges over the number
           of classes.
-        - **label**: the truth tensor. When `sparse_label` is True, `label`'s
-          shape should be `pred`'s shape with the `axis` dimension removed.
-          i.e. for `pred` with shape (1,2,3,4) and `axis = 2`, `label`'s shape
+        - :attr:`label` the truth tensor. When ``sparse_label=True``, label's
+          shape should be pred's shape with the axis dimension removed.
+          i.e. for pred with shape (1,2,3,4) and ``axis = 2``, label's shape
           should be (1,2,4) and values should be integers between 0 and 2. If
-          `sparse_label` is False, `label`'s shape must be the same as `pred`
-          and values should be floats in the range `[0, 1]`.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+          ``sparse_label=False``, label's shape must be the same as pred
+          and values should be floats in the range :math:`[0, 1]`.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as label. For example, if label has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -410,33 +403,28 @@ class KLDivLoss(Loss):
 
     KL divergence measures the distance between contiguous distributions. It
     can be used to minimize information loss when approximating a distribution.
-    If `from_logits` is True (default), loss is defined as:
+    If :attr:`from_logits` is True (default), loss is defined as:
 
     .. math::
 
-        L = \sum_i {label}_i * \big[\log({label}_i) - {pred}_i\big]
+        L = \sum_i \text{label}_i * \big[\log(\text{label}_i) - \text{pred}_i\big]
 
-    If `from_logits` is False, loss is defined as:
+    If :attr:`from_logits` is False, loss is defined as:
 
-    .. math::
-
-        \DeclareMathOperator{softmax}{softmax}
-
-        prob = \softmax({pred})
-
-        L = \sum_i {label}_i * \big[\log({label}_i) - \log({prob}_i)\big]
+    .. math:: prob = \text{softmax}(\text{pred})
+    .. math:: L = \sum_i \text{label}_i * \big[\log(\text{label}_i) - \log(\text{prob}_i)\big]
 
 
-    `label` and `pred` can have arbitrary shape as long as they have the same
+    :attr:`label` and :attr:`pred` can have arbitrary shape as long as they have the same
     number of elements.
 
     Parameters
     ----------
-    from_logits : bool, default is `True`
+    from_logits : bool, default is True
         Whether the input is log probability (usually from log_softmax) instead
         of unnormalized numbers.
     axis : int, default -1
-        The dimension along with to compute softmax. Only used when `from_logits`
+        The dimension along with to compute softmax. Only used when :attr:`from_logits`
         is False.
     weight : float or None
         Global scalar weight for loss.
@@ -445,18 +433,18 @@ class KLDivLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape. If `from_logits` is
-          True, `pred` should be log probabilities. Otherwise, it should be
+        - :attr:`pred` prediction tensor with arbitrary shape. If :attr:`from_logits` is
+          True, pred should be log probabilities. Otherwise, it should be
           unnormalized predictions, i.e. from a dense layer.
-        - **label**: truth tensor with values in range `(0, 1)`. Must have
-          the same size as `pred`.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`label` truth tensor with values in range :math:`(0, 1)`. Must have
+          the same size as :attr:`pred`.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
 
 
@@ -497,34 +485,35 @@ class CTCLoss(Loss):
 
 
     Inputs:
-        - **pred**: unnormalized prediction tensor (before softmax).
-          Its shape depends on `layout`. If `layout` is 'TNC', pred
+        - :attr:`pred` unnormalized prediction tensor (before softmax).
+          Its shape depends on :attr:`layout`. If :attr:`layout` is 'TNC', pred
           should have shape `(sequence_length, batch_size, alphabet_size)`.
           Note that in the last dimension, index `alphabet_size-1` is reserved
           for internal use as blank label. So `alphabet_size` is one plus the
           actual alphabet size.
 
-        - **label**: zero-based label tensor. Its shape depends on `label_layout`.
-          If `label_layout` is 'TN', `label` should have shape
-          `(label_sequence_length, batch_size)`.
+        - :attr:`label` zero-based label tensor. Its shape depends on :attr:`label_layout`.
+          For layout 'TN', label should have shape (label_sequence_length, batch_size).
 
-        - **pred_lengths**: optional (default None), used for specifying the
-          length of each entry when different `pred` entries in the same batch
-          have different lengths. `pred_lengths` should have shape `(batch_size,)`.
+        - :attr:`pred_lengths` optional (default None), used for specifying the
+          length of each entry when different pred entries in the same batch
+          have different lengths. Shape: (batch_size,).
 
-        - **label_lengths**: optional (default None), used for specifying the
-          length of each entry when different `label` entries in the same batch
-          have different lengths. `label_lengths` should have shape `(batch_size,)`.
+        - :attr:`label_lengths` optional (default None), used for specifying the
+          length of each entry when different label entries in the same batch
+          have different lengths. Shape: (batch_size,).
 
     Outputs:
-        - **loss**: output loss has shape `(batch_size,)`.
+        - :attr:`loss` output loss has shape (batch_size,).
 
 
-    **Example**: suppose the vocabulary is `[a, b, c]`, and in one batch we
+    Example
+    -------
+    Suppose the vocabulary is ``[a, b, c]`` and in one batch we
     have three sequences 'ba', 'cbb', and 'abac'. We can index the labels as
-    `{'a': 0, 'b': 1, 'c': 2, blank: 3}`. Then `alphabet_size` should be 4,
-    where label 3 is reserved for internal use by `CTCLoss`. We then need to
-    pad each sequence with `-1` to make a rectangular `label` tensor::
+    ``{'a': 0, 'b': 1, 'c': 2, blank: 3}``. Then `alphabet_size` should be 4,
+    where label 3 is reserved for internal use by :class:`CTCLoss`. We then need to
+    pad each sequence with -1 to make a rectangular :attr:`label` tensor::
 
         [[1, 0, -1, -1],
          [2, 1,  1, -1],
@@ -566,13 +555,13 @@ class HuberLoss(Loss):
     exceeds rho but is equal to L2 loss otherwise. Also called SmoothedL1 loss.
 
     .. math::
-        L = \sum_i \begin{cases} \frac{1}{2 {rho}} ({label}_i - {pred}_i)^2 &
-                           \text{ if } |{label}_i - {pred}_i| < {rho} \\
-                           |{label}_i - {pred}_i| - \frac{{rho}}{2} &
+        L = \sum_i \begin{cases} \frac{1}{2 \text{rho}} (\text{label}_i - \text{pred}_i)^2 &
+                           \text{ if } |\text{label}_i - \text{pred}_i| < \text{rho} \\
+                           |\text{label}_i - \text{pred}_i| - \frac{\text{rho}}{2} &
                            \text{ otherwise }
             \end{cases}
 
-    `label` and `pred` can have arbitrary shape as long as they have the same
+    :attr:`label` and :attr:`pred` can have arbitrary shape as long as they have the same
     number of elements.
 
     Parameters
@@ -586,15 +575,15 @@ class HuberLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **label**: target tensor with the same size as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`label` target tensor with the same size as pred.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -615,10 +604,10 @@ class HingeLoss(Loss):
     r"""Calculates the hinge loss function often used in SVMs:
 
     .. math::
-        L = \sum_i max(0, {margin} - {pred}_i \cdot {label}_i)
+        L = \sum_i max(0, \text{margin} - \text{pred}_i \cdot \text{label}_i)
 
-    where `pred` is the classifier prediction and `label` is the target tensor
-    containing values -1 or 1. `label` and `pred` must have the same number of
+    where :attr:`pred` is the classifier prediction and :attr:`label` is the target tensor
+    containing values -1 or 1. :attr:`label` and :attr:`pred` must have the same number of
     elements.
 
     Parameters
@@ -632,16 +621,16 @@ class HingeLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape.
-        - **label**: truth tensor with values -1 or 1. Must have the same size
+        - :attr:`pred` prediction tensor with arbitrary shape.
+        - :attr:`label` truth tensor with values -1 or 1. Must have the same size
           as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -660,10 +649,10 @@ class SquaredHingeLoss(Loss):
     r"""Calculates the soft-margin loss function used in SVMs:
 
     .. math::
-        L = \sum_i max(0, {margin} - {pred}_i \cdot {label}_i)^2
+        L = \sum_i max(0, \text{margin} - \text{pred}_i \cdot \text{label}_i)^2
 
-    where `pred` is the classifier prediction and `label` is the target tensor
-    containing values -1 or 1. `label` and `pred` can have arbitrary shape as
+    where :attr:`pred` is the classifier prediction and :attr:`label` is the target tensor
+    containing values -1 or 1. :attr:`label` and :attr:`pred` can have arbitrary shape as
     long as they have the same number of elements.
 
     Parameters
@@ -677,16 +666,16 @@ class SquaredHingeLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **label**: truth tensor with values -1 or 1. Must have the same size
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`label` truth tensor with values -1 or 1. Must have the same size
           as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -705,11 +694,11 @@ class LogisticLoss(Loss):
     r"""Calculates the logistic loss (for binary losses only):
 
     .. math::
-        L = \sum_i \log(1 + \exp(- {pred}_i \cdot {label}_i))
+        L = \sum_i \log(1 + \exp(- \text{pred}_i \cdot \text{label}_i))
 
-    where `pred` is the classifier prediction and `label` is the target tensor
-    containing values -1 or 1 (0 or 1 if `label_format` is binary).
-    `label` and `pred` can have arbitrary shape as long as they have the same number of elements.
+    where :attr:`pred` is the classifier prediction and :attr:`label` is the target tensor
+    containing values -1 or 1 (0 or 1 if :attr:`label_format` is binary).
+    :attr:`label` and :attr:`pred` can have arbitrary shape as long as they have the same number of elements.
 
     Parameters
     ----------
@@ -722,17 +711,18 @@ class LogisticLoss(Loss):
         be either -1 or 1. If the label_format is 'binary', all label values should be either
         0 or 1.
 
+
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape.
-        - **label**: truth tensor with values -1/1 (label_format is 'signed')
+        - :attr:`pred` prediction tensor with arbitrary shape.
+        - :attr:`label` truth tensor with values -1/1 (label_format is 'signed')
           or 0/1 (label_format is 'binary'). Must have the same size as pred.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,). Dimenions other than
+        - :attr:`loss` loss tensor with shape (batch_size,). Dimenions other than
           batch_axis are averaged out.
     """
 
@@ -760,10 +750,10 @@ class TripletLoss(Loss):
     example, a negative example, and prediction:
 
     .. math::
-        L = \sum_i \max(\Vert {pos_i}_i - {pred} \Vert_2^2 -
-                        \Vert {neg_i}_i - {pred} \Vert_2^2 + {margin}, 0)
+        L = \sum_i \max(\vert \text{pos}_i - \text{pred} \vert_2^2 -
+                        \vert \text{neg}_i - \text{pred} \vert_2^2 + \text{margin}, 0)
 
-    `positive`, `negative`, and 'pred' can have arbitrary shape as long as they
+    :attr:`positive`, :attr:`negative`, and :attr:`pred` can have arbitrary shape as long as they
     have the same number of elements.
 
     Parameters
@@ -777,14 +767,14 @@ class TripletLoss(Loss):
 
 
     Inputs:
-        - **pred**: prediction tensor with arbitrary shape
-        - **positive**: positive example tensor with arbitrary shape. Must have
+        - :attr:`pred` prediction tensor with arbitrary shape
+        - :attr:`positive` positive example tensor with arbitrary shape. Must have
           the same size as pred.
-        - **negative**: negative example tensor with arbitrary shape Must have
+        - :attr:`negative` negative example tensor with arbitrary shape Must have
           the same size as pred.
 
     Outputs:
-        - **loss**: loss tensor with shape (batch_size,).
+        - :attr:`loss` loss tensor with shape (batch_size,).
     """
 
     def __init__(self, margin=1, weight=None, batch_axis=0, **kwargs):
@@ -808,7 +798,7 @@ class PoissonNLLLoss(Loss):
     .. math::
         L = \text{pred} - \text{target} * \log(\text{pred}) +\log(\text{target!})
 
-    `target`, 'pred' can have arbitrary shape as long as they have the same number of elements.
+    :attr:`target`, :attr:'pred' can have arbitrary shape as long as they have the same number of elements.
 
     Parameters
     ----------
@@ -829,15 +819,15 @@ class PoissonNLLLoss(Loss):
 
 
     Inputs:
-        - **pred**:   Predicted value
-        - **target**: Random variable(count or number) which belongs to a Poisson distribution.
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`pred`  Predicted value
+        - :attr:`target` Random variable(count or number) which belongs to a Poisson distribution.
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as pred. For example, if pred has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: Average loss (shape=(1,1)) of the loss tensor with shape (batch_size,).
+        - :attr:`loss` Average loss (shape=(1,1)) of the loss tensor with shape (batch_size,).
     """
 
     def __init__(self, weight=None, from_logits=True, batch_axis=0, compute_full=False, **kwargs):
@@ -863,16 +853,17 @@ class PoissonNLLLoss(Loss):
 
 
 class CosineEmbeddingLoss(Loss):
-    r"""For a target label 1 or -1, vectors input1 and input2, the function computes the cosine distance
-    between the vectors. This can be interpreted as how similar/dissimilar two input vectors are.
+    r"""For a target label 1 or -1, two input vectors :math:`a` and :math:`b`, the function
+    computes the cosine distance between the vectors. This can be interpreted as how
+    similar/dissimilar two input vectors are.
 
     .. math::
+        L = \sum_i \begin{cases} 1 - {\text{cos_sim}(a_i, b_i)} & \text{ if } \text{label}_i = 1\\
+                         {\text{cos_sim}(a_i, b_i)} & \text{ if } \text{label}_i = -1 \end{cases}\\
+    .. math::
+        \text{cos_sim}(a, b) = \frac{a_i \cdot b_i}{\vert a_i \vert \cdot \vert b_i \vert }
 
-        L = \sum_i \begin{cases} 1 - {cos\_sim({input1}_i, {input2}_i)} & \text{ if } {label}_i = 1\\
-                         {cos\_sim({input1}_i, {input2}_i)} & \text{ if } {label}_i = -1 \end{cases}\\
-        cos\_sim(input1, input2) = \frac{{input1}_i.{input2}_i}{||{input1}_i||.||{input2}_i||}
-
-    `input1`, `input2` can have arbitrary shape as long as they have the same number of elements.
+    :math:`a`, :math:`b` can have arbitrary shape as long as they have the same number of elements.
 
     Parameters
     ----------
@@ -885,17 +876,17 @@ class CosineEmbeddingLoss(Loss):
 
 
     Inputs:
-        - **input1**: a tensor with arbitrary shape
-        - **input2**: another tensor with same shape as pred to which input1 is
+        - :attr:`input1` a tensor with arbitrary shape
+        - :attr:`input2` another tensor with same shape as pred to which input1 is
           compared for similarity and loss calculation
-        - **label**: A 1-D tensor indicating for each pair input1 and input2, target label is 1 or -1
-        - **sample_weight**: element-wise weighting tensor. Must be broadcastable
+        - :attr:`label` A 1-D tensor indicating for each pair input1 and input2, target label is 1 or -1
+        - :attr:`sample_weight` element-wise weighting tensor. Must be broadcastable
           to the same shape as input1. For example, if input1 has shape (64, 10)
           and you want to weigh each sample in the batch separately,
           sample_weight should have shape (64, 1).
 
     Outputs:
-        - **loss**: The loss tensor with shape (batch_size,).
+        - :attr:`loss` The loss tensor with shape (batch_size,).
     """
 
     def __init__(self, weight=None, batch_axis=0, margin=0, **kwargs):
