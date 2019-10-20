@@ -25,17 +25,17 @@ from ..model import _create_kvstore, _create_sparse_kvstore
 from .parameter import ParameterDict, Parameter
 
 class Trainer(object):
-    """Applies an `Optimizer` on a set of Parameters. Trainer should
-    be used together with `autograd`.
+    """Applies an :class:`~mxnet.optimizer.Optimizer` on a set of Parameters. Trainer should
+    be used together with ``autograd``.
 
     .. note::
 
         For the following cases, updates will always happen on kvstore,
-        i.e., you cannot set update_on_kvstore=False.
+        i.e., you cannot set ``update_on_kvstore=False``.
 
         - dist kvstore with sparse weights or sparse gradients
         - dist async kvstore
-        - `optimizer.lr_scheduler` is not None
+        - ``optimizer.lr_scheduler`` is not None
 
     Parameters
     ----------
@@ -43,31 +43,25 @@ class Trainer(object):
         The set of parameters to optimize.
     optimizer : str or Optimizer
         The optimizer to use. See
-        `help <https://mxnet.apache.org/api/python/docs/api/optimizer/index.html#mxnet.optimizer.Optimizer>`_
+        `help </api/python/tutorials/packages/optimizer/optimizer.html>`_
         on Optimizer for a list of available optimizers.
     optimizer_params : dict
         Key-word arguments to be passed to optimizer constructor. For example,
-        `{'learning_rate': 0.1}`. All optimizers accept learning_rate, wd (weight decay),
+        ``{'learning_rate': 0.1}``. All optimizers accept learning_rate, wd (weight decay),
         clip_gradient, and lr_scheduler. See each optimizer's
         constructor for a list of additional supported arguments.
     kvstore : str or KVStore
         kvstore type for multi-gpu and distributed training. See help on
-        :any:`mxnet.kvstore.create` for more information.
+        :meth:`mxnet.kvstore.create` for more information.
     compression_params : dict
         Specifies type of gradient compression and additional arguments depending
         on the type of compression being used. For example, 2bit compression requires a threshold.
-        Arguments would then be {'type':'2bit', 'threshold':0.5}
-        See mxnet.KVStore.set_gradient_compression method for more details on gradient compression.
+        Arguments would then be ``{'type':'2bit', 'threshold':0.5}``
+        See :meth:`~mxnet.kvstore.KVStore.set_gradient_compression` for more details on gradient compression.
     update_on_kvstore : bool, default None
         Whether to perform parameter updates on kvstore. If None, then trainer will choose the more
-        suitable option depending on the type of kvstore. If the `update_on_kvstore` argument is
+        suitable option depending on the type of kvstore. If the :attr:`update_on_kvstore` is
         provided, environment variable `MXNET_UPDATE_ON_KVSTORE` will be ignored.
-
-    Properties
-    ----------
-    learning_rate : float
-        The current learning rate of the optimizer. Given an Optimizer object
-        optimizer, its learning rate can be accessed as optimizer.learning_rate.
     """
     def __init__(self, params, optimizer, optimizer_params=None, kvstore='device',
                  compression_params=None, update_on_kvstore=None):
@@ -249,6 +243,7 @@ class Trainer(object):
 
     @property
     def learning_rate(self):
+        """The current learning rate of the optimizer."""
         if not isinstance(self._optimizer, opt.Optimizer):
             raise UserWarning("Optimizer has to be defined before its learning "
                               "rate can be accessed.")
@@ -257,6 +252,7 @@ class Trainer(object):
 
     @property
     def optimizer(self):
+        """The current optimizer in this trainer."""
         if isinstance(self._optimizer, opt.Optimizer):
             return self._optimizer
         else:
@@ -304,21 +300,21 @@ class Trainer(object):
 
     def step(self, batch_size, ignore_stale_grad=False):
         """Makes one step of parameter update. Should be called after
-        `autograd.backward()` and outside of `record()` scope.
+        :meth:`~mxnet.autograd.backward` and outside of :meth:`~mxnet.autograd.record()` scope.
 
-        For normal parameter updates, `step()` should be used, which internally calls
-        `allreduce_grads()` and then `update()`. However, if you need to get the reduced
+        For normal parameter updates, :meth:`step` should be used, which internally calls
+        :meth:`allreduce_grads` and then :meth:`update`. However, if you need to get the reduced
         gradients to perform certain transformation, such as in gradient clipping, then
-        you may want to manually call `allreduce_grads()` and `update()` separately.
+        you may want to manually call :meth:`allreduce_grads` and :meth:`update` separately.
 
         Parameters
         ----------
         batch_size : int
-            Batch size of data processed. Gradient will be normalized by `1/batch_size`.
-            Set this to 1 if you normalized loss manually with `loss = mean(loss)`.
+            Batch size of data processed. Gradient will be normalized by :math:`1/\\text{batch_size}`.
+            Set this to 1 if you normalized loss manually with ``loss = mean(loss)``.
         ignore_stale_grad : bool, optional, default=False
             If true, ignores Parameters with stale gradient (gradient that has not
-            been updated by `backward` after last step) and skip update.
+            been updated by backward after last step) and skip update.
         """
         rescale_grad = self._scale / batch_size
         self._check_and_rescale_grad(rescale_grad)
@@ -334,13 +330,13 @@ class Trainer(object):
     def allreduce_grads(self):
         """For each parameter, reduce the gradients from different contexts.
 
-        Should be called after `autograd.backward()`, outside of `record()` scope,
-        and before `trainer.update()`.
+        Should be called after :meth:`~mxnet.autograd.backward`, outside of
+        :meth:`~mxnet.autograd.record` scope, and before :meth:`update`.
 
-        For normal parameter updates, `step()` should be used, which internally calls
-        `allreduce_grads()` and then `update()`. However, if you need to get the reduced
+        For normal parameter updates, :meth:`step` should be used, which internally calls
+        :meth:`allreduce_grads` and then :meth:`update`. However, if you need to get the reduced
         gradients to perform certain transformation, such as in gradient clipping, then
-        you may want to manually call `allreduce_grads()` and `update()` separately.
+        you may want to manually call :meth:`allreduce_grads` and :meth:`update` separately.
         """
         if not self._kv_initialized:
             self._init_kvstore()
@@ -366,23 +362,22 @@ class Trainer(object):
     def update(self, batch_size, ignore_stale_grad=False):
         """Makes one step of parameter update.
 
-        Should be called after `autograd.backward()` and outside of `record()` scope,
-        and after `trainer.update()`.
+        Should be called after :meth:`~mxnet.autograd.backward`, outside of
+        :meth:`~mxnet.autograd.record` scope, and after :meth:`update`.
 
-
-        For normal parameter updates, `step()` should be used, which internally calls
-        `allreduce_grads()` and then `update()`. However, if you need to get the reduced
+        For normal parameter updates, :meth:`step` should be used, which internally calls
+        :meth:`allreduce_grads` and then :meth:`update`. However, if you need to get the reduced
         gradients to perform certain transformation, such as in gradient clipping, then
-        you may want to manually call `allreduce_grads()` and `update()` separately.
+        you may want to manually call :meth:`allreduce_grads` and :meth:`update` separately.
 
         Parameters
         ----------
         batch_size : int
-            Batch size of data processed. Gradient will be normalized by `1/batch_size`.
-            Set this to 1 if you normalized loss manually with `loss = mean(loss)`.
+            Batch size of data processed. Gradient will be normalized by :math:`1/\\text{batch_size}`.
+            Set this to 1 if you normalized loss manually with ``loss = mean(loss)``.
         ignore_stale_grad : bool, optional, default=False
             If true, ignores Parameters with stale gradient (gradient that has not
-            been updated by `backward` after last step) and skip update.
+            been updated by backward after last step) and skip update.
         """
         if not self._kv_initialized:
             self._init_kvstore()
@@ -436,7 +431,6 @@ class Trainer(object):
     def save_states(self, fname):
         """Saves trainer states (e.g. optimizer, momentum) to a file.
 
-
         Parameters
         ----------
         fname : str
@@ -444,8 +438,8 @@ class Trainer(object):
 
         Note
         ----
-        `optimizer.param_dict`, which contains Parameter information (such as
-        `lr_mult` and `wd_mult`) will not be saved.
+        ``optimizer.param_dict``, which contains Parameter information (such as
+        :attr:`lr_mult` and :attr:`wd_mult`) will not be saved.
         """
         assert self._optimizer is not None
 
@@ -472,8 +466,8 @@ class Trainer(object):
 
         Note
         ----
-        `optimizer.param_dict`, which contains Parameter information (such as
-        `lr_mult` and `wd_mult`) will not be loaded from the file, but rather set
+        ``optimizer.param_dict``, which contains Parameter information (such as
+        :attr:`lr_mult` and :attr:`wd_mult`) will not be loaded from the file, but rather set
         based on current Trainer's parameters.
         """
         if not self._kv_initialized:
