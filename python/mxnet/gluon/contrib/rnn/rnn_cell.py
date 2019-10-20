@@ -243,7 +243,7 @@ class LSTMPCell(HybridRecurrentCell):
         to zero.
     h2h_bias_initializer : str or Initializer
         Initializer for the bias vector.
-    prefix : str, default 'lstmp_'
+    prefix : str, default ``'lstmp_'``
         Prefix for the name of Blocks (and name of weight if params is ``None``).
     params : Parameter or None
         Container for weight sharing between cells. Created if ``None``.

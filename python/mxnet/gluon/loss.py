@@ -798,7 +798,7 @@ class PoissonNLLLoss(Loss):
     .. math::
         L = \text{pred} - \text{target} * \log(\text{pred}) +\log(\text{target!})
 
-    :attr:`target`, :attr:'pred' can have arbitrary shape as long as they have the same number of elements.
+    :attr:`target`, :attr:`pred` can have arbitrary shape as long as they have the same number of elements.
 
     Parameters
     ----------
