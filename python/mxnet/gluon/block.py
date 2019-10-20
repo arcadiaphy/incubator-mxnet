@@ -229,8 +229,8 @@ class Block(object):
     """Base class for all neural network layers and models. Your models should
     subclass this class.
 
-    :py:class:`Block` can be nested recursively in a tree structure. You can create and
-    assign child :py:class:`Block` as regular attributes::
+    :class:`Block` can be nested recursively in a tree structure. You can create and
+    assign child :class:`Block` as regular attributes::
 
         from mxnet.gluon import Block, nn
         from mxnet import ndarray as F
@@ -252,21 +252,21 @@ class Block(object):
         model(F.zeros((10, 10), ctx=mx.cpu(0)))
 
 
-    Child :py:class:`Block` assigned this way will be registered and :py:meth:`collect_params`
+    Child :class:`Block` assigned this way will be registered and :meth:`collect_params`
     will collect their Parameters recursively. You can also manually register
-    child blocks with :py:meth:`register_child`.
+    child blocks with :meth:`register_child`.
 
     Parameters
     ----------
     prefix : str
         Prefix acts like a name space. All children blocks created in parent block's
-        :py:meth:`name_scope` will have parent block's prefix in their name.
+        :meth:`name_scope` will have parent block's prefix in their name.
         Please refer to
         `naming tutorial </api/python/docs/tutorials/packages/gluon/blocks/naming.html>`_
         for more info on prefix and naming.
     params : ParameterDict or None
-        :py:class:`ParameterDict` for sharing weights with the new :py:class:`Block`. For example,
-        if you want ``dense1`` to share ``dense0``'s weights, you can do::
+        :class:`~mxnet.gluon.parameter.ParameterDict` for sharing weights with the new :class:`Block`.
+        For example, if you want ``dense1`` to share ``dense0``'s weights, you can do::
 
             dense0 = nn.Dense(20)
             dense1 = nn.Dense(20, params=dense0.collect_params())
@@ -342,16 +342,16 @@ class Block(object):
 
     @property
     def prefix(self):
-        """Prefix of this :py:class:`Block`."""
+        """Prefix of this Block."""
         return self._prefix
 
     @property
     def name(self):
-        """Name of this :py:class:`Block`, without '_' in the end."""
+        """Name of this Block, without '_' in the end."""
         return self._name
 
     def name_scope(self):
-        """Returns a name space object managing a child :py:class:`Block` and parameter
+        """Returns a name space object managing a child :class:`~mxnet.gluon.Block` and parameter
         names. Should be used within a ``with`` statement::
 
             with self.name_scope():
@@ -365,17 +365,17 @@ class Block(object):
 
     @property
     def params(self):
-        """Returns this :py:class:`Block`'s parameter dictionary (does not include its
+        """Returns this Block's parameter dictionary (does not include its
         children's parameters)."""
         return self._params
 
     def collect_params(self, select=None):
-        """Returns a :py:class:`ParameterDict` containing this :py:class:`Block` and all of its
-        children's Parameters(default), also can returns the select :py:class:`ParameterDict`
-        which match some given regular expressions.
+        """Returns a :class:`~mxnet.gluon.parameter.ParameterDict` containing this Block
+        and all of its children's Parameters(default), also can returns the select
+        :class:`~mxnet.gluon.parameter.ParameterDict` which match some given regular expressions.
 
-        For example, collect the specified parameters in ['conv1_weight', 'conv1_bias', 'fc_weight',
-        'fc_bias']::
+        For example, collect the specified parameters in ``['conv1_weight', 'conv1_bias', 'fc_weight',
+        'fc_bias']``::
 
             model.collect_params('conv1_weight|conv1_bias|fc_weight|fc_bias')
 
@@ -391,7 +391,7 @@ class Block(object):
 
         Returns
         -------
-        The selected :py:class:`ParameterDict`
+        The selected :class:`~mxnet.gluon.parameter.ParameterDict`
         """
         # We need to check here because blocks inside containers are not supported.
         self._check_container_with_block()
@@ -416,9 +416,9 @@ class Block(object):
     def save_parameters(self, filename):
         """Save parameters to file.
 
-        Saved parameters can only be loaded with `load_parameters`. Note that this
+        Saved parameters can only be loaded with :meth:`load_parameters`. Note that this
         method only saves parameters, not model structure. If you want to save
-        model structures, please use :py:meth:`HybridBlock.export`.
+        model structures, please use :meth:`HybridBlock.export`.
 
         Parameters
         ----------
@@ -436,11 +436,13 @@ class Block(object):
         save_fn(filename, arg_dict)
 
     def save_params(self, filename):
-        """[Deprecated] Please use save_parameters. Note that if you want load
-        from SymbolBlock later, please use export instead.
+        """[Deprecated] Please use :meth:`~mxnet.gluon.Block.save_parameters`.
 
-        Save parameters to file.
+        Save parameters to file. Note that if you want load from :class:`~mxnet.gluon.SymbolBlock`
+        later, please use :meth:`HybridBlock.export`.
 
+        Parameters
+        ----------
         filename : str
             Path to file.
         """
@@ -457,7 +459,7 @@ class Block(object):
 
     def load_parameters(self, filename, ctx=None, allow_missing=False,
                         ignore_extra=False, cast_dtype=False, dtype_source='current'):
-        """Load parameters from file previously saved by `save_parameters`.
+        """Load parameters from file previously saved by :meth:`~mxnet.gluon.Block.save_parameters`.
 
         Parameters
         ----------
@@ -475,7 +477,7 @@ class Block(object):
             provided by the Parameter if any.
         dtype_source : str, default 'current'
             must be in {'current', 'saved'}
-            Only valid if cast_dtype=True, specify the source of the dtype for casting
+            Only valid if ``cast_dtype=True``, specify the source of the dtype for casting
             the parameters
         References
         ----------
@@ -533,10 +535,12 @@ class Block(object):
 
     def load_params(self, filename, ctx=None, allow_missing=False,
                     ignore_extra=False):
-        """[Deprecated] Please use load_parameters.
+        """[Deprecated] Please use :meth:`~mxnet.gluon.Block.load_parameters`.
 
         Load parameters from file.
 
+        Parameters
+        ----------
         filename : str
             Path to parameter file.
         ctx : Context or list of Context, default cpu()
@@ -551,61 +555,63 @@ class Block(object):
         self.load_parameters(filename, ctx, allow_missing, ignore_extra)
 
     def register_child(self, block, name=None):
-        """Registers block as a child of self. :py:class:`Block` s assigned to self as
-        attributes will be registered automatically."""
+        """Registers block as a child of self.
+
+        :class:`Block` assigned to self as attributes will be registered automatically.
+        """
         if name is None:
             name = str(len(self._children))
         self._children[name] = block
 
     def register_forward_pre_hook(self, hook):
-        r"""Registers a forward pre-hook on the block.
+        """Registers a forward pre-hook on the block.
 
-        The hook function is called immediately before :func:`forward`.
+        The hook function is called immediately before :meth:`forward`.
         It should not modify the input or output.
 
         Parameters
         ----------
         hook : callable
-            The forward hook function of form `hook(block, input) -> None`.
+            The forward hook function of form ``hook(block, input) -> None``.
 
         Returns
         -------
-        :class:`mxnet.gluon.utils.HookHandle`
+        :class:`~mxnet.gluon.utils.HookHandle`
         """
         handle = HookHandle()
         handle.attach(self._forward_pre_hooks, hook)
         return handle
 
     def register_forward_hook(self, hook):
-        r"""Registers a forward hook on the block.
+        """Registers a forward hook on the block.
 
-        The hook function is called immediately after :func:`forward`.
+        The hook function is called immediately after :meth:`forward`.
         It should not modify the input or output.
 
         Parameters
         ----------
         hook : callable
-            The forward hook function of form `hook(block, input, output) -> None`.
+            The forward hook function of form ``hook(block, input, output) -> None``.
 
         Returns
         -------
-        :class:`mxnet.gluon.utils.HookHandle`
+        :class:`~mxnet.gluon.utils.HookHandle`
         """
         handle = HookHandle()
         handle.attach(self._forward_hooks, hook)
         return handle
 
     def apply(self, fn):
-        r"""Applies ``fn`` recursively to every child block as well as self.
+        """Applies :attr:`fn` recursively to every child block as well as self.
 
         Parameters
         ----------
         fn : callable
-            Function to be applied to each submodule, of form `fn(block)`.
+            Function to be applied to each submodule, of form ``fn(block)``.
 
         Returns
         -------
-        this block
+        this Block
         """
         for cld in self._children.values():
             cld.apply(fn)
@@ -614,14 +620,14 @@ class Block(object):
 
     def initialize(self, init=initializer.Uniform(), ctx=None, verbose=False,
                    force_reinit=False):
-        """Initializes :py:class:`Parameter` s of this :py:class:`Block` and its children.
-        Equivalent to ``block.collect_params().initialize(...)``
+        """Initializes :class:`~mxnet.gluon.parameter.Parameter` of this Block
+        and its children. Equivalent to ``block.collect_params().initialize(...)``
 
         Parameters
         ----------
         init : Initializer
-            Global default Initializer to be used when :py:meth:`Parameter.init` is ``None``.
-            Otherwise, :py:meth:`Parameter.init` takes precedence.
+            Global default Initializer to be used when ``Parameter.init`` is ``None``.
+            Otherwise, ``Parameter.init`` takes precedence.
         ctx : Context or list of Context
             Keeps a copy of Parameters on one or many context(s).
         verbose : bool, default False
@@ -632,7 +638,7 @@ class Block(object):
         self.collect_params().initialize(init, ctx, verbose, force_reinit)
 
     def hybridize(self, active=True, **kwargs):
-        """Activates or deactivates :py:class:`HybridBlock` s recursively. Has no effect on
+        """Activates or deactivates :class:`~mxnet.gluon.HybridBlock` recursively. Has no effect on
         non-hybrid children.
 
         Parameters
@@ -643,7 +649,7 @@ class Block(object):
             Statically allocate memory to improve speed. Memory usage may increase.
         static_shape : bool, default False
             Optimize for invariant input shapes between iterations. Must also
-            set static_alloc to True. Change of input shapes is still allowed
+            set :attr:`static_alloc` to ``True``. Change of input shapes is still allowed
             but slower.
         """
         for cld in self._children.values():
@@ -676,7 +682,7 @@ class Block(object):
         return out
 
     def forward(self, *args):
-        """Overrides to implement forward computation using :py:class:`NDArray`. Only
+        """Overrides to implement forward computation using :class:`~mxnet.ndarray.NDArray`. Only
         accepts positional arguments.
 
         Parameters
@@ -695,7 +701,7 @@ class Block(object):
         callback : function
             Takes a string and a NDArrayHandle.
         monitor_all : bool, default False
-            If true, monitor both input and output, otherwise monitor output only.
+            If ``True``, monitor both input and output, otherwise monitor output only.
         """
         for cld in self._children.values():
             cld.register_op_hook(callback, monitor_all)
@@ -709,7 +715,7 @@ class Block(object):
         ----------
         inputs : object
             Any input that the model supports. For any tensor in the input, only
-            :class:`mxnet.ndarray.NDArray` is supported.
+            :class:`~mxnet.ndarray.NDArray` is supported.
         """
         summary = OrderedDict()
         seen = set()
@@ -813,9 +819,10 @@ class Block(object):
 
 
 class HybridBlock(Block):
-    """`HybridBlock` supports forwarding with both Symbol and NDArray.
+    """:class:`HybridBlock` supports forwarding with both :class:`~mxnet.symbol.Symbol`
+    and :class:`~mxnet.ndarray.NDArray`.
 
-    `HybridBlock` is similar to `Block`, with a few differences::
+    :class:`HybridBlock` is similar to :class:`Block`, with a few differences::
 
         import mxnet as mx
         from mxnet.gluon import HybridBlock, nn
@@ -837,17 +844,17 @@ class HybridBlock(Block):
         model.hybridize()
         model(mx.nd.zeros((10, 10), ctx=mx.cpu(0)))
 
-    Forward computation in :py:class:`HybridBlock` must be static to work with :py:class:`Symbol` s,
-    i.e. you cannot call :py:meth:`NDArray.asnumpy`, :py:attr:`NDArray.shape`,
-    :py:attr:`NDArray.dtype`, `NDArray` indexing (`x[i]`) etc on tensors.
-    Also, you cannot use branching or loop logic that bases on non-constant
+    Forward computation in :class:`HybridBlock` must be static to work with
+    :class:`~mxnet.symbol.Symbol`, i.e. you cannot call :meth:`~mxnet.ndarray.NDArray.asnumpy`,
+    :attr:`~mxnet.ndarray.NDArray.shape`, :attr:`~mxnet.ndarray.NDArray.dtype`, indexing (``x[i]``)
+    etc on tensors. Also, you cannot use branching or loop logic that bases on non-constant
     expressions like random numbers or intermediate results, since they change
     the graph structure for each iteration.
 
-    Before activating with :py:meth:`hybridize()`, :py:class:`HybridBlock` works just like normal
-    :py:class:`Block`. After activation, :py:class:`HybridBlock` will create a symbolic graph
+    Before activating with :meth:`hybridize()`, :class:`HybridBlock` works just like normal
+    :class:`Block`. After activation, :class:`HybridBlock` will create a symbolic graph
     representing the forward computation and cache it. On subsequent forwards,
-    the cached graph will be used instead of :py:meth:`hybrid_forward`.
+    the cached graph will be used instead of :meth:`hybrid_forward`.
 
     Please see references for detailed tutorial.
 
@@ -1052,8 +1059,8 @@ class HybridBlock(Block):
         self._infer_attrs('infer_type', 'dtype', *args)
 
     def export(self, path, epoch=0, remove_amp_cast=True):
-        """Export HybridBlock to json format that can be loaded by
-        `gluon.SymbolBlock.imports`, `mxnet.mod.Module` or the C++ interface.
+        """Export :class:`~mxnet.gluon.HybridBlock` to json format that can be loaded by
+        :meth:`~mxnet.gluon.SymbolBlock.imports`, :class:`~mxnet.module.Module` or the C++ interface.
 
         .. note:: When there are only one input, it will have name `data`. When there
                   Are more than one inputs, they will be named as `data0`, `data1`, etc.
@@ -1104,7 +1111,6 @@ class HybridBlock(Block):
     def forward(self, x, *args):
         """Defines the forward computation. Arguments can be either
         :py:class:`NDArray` or :py:class:`Symbol`."""
-
         has_symbol, has_ndarray, ctx_set, first_ctx = _gather_type_ctx_info([x] + list(args))
         if has_symbol and has_ndarray:
             raise ValueError('In HybridBlock, we do not support mixed NDArrays and Symbols'
@@ -1139,7 +1145,7 @@ class HybridBlock(Block):
             return self.hybrid_forward(symbol, x, *args, **params)
 
     def hybrid_forward(self, F, x, *args, **kwargs):
-        """Overrides to construct symbolic graph for this `Block`.
+        """Overrides to construct symbolic graph for this Block.
 
         Parameters
         ----------
@@ -1198,8 +1204,9 @@ class SymbolBlock(HybridBlock):
     """
     @staticmethod
     def imports(symbol_file, input_names, param_file=None, ctx=None):
-        """Import model previously saved by `gluon.HybridBlock.export` or
-        `Module.save_checkpoint` as a `gluon.SymbolBlock` for use in Gluon.
+        """Import model previously saved by :class:`~mxnet.gluon.HybridBlock.export` or
+        :meth:`~mxnet.module.Module.save_checkpoint` as a :class:`~mxnet.gluon.SymbolBlock`
+        for use in Gluon.
 
         Parameters
         ----------
@@ -1210,12 +1217,12 @@ class SymbolBlock(HybridBlock):
         param_file : str, optional
             Path to parameter file.
         ctx : Context, default None
-            The context to initialize `gluon.SymbolBlock` on.
+            The context to initialize :class:`~mxnet.gluon.SymbolBlock` on.
 
         Returns
         -------
-        gluon.SymbolBlock
-            `gluon.SymbolBlock` loaded from symbol and parameter files.
+        SymbolBlock
+            :class:`~mxnet.gluon.SymbolBlock` loaded from symbol and parameter files.
 
         Examples
         --------
@@ -1340,15 +1347,15 @@ def _infer_param_types(in_params, out_params, arg_params, aux_params, default_dt
     aux_params: List of Str
         List of names of auxiliary parameters.
     default_dtype: numpy.dtype or str, default 'float32'
-        Default data type for arg_params and aux_params, if unable to infer the type.
+        Default data type for :attr:`arg_params` and :attr:`aux_params`, if unable to infer the type.
 
     Returns
     -------
     arg_types: List of numpy.dtype
-        List of arg_params type. Order is same as arg_params.
+        List of :attr:`arg_params` type. Order is same as :attr:`arg_params`.
         Defaults to 'float32', if unable to infer type.
     aux_types: List of numpy.dtype
-        List of aux_params type. Order is same as aux_params.
+        List of :attr:`aux_params` type. Order is same as :attr:`aux_params`.
         Defaults to 'float32', if unable to infer type.
     """
     arg_types = None
