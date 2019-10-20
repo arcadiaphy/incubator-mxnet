@@ -252,10 +252,10 @@ class Conv1DRNNCell(_ConvRNNCell):
         Layout for all convolution inputs, outputs and weights. Options are 'NCW' and 'NWC'.
     activation : str or gluon.Block, default 'tanh'
         Type of activation function.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_rnn_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_rnn_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -319,10 +319,10 @@ class Conv2DRNNCell(_ConvRNNCell):
         Layout for all convolution inputs, outputs and weights. Options are 'NCHW' and 'NHWC'.
     activation : str or gluon.Block, default 'tanh'
         Type of activation function.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_rnn_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_rnn_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -386,10 +386,10 @@ class Conv3DRNNCell(_ConvRNNCell):
         Layout for all convolution inputs, outputs and weights. Options are 'NCDHW' and 'NDHWC'.
     activation : str or gluon.Block, default 'tanh'
         Type of activation function.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_rnn_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_rnn_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -515,11 +515,11 @@ class Conv1DLSTMCell(_ConvLSTMCell):
     conv_layout : str, default 'NCW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCW' and 'NWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in c^\prime_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`c^\prime_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_lstm_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_lstm_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -592,11 +592,11 @@ class Conv2DLSTMCell(_ConvLSTMCell):
     conv_layout : str, default 'NCHW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCHW' and 'NHWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in c^\prime_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`c^\prime_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_lstm_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_lstm_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -669,11 +669,11 @@ class Conv3DLSTMCell(_ConvLSTMCell):
     conv_layout : str, default 'NCDHW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCDHW' and 'NDHWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in c^\prime_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`c^\prime_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_lstm_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_lstm_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -799,11 +799,11 @@ class Conv1DGRUCell(_ConvGRUCell):
     conv_layout : str, default 'NCW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCW' and 'NWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in n_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`n_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_gru_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_gru_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -871,11 +871,11 @@ class Conv2DGRUCell(_ConvGRUCell):
     conv_layout : str, default 'NCHW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCHW' and 'NHWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in n_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`n_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_gru_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_gru_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.
@@ -943,11 +943,11 @@ class Conv3DGRUCell(_ConvGRUCell):
     conv_layout : str, default 'NCDHW'
         Layout for all convolution inputs, outputs and weights. Options are 'NCDHW' and 'NDHWC'.
     activation : str or gluon.Block, default 'tanh'
-        Type of activation function used in n_t.
-        If argument type is string, it's equivalent to nn.Activation(act_type=str). See
+        Type of activation function used in :math:`n_t`.
+        If argument type is string, it's equivalent to ``nn.Activation(act_type=str)``. See
         :func:`~mxnet.ndarray.Activation` for available choices.
-        Alternatively, other activation blocks such as nn.LeakyReLU can be used.
-    prefix : str, default ``'conv_gru_``'
+        Alternatively, other activation blocks such as :class:`~mxnet.gluon.nn.LeakyReLU` can be used.
+    prefix : str, default 'conv_gru_'
         Prefix for name of layers (and name of weight if params is None).
     params : RNNParams, default None
         Container for weight sharing between cells. Created if None.

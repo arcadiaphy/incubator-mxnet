@@ -40,7 +40,7 @@ __all__ = ['Estimator']
 class Estimator(object):
     """Estimator Class for easy model training
 
-    :py:class:`Estimator` can be used to facilitate the training & validation process
+    :class:`Estimator` can be used to facilitate the training & validation process
 
 
     Parameters
@@ -239,7 +239,7 @@ class Estimator(object):
             event_handlers=None,
             batches=None,
             batch_axis=0):
-        """Trains the model with a given :py:class:`DataLoader` for a specified
+        """Trains the model with a given :class:`~mxnet.gluon.data.DataLoader` for a specified
         number of epochs or batches. The batch size is inferred from the
         data loader's batch_size.
 
@@ -253,7 +253,7 @@ class Estimator(object):
             Number of epochs to iterate on the training data.
             You can only specify one and only one type of iteration(epochs or batches).
         event_handlers : EventHandler or list of EventHandler
-            List of :py:class:`EventHandlers` to apply during training.
+            List of EventHandlers to apply during training.
         batches : int, default None
             Number of batches to iterate on the training data.
             You can only specify one and only one type of iteration(epochs or batches).

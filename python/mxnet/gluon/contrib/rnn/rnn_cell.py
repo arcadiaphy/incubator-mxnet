@@ -17,7 +17,7 @@
 
 # coding: utf-8
 """Definition of various recurrent neural network cells."""
-__all__ = ['VariationalDropoutCell', 'LSTMPCell']
+__all__ = ['VariationalDropoutCell', 'LSTMPCell', 'dynamic_unroll']
 
 from ...rnn import BidirectionalCell, SequentialRNNCell, ModifierCell, HybridRecurrentCell
 from ...rnn.rnn_cell import _format_sequence, _get_begin_state, _mask_sequence_variable_length
@@ -122,48 +122,52 @@ class VariationalDropoutCell(ModifierCell):
         length : int
             Number of steps to unroll.
         inputs : Symbol, list of Symbol, or None
-            If `inputs` is a single Symbol (usually the output
+            If :attr:`inputs` is a single Symbol (usually the output
             of Embedding symbol), it should have shape
             (batch_size, length, ...) if `layout` is 'NTC',
             or (length, batch_size, ...) if `layout` is 'TNC'.
 
-            If `inputs` is a list of symbols (usually output of
+            If :attr:`inputs` is a list of symbols (usually output of
             previous unroll), they should all have shape
             (batch_size, ...).
         begin_state : nested list of Symbol, optional
-            Input states created by `begin_state()`
-            or output state of another cell.
-            Created from `begin_state()` if `None`.
+            Input states created by ``begin_state()`` or output state of another cell.
+            Created from ``begin_state()`` if ``None``.
         layout : str, optional
-            `layout` of input symbol. Only used if inputs
-            is a single Symbol.
+            Layout of input symbol. Only used if inputs is a single Symbol.
         merge_outputs : bool, optional
-            If `False`, returns outputs as a list of Symbols.
-            If `True`, concatenates output across time steps
+            If ``False`` returns outputs as a list of Symbols.
+
+            If ``True`` concatenates output across time steps
             and returns a single symbol with shape
             (batch_size, length, ...) if layout is 'NTC',
             or (length, batch_size, ...) if layout is 'TNC'.
-            If `None`, output whatever is faster.
+
+            If ``None``, output whatever is faster.
         valid_length : Symbol, NDArray or None
-            `valid_length` specifies the length of the sequences in the batch without padding.
+            The length of the sequences in the batch without padding.
             This option is especially useful for building sequence-to-sequence models where
             the input and output sequences would potentially be padded.
-            If `valid_length` is None, all sequences are assumed to have the same length.
-            If `valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
+
+            If :attr:`valid_length` is None, all sequences are assumed to have the same length.
+
+            If :attr:`valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
             The ith element will be the length of the ith sequence in the batch.
             The last valid state will be return and the padded outputs will be masked with 0.
-            Note that `valid_length` must be smaller or equal to `length`.
+
+            Note that :attr:`valid_length` must be smaller or equal to :attr:`length`.
 
         Returns
         -------
-        outputs : list of Symbol or Symbol
-            Symbol (if `merge_outputs` is True) or list of Symbols
-            (if `merge_outputs` is False) corresponding to the output from
-            the RNN from this unrolling.
+        outputs : Symbol or list of Symbol
+            If :attr:`merge_outputs` is ``True``, Symbol;
+
+            If :attr:`merge_outputs` is ``False``, list of Symbol corresponding to the
+            output from the RNN from this unrolling.
 
         states : list of Symbol
             The new state of this RNN after this unrolling.
-            The type of this symbol is same as the output of `begin_state()`.
+            The type of this symbol is same as the output of ``begin_state()``.
         """
 
         # Dropout on inputs and outputs can be performed on the whole sequence
@@ -239,20 +243,21 @@ class LSTMPCell(HybridRecurrentCell):
         to zero.
     h2h_bias_initializer : str or Initializer
         Initializer for the bias vector.
-    prefix : str, default ``'lstmp_``'
-        Prefix for name of `Block`s
-        (and name of weight if params is `None`).
+    prefix : str, default 'lstmp_'
+        Prefix for the name of Blocks (and name of weight if params is ``None``).
     params : Parameter or None
-        Container for weight sharing between cells.
-        Created if `None`.
+        Container for weight sharing between cells. Created if ``None``.
+
+
     Inputs:
-        - **data**: input tensor with shape `(batch_size, input_size)`.
-        - **states**: a list of two initial recurrent state tensors, with shape
+        - :attr:`data` input tensor with shape `(batch_size, input_size)`.
+        - :attr:`states` a list of two initial recurrent state tensors, with shape
           `(batch_size, projection_size)` and `(batch_size, hidden_size)` respectively.
+
     Outputs:
-        - **out**: output tensor with shape `(batch_size, num_hidden)`.
-        - **next_states**: a list of two output recurrent state tensors. Each has
-          the same shape as `states`.
+        - :attr:`out` output tensor with shape `(batch_size, num_hidden)`.
+        - :attr:`next_states` a list of two output recurrent state tensors. Each has
+          the same shape as :attr:`states`.
     """
     def __init__(self, hidden_size, projection_size,
                  i2h_weight_initializer=None, h2h_weight_initializer=None,
@@ -334,8 +339,8 @@ def dynamic_unroll(cell, inputs, begin_state, drop_inputs=0, drop_outputs=0,
     cell : an object whose base class is RNNCell.
         The RNN cell to run on the input sequence.
     inputs : Symbol
-        It should have shape (batch_size, length, ...) if `layout` is 'NTC',
-        or (length, batch_size, ...) if `layout` is 'TNC'.
+        It should have shape (batch_size, length, ...) if :attr:`layout` is 'NTC',
+        or (length, batch_size, ...) if :attr:`layout` is 'TNC'.
     begin_state : nested list of Symbol
         The initial states of the RNN sequence.
     drop_inputs : float, default 0.
@@ -343,17 +348,19 @@ def dynamic_unroll(cell, inputs, begin_state, drop_inputs=0, drop_outputs=0,
     drop_outputs : float, default 0.
         The dropout rate for outputs. Won't apply dropout if it equals 0.
     layout : str, optional
-        `layout` of input symbol. Only used if inputs
-        is a single Symbol.
+        Layout of input symbol. Only used if inputs is a single Symbol.
     valid_length : Symbol, NDArray or None
-        `valid_length` specifies the length of the sequences in the batch without padding.
+        The length of the sequences in the batch without padding.
         This option is especially useful for building sequence-to-sequence models where
         the input and output sequences would potentially be padded.
-        If `valid_length` is None, all sequences are assumed to have the same length.
-        If `valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
+
+        If :attr:`valid_length` is None, all sequences are assumed to have the same length.
+
+        If :attr:`valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
         The ith element will be the length of the ith sequence in the batch.
         The last valid state will be return and the padded outputs will be masked with 0.
-        Note that `valid_length` must be smaller or equal to `length`.
+
+        Note that :attr:`valid_length` must be smaller or equal to :attr:`length`.
 
     Returns
     -------

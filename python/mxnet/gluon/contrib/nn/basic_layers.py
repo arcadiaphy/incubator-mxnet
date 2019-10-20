@@ -29,7 +29,7 @@ from ...block import HybridBlock, Block
 from ...nn import Sequential, HybridSequential, BatchNorm
 
 class Concurrent(Sequential):
-    """Lays `Block` s concurrently.
+    """Lays :class:`~mxnet.gluon.Block` concurrently.
 
     This block feeds its input to all children blocks, and
     produce the output by concatenating all the children blocks' outputs
@@ -62,7 +62,7 @@ class Concurrent(Sequential):
 
 
 class HybridConcurrent(HybridSequential):
-    """Lays `HybridBlock` s concurrently.
+    """Lays :class:`~mxnet.gluon.HybridBlock` concurrently.
 
     This block feeds its input to all children blocks, and
     produce the output by concatenating all the children blocks' outputs
@@ -97,7 +97,7 @@ class HybridConcurrent(HybridSequential):
 class Identity(HybridBlock):
     """Block that passes through the input directly.
 
-    This block can be used in conjunction with HybridConcurrent
+    This block can be used in conjunction with :class:`HybridConcurrent`
     block for residual connection.
 
     Example::
@@ -117,16 +117,19 @@ class Identity(HybridBlock):
 
 class SparseEmbedding(Block):
     r"""Turns non-negative integers (indexes/tokens) into dense vectors
-    of fixed size. eg. [4, 20] -> [[0.25, 0.1], [0.6, -0.2]]
+    of fixed size. eg. ``[4, 20] -> [[0.25, 0.1], [0.6, -0.2]]``
 
     This SparseBlock is designed for distributed training with extremely large
-    input dimension. Both weight and gradient w.r.t. weight are `RowSparseNDArray`.
+    input dimension. Both weight and gradient w.r.t. weight are
+    :class:`~mxnet.ndarray.sparse.RowSparseNDArray`.
 
-    Note: if `sparse_grad` is set to True, the gradient w.r.t weight will be
+    Note
+    ----
+    if :attr:`sparse_grad` is set to True, the gradient w.r.t weight will be
     sparse. Only a subset of optimizers support sparse gradients, including SGD, AdaGrad
     and Adam. By default lazy updates is turned on, which may perform differently
-    from standard updates. For more details, please check the Optimization API at:
-    https://mxnet.incubator.apache.org/api/python/optimization/optimization.html
+    from standard updates. For more details, please check the `Optimization API
+    <../../optimizer/index.html>`_.
 
     Parameters
     ----------
@@ -137,12 +140,13 @@ class SparseEmbedding(Block):
     dtype : str or np.dtype, default 'float32'
         Data type of output embeddings.
     weight_initializer : Initializer
-        Initializer for the `embeddings` matrix.
+        Initializer for the embeddings matrix.
+
 
     Inputs:
-        - **data**: (N-1)-D tensor with shape: `(x1, x2, ..., xN-1)`.
+        - :attr:`data` (N-1)-D tensor with shape: :math:`(x_1, x_2, \dots, x_{N-1})`.
     Output:
-        - **out**: N-D tensor with shape: `(x1, x2, ..., xN-1, output_dim)`.
+        - :attr:`out` N-D tensor with shape: :math:`(x_1, x_2, \dots, x_{N-1}, \text{output_dim})`.
     """
     def __init__(self, input_dim, output_dim, dtype='float32',
                  weight_initializer=None, **kwargs):
@@ -176,8 +180,8 @@ class SyncBatchNorm(BatchNorm):
     ----------
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time forward is called
+        and :attr:`in_channels` will be inferred from the shape of input data.
     num_devices : int, default number of visible GPUs
     momentum: float, default 0.9
         Momentum for the moving average.
@@ -195,20 +199,20 @@ class SyncBatchNorm(BatchNorm):
         If True, use global moving statistics instead of local batch-norm. This will force
         change batch-norm into a scale shift operator.
         If False, use local batch-norm.
-    beta_initializer: str or `Initializer`, default 'zeros'
+    beta_initializer: str or Initializer, default 'zeros'
         Initializer for the beta weight.
-    gamma_initializer: str or `Initializer`, default 'ones'
+    gamma_initializer: str or Initializer, default 'ones'
         Initializer for the gamma weight.
-    running_mean_initializer: str or `Initializer`, default 'zeros'
+    running_mean_initializer: str or Initializer, default 'zeros'
         Initializer for the running mean.
-    running_variance_initializer: str or `Initializer`, default 'ones'
+    running_variance_initializer: str or Initializer, default 'ones'
         Initializer for the running variance.
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
 
     Reference:
         .. [1] Ioffe, Sergey, and Christian Szegedy. "Batch normalization: Accelerating \
@@ -243,26 +247,27 @@ class SyncBatchNorm(BatchNorm):
 
 class PixelShuffle1D(HybridBlock):
 
-    r"""Pixel-shuffle layer for upsampling in 1 dimension.
+    """Pixel-shuffle layer for upsampling in 1 dimension.
 
     Pixel-shuffling is the operation of taking groups of values along
-    the *channel* dimension and regrouping them into blocks of pixels
-    along the ``W`` dimension, thereby effectively multiplying that dimension
+    the channel dimension and regrouping them into blocks of pixels
+    along the :math:`W` dimension, thereby effectively multiplying that dimension
     by a constant factor in size.
 
-    For example, a feature map of shape :math:`(fC, W)` is reshaped
-    into :math:`(C, fW)` by forming little value groups of size :math:`f`
+    For example, a feature map of shape :math:`(f * C, W)` is reshaped
+    into :math:`(C, f * W)` by forming little value groups of size :math:`f`
     and arranging them in a grid of size :math:`W`.
 
     Parameters
     ----------
     factor : int or 1-tuple of int
-        Upsampling factor, applied to the ``W`` dimension.
+        Upsampling factor, applied to the :math:`W` dimension.
+
 
     Inputs:
-        - **data**: Tensor of shape ``(N, f*C, W)``.
+        - :attr:`data` Tensor of shape :math:`(N, f * C, W)`.
     Outputs:
-        - **out**: Tensor of shape ``(N, C, W*f)``.
+        - :attr:`out` Tensor of shape :math:`(N, C, W * f)`.
 
     Examples
     --------
@@ -294,12 +299,12 @@ class PixelShuffle2D(HybridBlock):
     r"""Pixel-shuffle layer for upsampling in 2 dimensions.
 
     Pixel-shuffling is the operation of taking groups of values along
-    the *channel* dimension and regrouping them into blocks of pixels
-    along the ``H`` and ``W`` dimensions, thereby effectively multiplying
+    the channel dimension and regrouping them into blocks of pixels
+    along the :math:`H` and :math:`W` dimensions, thereby effectively multiplying
     those dimensions by a constant factor in size.
 
-    For example, a feature map of shape :math:`(f^2 C, H, W)` is reshaped
-    into :math:`(C, fH, fW)` by forming little :math:`f \times f` blocks
+    For example, a feature map of shape :math:`(f^2 * C, H, W)` is reshaped
+    into :math:`(C, f * H, f * W)` by forming little :math:`f \times f` blocks
     of pixels and arranging them in an :math:`H \times W` grid.
 
     Pixel-shuffling together with regular convolution is an alternative,
@@ -313,13 +318,14 @@ class PixelShuffle2D(HybridBlock):
     Parameters
     ----------
     factor : int or 2-tuple of int
-        Upsampling factors, applied to the ``H`` and ``W`` dimensions,
+        Upsampling factors, applied to the :math:`H` and :math:`W` dimensions,
         in that order.
 
+
     Inputs:
-        - **data**: Tensor of shape ``(N, f1*f2*C, H, W)``.
+        - :attr:`data` Tensor of shape :math:`(N, f_1 * f_2 * C, H, W)`.
     Outputs:
-        - **out**: Tensor of shape ``(N, C, H*f1, W*f2)``.
+        - :attr:`out` Tensor of shape :math:`(N, C, H * f_1, W * f_2)`.
 
     Examples
     --------
@@ -356,12 +362,12 @@ class PixelShuffle3D(HybridBlock):
     r"""Pixel-shuffle layer for upsampling in 3 dimensions.
 
     Pixel-shuffling (or voxel-shuffling in 3D) is the operation of taking
-    groups of values along the *channel* dimension and regrouping them into
-    blocks of voxels along the ``D``, ``H`` and ``W`` dimensions, thereby
+    groups of values along the channel dimension and regrouping them into
+    blocks of voxels along the :math:`D`, :math:`H` and :math:`W` dimensions, thereby
     effectively multiplying those dimensions by a constant factor in size.
 
-    For example, a feature map of shape :math:`(f^3 C, D, H, W)` is reshaped
-    into :math:`(C, fD, fH, fW)` by forming little :math:`f \times f \times f`
+    For example, a feature map of shape :math:`(f^3 * C, D, H, W)` is reshaped
+    into :math:`(C, f * D, f * H, f * W)` by forming little :math:`f \times f \times f`
     blocks of voxels and arranging them in a :math:`D \times H \times W` grid.
 
     Pixel-shuffling together with regular convolution is an alternative,
@@ -375,13 +381,14 @@ class PixelShuffle3D(HybridBlock):
     Parameters
     ----------
     factor : int or 3-tuple of int
-        Upsampling factors, applied to the ``D``, ``H`` and ``W``
+        Upsampling factors, applied to the :math:`D`, :math:`H` and :math:`W`
         dimensions, in that order.
 
+
     Inputs:
-        - **data**: Tensor of shape ``(N, f1*f2*f3*C, D, H, W)``.
+        - :attr:`data` Tensor of shape :math:`(N, f_1 * f_2 * f_3 * C, D, H, W)``.
     Outputs:
-        - **out**: Tensor of shape ``(N, C, D*f1, H*f2, W*f3)``.
+        - :attr:`out` Tensor of shape :math:`(N, C, D * f_1, H * f_2, W * f_3)``.
 
     Examples
     --------

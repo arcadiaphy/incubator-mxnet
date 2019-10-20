@@ -27,7 +27,7 @@ from ....base import numeric_types
 from ...nn import Activation
 
 class DeformableConvolution(HybridBlock):
-    """2-D Deformable Convolution v_1 (Dai, 2017).
+    r"""2-D Deformable Convolution v_1 (Dai, 2017).
     Normal Convolution uses sampling points in a regular grid, while the sampling
     points of Deformablem Convolution can be offset. The offset is learned with a
     separate convolution layer during the training. Both the convolution layer for
@@ -35,68 +35,73 @@ class DeformableConvolution(HybridBlock):
 
     Parameters
     ----------
-    channels : int,
+    channels : int
         The dimensionality of the output space
         i.e. the number of output channels in the convolution.
-    kernel_size : int or tuple/list of 2 ints, (Default value = (1,1))
+    kernel_size : int or tuple/list of 2 ints, default (1,1)
         Specifies the dimensions of the convolution window.
-    strides : int or tuple/list of 2 ints, (Default value = (1,1))
+    strides : int or tuple/list of 2 ints, default (1,1)
         Specifies the strides of the convolution.
-    padding : int or tuple/list of 2 ints, (Default value = (0,0))
+    padding : int or tuple/list of 2 ints, default (0,0)
         If padding is non-zero, then the input is implicitly zero-padded
         on both sides for padding number of points.
-    dilation : int or tuple/list of 2 ints, (Default value = (1,1))
+    dilation : int or tuple/list of 2 ints, default (1,1)
         Specifies the dilation rate to use for dilated convolution.
-    groups : int, (Default value = 1)
+    groups : int, default 1
         Controls the connections between inputs and outputs.
         At groups=1, all inputs are convolved to all outputs.
         At groups=2, the operation becomes equivalent to having two convolution
         layers side by side, each seeing half the input channels, and producing
         half the output channels, and both subsequently concatenated.
-    num_deformable_group : int, (Default value = 1)
+    num_deformable_group : int, default 1
         Number of deformable group partitions.
-    layout : str, (Default value = NCHW)
+    layout : str, default NCHW
         Dimension ordering of data and weight. Can be 'NCW', 'NWC', 'NCHW',
         'NHWC', 'NCDHW', 'NDHWC', etc. 'N', 'C', 'H', 'W', 'D' stands for
         batch, channel, height, width and depth dimensions respectively.
         Convolution is performed over 'D', 'H', and 'W' dimensions.
-    use_bias : bool, (Default value = True)
+    use_bias : bool, default True
         Whether the layer for generating the output features uses a bias vector.
-    in_channels : int, (Default value = 0)
+    in_channels : int, default 0
         The number of input channels to this layer. If not specified,
         initialization will be deferred to the first time `forward` is called
         and input channels will be inferred from the shape of input data.
-    activation : str, (Default value = None)
+    activation : str, default None
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
-    weight_initializer : str or `Initializer`, (Default value = None)
+        (ie. "linear" activation: :math:`a(x) = x`).
+    weight_initializer : str or Initializer, default None
         Initializer for the `weight` weights matrix for the convolution layer
         for generating the output features.
-    bias_initializer : str or `Initializer`, (Default value = zeros)
+    bias_initializer : str or Initializer, default zeros
         Initializer for the bias vector for the convolution layer
         for generating the output features.
-    offset_weight_initializer : str or `Initializer`, (Default value = zeros)
-        Initializer for the `weight` weights matrix for the convolution layer
+    offset_weight_initializer : str or Initializer, default zeros
+        Initializer for the  weight matrix for the convolution layer
         for generating the offset.
-    offset_bias_initializer : str or `Initializer`, (Default value = zeros),
+    offset_bias_initializer : str or Initializer, default zeros
         Initializer for the bias vector for the convolution layer
         for generating the offset.
-    offset_use_bias: bool, (Default value = True)
+    offset_use_bias: bool, default  True
         Whether the layer for generating the offset uses a bias vector.
 
+
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when layout is 'NCHW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, out_height, out_width)` when `layout` is `NCHW`.
-          out_height and out_width are calculated as::
+        - :attr:`out`: 4D tensor with shape :math:`(N, C_{out}, H_{out}, W_{out})`
+          when layout is 'NCHW' in which :math:`H_{out}`and :math:`W_{out}` are calculated as:
 
-              out_height = floor((height+2*padding[0]-dilation[0]*(kernel_size[0]-1)-1)/stride[0])+1
-              out_width = floor((width+2*padding[1]-dilation[1]*(kernel_size[1]-1)-1)/stride[1])+1
+          .. math::
+              H_{out} = \left\lfloor\frac
+              {H_{in} + 2 \times \text{padding}[0] - (\text{dilation}[0] \times (\text{kernel_size}[0] - 1) - 1)}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac
+              {W_{in} + 2 \times \text{padding}[1] - (\text{dilation}[1] \times (\text{kernel_size}[1] - 1) - 1)}
+              {\text{stride}[1]}\right\rfloor + 1
     """
 
     def __init__(self, channels, kernel_size=(1, 1), strides=(1, 1), padding=(0, 0), dilation=(1, 1), groups=1,

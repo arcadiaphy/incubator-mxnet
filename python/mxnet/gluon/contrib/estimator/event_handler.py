@@ -107,9 +107,9 @@ class StoppingHandler(TrainBegin, BatchEnd, EpochEnd):
 class MetricHandler(EpochBegin, BatchEnd):
     """Metric Handler that update metric values at batch end
 
-    :py:class:`MetricHandler` takes model predictions and true labels
+    :class:`MetricHandler` takes model predictions and true labels
     and update the metrics, it also update metric wrapper for loss with loss values.
-    Validation loss and metrics will be handled by :py:class:`ValidationHandler`
+    Validation loss and metrics will be handled by :class:`ValidationHandler`
 
     Parameters
     ----------
@@ -142,9 +142,9 @@ class MetricHandler(EpochBegin, BatchEnd):
 class ValidationHandler(TrainBegin, BatchEnd, EpochEnd):
     """Validation Handler that evaluate model on validation dataset
 
-    :py:class:`ValidationHandler` takes validation dataset, an evaluation function,
+    :class:`ValidationHandler` takes validation dataset, an evaluation function,
     metrics to be evaluated, and how often to run the validation. You can provide custom
-    evaluation function or use the one provided my :py:class:`Estimator`
+    evaluation function or use the one provided my :class:`Estimator`
 
     Parameters
     ----------
@@ -157,10 +157,10 @@ class ValidationHandler(TrainBegin, BatchEnd, EpochEnd):
         Validation metrics to be updated.
     epoch_period : int, default 1
         How often to run validation at epoch end, by default
-        :py:class:`ValidationHandler` validate every epoch.
+        :class:`ValidationHandler` validate every epoch.
     batch_period : int, default None
         How often to run validation at batch end, by default
-        :py:class:`ValidationHandler` does not validate at batch end.
+        :class:`ValidationHandler` does not validate at batch end.
     """
 
     def __init__(self,
@@ -208,7 +208,7 @@ class ValidationHandler(TrainBegin, BatchEnd, EpochEnd):
 class LoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, BatchEnd):
     """Basic Logging Handler that applies to every Gluon estimator by default.
 
-    :py:class:`LoggingHandler` logs hyper-parameters, training statistics,
+    :class:`LoggingHandler` logs hyper-parameters, training statistics,
     and other useful information during training
 
     Parameters
@@ -335,7 +335,7 @@ class LoggingHandler(TrainBegin, TrainEnd, EpochBegin, EpochEnd, BatchBegin, Bat
 class CheckpointHandler(TrainBegin, BatchEnd, EpochEnd):
     """Save the model after user define period
 
-    :py:class:`CheckpointHandler` saves the network architecture after first batch if the model
+    :class:`CheckpointHandler` saves the network architecture after first batch if the model
     can be fully hybridized, saves model parameters and trainer states after user defined period,
     default saves every epoch.
 
@@ -351,12 +351,12 @@ class CheckpointHandler(TrainBegin, BatchEnd, EpochEnd):
     verbose: int, default 0
         Verbosity mode, 1 means inform user every time a checkpoint is saved
     save_best: bool, default False
-        If True, monitor must not be None, :py:class:`CheckpointHandler` will save the
+        If True, monitor must not be None, :class:`CheckpointHandler` will save the
         model parameters and trainer states with the best monitored value.
     mode: str, default 'auto'
-        One of {auto, min, max}, if `save_best=True`, the comparison to make
+        One of {auto, min, max}, if ``save_best=True``, the comparison to make
         and determine if the monitored value has improved. if 'auto' mode,
-        :py:class:`CheckpointHandler` will try to use min or max based on
+        :class:`CheckpointHandler` will try to use min or max based on
         the monitored metric name.
     epoch_period: int, default 1
         Epoch intervals between saving the network. By default, checkpoints are
@@ -369,7 +369,7 @@ class CheckpointHandler(TrainBegin, BatchEnd, EpochEnd):
         will be removed. Best checkpoint file is not counted.
     resume_from_checkpoint : bool, default False
         Whether to resume training from checkpoint in model_dir. If True and checkpoints
-        found, :py:class:`CheckpointHandler` will load net parameters and trainer states,
+        found, :class:`CheckpointHandler` will load net parameters and trainer states,
         and train the remaining of epochs and batches.
     """
 
@@ -619,7 +619,7 @@ class EarlyStoppingHandler(TrainBegin, EpochEnd, TrainEnd):
     patience: int, default 0
         Number of epochs to wait for improvement before terminate training.
     mode: str, default 'auto'
-        One of {auto, min, max}, if `save_best_only=True`, the comparison to make
+        One of {auto, min, max}, if ``save_best_only=True``, the comparison to make
         and determine if the monitored value has improved. if 'auto' mode, checkpoint
         handler will try to use min or max based on the monitored metric name.
     baseline: float

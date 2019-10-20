@@ -88,6 +88,7 @@ Recurrent Neural Network
     Conv2DGRUCell
     Conv3DGRUCell
     LSTMPCell
+    dynamic_unroll
 
 
 Data
