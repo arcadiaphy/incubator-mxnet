@@ -64,18 +64,16 @@ class LeakyReLU(HybridBlock):
     It allows a small gradient when the unit is not active
 
     .. math::
-
-        f\left(x\right) = \left\{
-            \begin{array}{lr}
-               \alpha x & : x \lt 0 \\
-                      x & : x \geq 0 \\
-            \end{array}
-        \right.\\
+        \text{LeakyReLU}(x) =
+        \begin{cases}
+        x, & \text{if} \ x > 0 \\
+        \alpha * x, & \text{otherwise}
+        \end{cases}
 
     Parameters
     ----------
     alpha : float
-        slope coefficient for the negative half axis. Must be >= 0.
+        The :math:`\alpha` parameter in the equation. Must be >= 0.
 
 
     Inputs:
@@ -101,25 +99,22 @@ class LeakyReLU(HybridBlock):
 
 class PReLU(HybridBlock):
     r"""Parametric leaky version of a Rectified Linear Unit.
-    https://arxiv.org/abs/1502.01852.
 
     It learns a gradient when the unit is not active
 
     .. math::
+        \text{PReLU}(x) =
+        \begin{cases}
+        x, & \text{if} \ x > 0 \\
+        \alpha * x, & \text{otherwise}
+        \end{cases}
 
-        f\left(x\right) = \left\{
-            \begin{array}{lr}
-               \alpha x & : x \lt 0 \\
-                      x & : x \geq 0 \\
-            \end{array}
-        \right.\\
-
-    where alpha is a learned parameter.
+    where :math:`\alpha` is a learnable parameter.
 
     Parameters
     ----------
     alpha_initializer : Initializer
-        Initializer for the `embeddings` matrix.
+        Initializer for the :math:`\alpha`.
 
 
     Inputs:
@@ -127,6 +122,10 @@ class PReLU(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Parametric leaky ReLU <https://arxiv.org/abs/1502.01852>`_
     """
     def __init__(self, alpha_initializer=initializer.Constant(0.25), **kwargs):
         super(PReLU, self).__init__(**kwargs)
@@ -138,15 +137,21 @@ class PReLU(HybridBlock):
 
 
 class ELU(HybridBlock):
-    """Exponential Linear Unit (ELU)
+    r"""Exponential Linear Unit (ELU)
 
-    "Fast and Accurate Deep Network Learning by Exponential Linear Units", Clevert et al, 2016
-    https://arxiv.org/abs/1511.07289 Published as a conference paper at ICLR 2016
+    Applies the element-wise function:
+
+    .. math::
+        \text{ELU}(x) =
+        \begin{cases}
+        x, & \text{if} \ x > 0 \\
+        \alpha * (\exp(x) - 1), & \text{otherwise}
+        \end{cases}
 
     Parameters
     ----------
     alpha : float
-        The alpha parameter as described by Clevert et al, 2016
+        The :math:`\alpha` parameter in the equation.
 
 
     Inputs:
@@ -154,6 +159,11 @@ class ELU(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Fast and Accurate Deep Network Learning by Exponential Linear Units
+        <https://arxiv.org/abs/1511.07289>`_
     """
 
     def __init__(self, alpha=1.0, **kwargs):
@@ -165,10 +175,19 @@ class ELU(HybridBlock):
 
 
 class SELU(HybridBlock):
-    """Scaled Exponential Linear Unit (SELU)
+    r"""Scaled Exponential Linear Unit (SELU)
 
-    "Self-Normalizing Neural Networks", Klambauer et al, 2017
-    https://arxiv.org/abs/1706.02515
+    Applies the element-wise function:
+
+    .. math::
+        \text{SELU}(x) =
+        \begin{cases}
+        \text{scale} * x, & \text{if} \ x > 0 \\
+        \text{scale} * \alpha (\exp(x) - 1), & \text{otherwise}
+        \end{cases}
+
+    where :math:`\text{scale} = 1.0507009873554804934193349852946`
+    and :math:`\alpha = 1.6732632423543772848170429916717`.
 
 
     Inputs:
@@ -176,6 +195,10 @@ class SELU(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Self-Normalizing Neural Networks <https://arxiv.org/abs/1706.02515>`_
     """
     def __init__(self, **kwargs):
         super(SELU, self).__init__(**kwargs)
@@ -184,10 +207,13 @@ class SELU(HybridBlock):
         return F.LeakyReLU(x, act_type='selu', name='fwd')
 
 class GELU(HybridBlock):
-    """Gaussian Exponential Linear Unit (GELU)
+    r"""Gaussian Exponential Linear Unit (GELU)
 
-    "Gaussian Error Linear Units (GELUs)", Hendrycks et al, 2016
-    https://arxiv.org/abs/1606.08415
+    Applies the element-wise function:
+
+    .. math:: \text{GELU}(x) = x * \Phi(x)
+
+    where :math:`\Phi(x)` is the cumulative distribution function for Gaussian distribution.
 
 
     Inputs:
@@ -195,6 +221,10 @@ class GELU(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Gaussian Error Linear Units (GELUs) <https://arxiv.org/abs/1606.08415>`_
     """
     def __init__(self, **kwargs):
         super(GELU, self).__init__(**kwargs)
@@ -204,15 +234,17 @@ class GELU(HybridBlock):
 
 
 class Swish(HybridBlock):
-    r"""Swish Activation function https://arxiv.org/pdf/1710.05941.pdf
+    r"""Swish Activation function.
+
+    Applies the element-wise function:
+
+    .. math:: \text{swish}(x) = x * \text{sigmoid}(\beta * x)
 
 
     Parameters
     ----------
     beta : float
-        The beta parameter in the following equation:
-
-        .. math:: \text{swish}(x) = x * \text{sigmoid}(beta * x)
+        The :math:`\beta` parameter in the equation.
 
 
     Inputs:
@@ -220,6 +252,10 @@ class Swish(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Searching for Activation Functions <https://arxiv.org/abs/1710.05941>`_
     """
 
     def __init__(self, beta=1.0, **kwargs):

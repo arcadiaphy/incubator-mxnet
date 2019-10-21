@@ -1062,8 +1062,8 @@ class HybridBlock(Block):
         """Export :class:`~mxnet.gluon.HybridBlock` to json format that can be loaded by
         :meth:`~mxnet.gluon.SymbolBlock.imports`, :class:`~mxnet.module.Module` or the C++ interface.
 
-        .. note:: When there are only one input, it will have name `data`. When there
-                  Are more than one inputs, they will be named as `data0`, `data1`, etc.
+        .. note:: When there are only one input, it will have name 'data'. When there
+                  are more than one input, they will be named as 'data0', 'data1', etc.
 
         Parameters
         ----------

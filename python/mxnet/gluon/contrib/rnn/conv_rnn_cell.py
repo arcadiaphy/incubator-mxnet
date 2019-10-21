@@ -220,7 +220,7 @@ class Conv1DRNNCell(_ConvRNNCell):
 
     .. math::
 
-        h_t = tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
+        h_t = \tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
 
     Parameters
     ----------
@@ -287,7 +287,7 @@ class Conv2DRNNCell(_ConvRNNCell):
 
     .. math::
 
-        h_t = tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
+        h_t = \tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
 
     Parameters
     ----------
@@ -354,7 +354,7 @@ class Conv3DRNNCell(_ConvRNNCell):
 
     .. math::
 
-        h_t = tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
+        h_t = \tanh(W_i \ast x_t + R_i \ast h_{t-1} + b_i)
 
     Parameters
     ----------
@@ -481,9 +481,9 @@ class Conv1DLSTMCell(_ConvLSTMCell):
         i_t = \sigma(W_i \ast x_t + R_i \ast h_{t-1} + b_i) \\
         f_t = \sigma(W_f \ast x_t + R_f \ast h_{t-1} + b_f) \\
         o_t = \sigma(W_o \ast x_t + R_o \ast h_{t-1} + b_o) \\
-        c^\prime_t = tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
+        c^\prime_t = \tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
         c_t = f_t \circ c_{t-1} + i_t \circ c^\prime_t \\
-        h_t = o_t \circ tanh(c_t) \\
+        h_t = o_t \circ \tanh(c_t) \\
         \end{array}
 
     Parameters
@@ -558,9 +558,9 @@ class Conv2DLSTMCell(_ConvLSTMCell):
         i_t = \sigma(W_i \ast x_t + R_i \ast h_{t-1} + b_i) \\
         f_t = \sigma(W_f \ast x_t + R_f \ast h_{t-1} + b_f) \\
         o_t = \sigma(W_o \ast x_t + R_o \ast h_{t-1} + b_o) \\
-        c^\prime_t = tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
+        c^\prime_t = \tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
         c_t = f_t \circ c_{t-1} + i_t \circ c^\prime_t \\
-        h_t = o_t \circ tanh(c_t) \\
+        h_t = o_t \circ \tanh(c_t) \\
         \end{array}
 
     Parameters
@@ -635,9 +635,9 @@ class Conv3DLSTMCell(_ConvLSTMCell):
         i_t = \sigma(W_i \ast x_t + R_i \ast h_{t-1} + b_i) \\
         f_t = \sigma(W_f \ast x_t + R_f \ast h_{t-1} + b_f) \\
         o_t = \sigma(W_o \ast x_t + R_o \ast h_{t-1} + b_o) \\
-        c^\prime_t = tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
+        c^\prime_t = \tanh(W_c \ast x_t + R_c \ast h_{t-1} + b_c) \\
         c_t = f_t \circ c_{t-1} + i_t \circ c^\prime_t \\
-        h_t = o_t \circ tanh(c_t) \\
+        h_t = o_t \circ \tanh(c_t) \\
         \end{array}
 
     Parameters
@@ -766,7 +766,7 @@ class Conv1DGRUCell(_ConvGRUCell):
         \begin{array}{ll}
         r_t = \sigma(W_r \ast x_t + R_r \ast h_{t-1} + b_r) \\
         z_t = \sigma(W_z \ast x_t + R_z \ast h_{t-1} + b_z) \\
-        n_t = tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
+        n_t = \tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
         h^\prime_t = (1 - z_t) \circ n_t + z_t \circ h \\
         \end{array}
 
@@ -838,7 +838,7 @@ class Conv2DGRUCell(_ConvGRUCell):
         \begin{array}{ll}
         r_t = \sigma(W_r \ast x_t + R_r \ast h_{t-1} + b_r) \\
         z_t = \sigma(W_z \ast x_t + R_z \ast h_{t-1} + b_z) \\
-        n_t = tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
+        n_t = \tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
         h^\prime_t = (1 - z_t) \circ n_t + z_t \circ h \\
         \end{array}
 
@@ -910,7 +910,7 @@ class Conv3DGRUCell(_ConvGRUCell):
         \begin{array}{ll}
         r_t = \sigma(W_r \ast x_t + R_r \ast h_{t-1} + b_r) \\
         z_t = \sigma(W_z \ast x_t + R_z \ast h_{t-1} + b_z) \\
-        n_t = tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
+        n_t = \tanh(W_i \ast x_t + b_i + r_t \circ (R_n \ast h_{t-1} + b_n)) \\
         h^\prime_t = (1 - z_t) \circ n_t + z_t \circ h \\
         \end{array}
 

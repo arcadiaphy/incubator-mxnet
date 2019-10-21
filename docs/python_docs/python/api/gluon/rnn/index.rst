@@ -59,4 +59,3 @@ API Reference
 .. automodule:: mxnet.gluon.rnn
     :members:
     :imported-members:
-    :autosummary:

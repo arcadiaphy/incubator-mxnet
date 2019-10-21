@@ -34,7 +34,10 @@ from ...util import is_np_array
 class Sequential(Block):
     """Stacks Blocks sequentially.
 
-    Example::
+    Examples
+    --------
+
+    .. code-block:: python
 
         net = nn.Sequential()
         # use net's name_scope to give child Blocks appropriate names.
@@ -97,7 +100,10 @@ class Sequential(Block):
 class HybridSequential(HybridBlock):
     """Stacks HybridBlocks sequentially.
 
-    Example::
+    Examples
+    --------
+
+    .. code-block:: python
 
         net = nn.HybridSequential()
         # use net's name_scope to give child Blocks appropriate names.
@@ -144,15 +150,17 @@ class HybridSequential(HybridBlock):
 class Dense(HybridBlock):
     r"""Just your regular densely-connected NN layer.
 
-    `Dense` implements the operation:
-    `output = activation(dot(input, weight) + bias)`
-    where `activation` is the element-wise activation function
-    passed as the `activation` argument, `weight` is a weights matrix
-    created by the layer, and `bias` is a bias vector created by the layer
+    Dense implements the operation:
+
+    .. math:: y = \text{act}(x \cdot w + b)
+
+    where :math:`\text{act}` is the element-wise activation function
+    passed as the :attr:`activation` argument, :math:`w` is a weights matrix
+    created by the layer, and :math:`b` is a bias vector created by the layer
     (only applicable if :attr:`use_bias` is ``True``).
 
     .. note::
-        the input must be a tensor with rank 2. Use :class:`~mxnet.ndarray.flatten`
+        The input must be a tensor with rank 2. Use :func:`~mxnet.ndarray.flatten`
         to convert it to rank 2 manually if necessary.
 
     Parameters
@@ -280,26 +288,30 @@ class Dropout(HybridBlock):
 
 
 class BatchNorm(HybridBlock):
-    """Batch normalization layer (Ioffe and Szegedy, 2014).
-    Normalizes the input at each batch, i.e. applies a transformation
+    r"""Batch normalization layer.
+
+    BatchNorm normalizes the input at each batch, i.e. applies a transformation
     that maintains the mean activation close to 0 and the activation
-    standard deviation close to 1.
+    standard deviation close to 1 using the following equation:
+
+    .. math::
+
+        \text{out} = \frac{x - \text{E}[\text{data}]}{\sqrt{\text{Var}[\text{data}]} + \epsilon}
+        * \gamma + \beta
 
     Parameters
     ----------
     axis : int, default 1
-        The axis that should be normalized. This is typically the channels
-        (C) axis. For instance, after a `Conv2D` layer with `layout='NCHW'`,
-        set `axis=1` in `BatchNorm`. If `layout='NHWC'`, then set `axis=3`.
+        The axis that should be normalized. This is typically the axis of the channels.
     momentum: float, default 0.9
         Momentum for the moving average.
     epsilon: float, default 1e-5
         Small float added to variance to avoid dividing by zero.
     center: bool, default True
-        If True, add offset of `beta` to normalized tensor.
-        If False, `beta` is ignored.
+        If True, add offset of :math:`\beta` to normalized tensor.
+        If False, :math:`\beta` is ignored.
     scale: bool, default True
-        If True, multiply by `gamma`. If False, `gamma` is not used.
+        If True, multiply by :math:`\gamma`. If False, :math:`\gamma` is not used.
         When the next layer is linear (also e.g. ``nn.relu``),
         this can be disabled since the scaling will be done by the next layer.
     use_global_stats: bool, default False
@@ -307,9 +319,9 @@ class BatchNorm(HybridBlock):
         change batch-norm into a scale shift operator.
         If False, use local batch-norm.
     beta_initializer: str or Initializer, default 'zeros'
-        Initializer for the beta weight.
+        Initializer for the :math:`\beta` weight.
     gamma_initializer: str or Initializer, default 'ones'
-        Initializer for the gamma weight.
+        Initializer for the :math:`\gamma` weight.
     running_mean_initializer: str or Initializer, default 'zeros'
         Initializer for the running mean.
     running_variance_initializer: str or Initializer, default 'ones'
@@ -325,6 +337,11 @@ class BatchNorm(HybridBlock):
 
     Outputs:
         - :attr:`out` output tensor with the same shape as :attr:`data`.
+
+    References
+    ----------
+        `Batch Normalization: Accelerating Deep Network Training by Reducing Internal Covariate Shift
+        <https://arxiv.org/abs/1502.03167>`_
     """
     def __init__(self, axis=1, momentum=0.9, epsilon=1e-5, center=True, scale=True,
                  use_global_stats=False, beta_initializer='zeros', gamma_initializer='ones',
@@ -377,7 +394,7 @@ class BatchNorm(HybridBlock):
 
 class Embedding(HybridBlock):
     r"""Turns non-negative integers (indexes/tokens) into dense vectors
-    of fixed size. eg. ``[4, 20] -> [[0.25, 0.1], [0.6, -0.2]]``
+    of fixed size.
 
     .. note::
         If :attr:`sparse_grad` is set to True, the gradient w.r.t weight will be
@@ -455,30 +472,29 @@ class InstanceNorm(HybridBlock):
 
     .. math::
 
-        \text{out} = \frac{x - \text{mean}[\text{data}, \bar{C}]}{ \sqrt{Var[\text{data}, \bar{C}]} + \epsilon}
-        * \text{gamma} + \text{beta}
+        \text{out} = \frac{x - \text{E}[\text{data}, \bar{C}]}{ \sqrt{\text{Var}[\text{data}, \bar{C}]} + \epsilon}
+        * \gamma + \beta
 
     Parameters
     ----------
     axis : int, default 1
-        The axis that will be excluded in the normalization process. This is typically the channels
-        (C) axis. For instance, after a `Conv2D` layer with `layout='NCHW'`,
-        set `axis=1` in `InstanceNorm`. If `layout='NHWC'`, then set `axis=3`. Data will be
-        normalized along axes excluding the first axis and the axis given.
+        The axis that will be excluded in the normalization process. This is typically
+        the axis of channels. Data will be normalized along axes excluding the first
+        axis and the axis given.
     epsilon: float, default 1e-5
         Small float added to variance to avoid dividing by zero.
     center: bool, default True
-        If True, add offset of `beta` to normalized tensor.
-        If False, `beta` is ignored.
+        If True, add offset of :math:`\beta` to normalized tensor.
+        If False, :math:`\beta` is ignored.
     scale: bool, default True
-        If True, multiply by `gamma`. If False, `gamma` is not used.
-        When the next layer is linear (also e.g. `nn.relu`),
+        If True, multiply by :math:`\gamma`. If False, :math:`\gamma` is not used.
+        When the next layer is linear (also e.g. ``nn.relu``),
         this can be disabled since the scaling
         will be done by the next layer.
     beta_initializer: str or Initializer, default 'zeros'
-        Initializer for the beta weight.
+        Initializer for the :math:`\beta` weight.
     gamma_initializer: str or Initializer, default 'ones'
-        Initializer for the gamma weight.
+        Initializer for the :math:`\gamma` weight.
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
         initialization will be deferred to the first time ``forward`` is called
@@ -549,8 +565,8 @@ class LayerNorm(HybridBlock):
 
     .. math::
 
-      \text{out} = \frac{x - \text{mean}[\text{data}, \text{axis}]}{ \sqrt{Var[\text{data}, \text{axis}] + \epsilon}}
-      * \text{gamma} + \text{beta}
+      \text{out} = \frac{x - \text{E}[\text{data}, \text{axis}]}{ \sqrt{\text{Var}[\text{data}, \text{axis}] + \epsilon}}
+      * \gamma + \beta
 
     Parameters
     ----------
@@ -559,14 +575,14 @@ class LayerNorm(HybridBlock):
     epsilon: float, default 1e-5
         Small float added to variance to avoid dividing by zero.
     center: bool, default True
-        If True, add offset of `beta` to normalized tensor.
-        If False, `beta` is ignored.
+        If True, add offset of :math:`\beta` to normalized tensor.
+        If False, :math:`\beta` is ignored.
     scale: bool, default True
-        If True, multiply by `gamma`. If False, `gamma` is not used.
+        If True, multiply by :math:`\gamma`. If False, :math:`\gamma` is not used.
     beta_initializer: str or Initializer, default 'zeros'
-        Initializer for the beta weight.
+        Initializer for the :math:`\beta` weight.
     gamma_initializer: str or Initializer, default 'ones'
-        Initializer for the gamma weight.
+        Initializer for the :math:`\gamma` weight.
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
         initialization will be deferred to the first time ``forward`` is called
@@ -638,8 +654,8 @@ class GroupNorm(HybridBlock):
 
     .. math::
 
-        \text{out} = \frac{x - \text{mean}[\text{data}, \text{axis}]}{\sqrt{Var[\text{data}, \text{axis}] + \epsilon}}
-        * \text{gamma} + \text{beta}
+        \text{out} = \frac{x - \text{E}[\text{data}, \text{axis}]}{\sqrt{\text{Var}[\text{data}, \text{axis}] + \epsilon}}
+        * \gamma + \beta
 
     Parameters
     ----------
@@ -648,14 +664,14 @@ class GroupNorm(HybridBlock):
     epsilon: float, default 1e-5
         Small float added to variance to avoid dividing by zero.
     center: bool, default True
-        If True, add offset of `beta` to normalized tensor.
-        If False, `beta` is ignored.
+        If True, add offset of :math:`\beta` to normalized tensor.
+        If False, :math:`\beta` is ignored.
     scale: bool, default True
-        If True, multiply by `gamma`. If False, `gamma` is not used.
+        If True, multiply by :math:`\gamma`. If False, :math:`\gamma` is not used.
     beta_initializer: str or Initializer, default 'zeros'
-        Initializer for the beta weight.
+        Initializer for the :math:`\beta` weight.
     gamma_initializer: str or Initializer, default 'ones'
-        Initializer for the gamma weight.
+        Initializer for the :math:`\gamma` weight.
 
 
     Inputs:
@@ -673,11 +689,11 @@ class GroupNorm(HybridBlock):
     --------
     >>> # Input of shape (2, 3, 4)
     >>> x = mx.nd.array([[[ 0,  1,  2,  3],
-                          [ 4,  5,  6,  7],
-                          [ 8,  9, 10, 11]],
-                         [[12, 13, 14, 15],
-                          [16, 17, 18, 19],
-                          [20, 21, 22, 23]]])
+    ...                   [ 4,  5,  6,  7],
+    ...                   [ 8,  9, 10, 11]],
+    ...                  [[12, 13, 14, 15],
+    ...                   [16, 17, 18, 19],
+    ...                   [20, 21, 22, 23]]])
     >>> # Group normalization is calculated with the above formula
     >>> layer = GroupNorm()
     >>> layer.initialize(ctx=mx.cpu(0))

@@ -151,36 +151,43 @@ The following modified ReLU Activation functions are supported:
 
 - **elu**: Exponential Linear Unit.
 
-.. math::
-    \text{elu}(x) =
-    \begin{cases}
-    x, & \text{if} x > 0 \\
-    \text{slope} * (\exp(x) - 1), & \text{ otherwise }
-    \end{cases}
+  .. math::
+      \text{elu}(x) =
+      \begin{cases}
+      x, & \text{if} \ x > 0 \\
+      \text{slope} * (\exp(x) - 1), & \text{otherwise}
+      \end{cases}
 
-- **selu**: Scaled Exponential Linear Unit. Suppose
-  :math:`\text{scale} = 1.0507009873554804934193349852946`
-  and :math:`\alpha = 1.6732632423543772848170429916717`,
+- **selu**: Scaled Exponential Linear Unit.
 
-.. math::
-    \text{selu}(x) =
-    \begin{cases}
-    \text{scale} * x, & \text{if} x > 0 \\
-    \text{scale} * \alpha (\exp(x) - 1), & \text{ otherwise }
-    \end{cases}
+  .. math::
+      \text{selu}(x) =
+      \begin{cases}
+      \text{scale} * x, & \text{if} \ x > 0 \\
+      \text{scale} * \alpha (\exp(x) - 1), & \text{otherwise}
+      \end{cases}
+
+  where :math:`\text{scale} = 1.0507009873554804934193349852946`
+  and :math:`\alpha = 1.6732632423543772848170429916717`.
+
+- **gelu**: Gaussian Exponential Linear Unit.
+
+  .. math:: \text{GELU}(x) = x * \Phi(x)
+
+  where :math:`\Phi(x)` is the cumulative distribution function for Gaussian distribution.
 
 - **leaky**: Leaky ReLU.
 
-.. math::
-    \text{leaky}(x) =
-    \begin{cases}
-    x, & \text{if} x > 0 \\
-    \text{slope} * x, & \text{ otherwise }
-    \end{cases}
+  .. math::
+      \text{leaky}(x) =
+      \begin{cases}
+      x, & \text{if} \ x > 0 \\
+      \text{slope} * x, & \text{otherwise}
+      \end{cases}
 
-- **prelu**: Parametric ReLU. Same as **leaky** but the ``slope`` is learnt during training.
+- **prelu**: Parametric ReLU. Same as **leaky** but the :attr:`slope` is learnt during training.
 
-- **rrelu**: Randomized ReLU. Same as **leaky** but the ``slope`` is uniformly and randomly chosen from
+- **rrelu**: Randomized ReLU. Same as **leaky** but the :attr:`slope` is uniformly and randomly chosen from
   :math:`[\text{lower_bound}, \text{upper_bound})` for training, while fixed to be
   :math:`(\text{lower_bound} + \text{upper_bound}) / 2` for inference.
 

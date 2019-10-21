@@ -1,8 +1,3 @@
-# Licensed to the Apache Software Foundation (ASF) under one
-# or more contributor license agreements.  See the NOTICE file
-# distributed with this work for additional information
-# regarding copyright ownership.  The ASF licenses this file
-# to you under the Apache License, Version 2.0 (the
 # "License"); you may not use this file except in compliance
 # with the License.  You may obtain a copy of the License at
 #
@@ -905,8 +900,8 @@ class MaxPool3D(_Pooling):
               H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
               {\text{stride}[1]}\right\rfloor + 1
           .. math::
-              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[3] - \text{pool_size}[3]}
-              {\text{stride}[3]}\right\rfloor + 1
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[2] - \text{pool_size}[2]}
+              {\text{stride}[2]}\right\rfloor + 1
 
           When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
@@ -1067,8 +1062,8 @@ class AvgPool3D(_Pooling):
               H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
               {\text{stride}[1]}\right\rfloor + 1
           .. math::
-              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[3] - \text{pool_size}[3]}
-              {\text{stride}[3]}\right\rfloor + 1
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[2] - \text{pool_size}[2]}
+              {\text{stride}[2]}\right\rfloor + 1
 
           When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.

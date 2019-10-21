@@ -201,15 +201,16 @@ class RecurrentCell(Block):
         length : int
             Number of steps to unroll.
         inputs : Symbol, list of Symbol, or None
-            Inputs to be unrolled. If inputs is a single Symbol (usually the output
+            Input to be unrolled. If :attr:`inputs` is a single Symbol (usually the output
             of Embedding symbol), it should have shape according to :attr:`layout`.
-            If inputs is a list of symbols (usually output of previous unroll),
-            this list is organized along 'T' dimension, so each elements has layout 'TC'.
+            If :attr:`inputs` is a list of symbols (usually output of previous unroll),
+            this list is organized along 'T' dimension, so each elements has layout 'NC'.
         begin_state : nested list of Symbol, optional
             Input states created by :meth:`begin_state` or output state of another cell.
             Created from :meth:`begin_state` if ``None``.
-        layout : str, optional
-            Layout of input symbol. Only used if inputs is a single Symbol.
+        layout : str, default 'TNC'
+            The format of input and output tensors. T, N and C stand for
+            sequence length, batch size, and feature dimensions respectively.
         merge_outputs : bool, optional
             Whether to merge ouputs across time steps:
 
@@ -548,9 +549,6 @@ class LSTMCell(HybridRecurrentCell):
 
 class GRUCell(HybridRecurrentCell):
     r"""Gated Rectified Unit (GRU) network cell.
-    Note: this is an implementation of the cuDNN version of GRUs
-    (slight modification compared to Cho et al. 2014; the reset gate :math:`r_t`
-    is applied after matrix multiplication).
 
     Each call computes the following function:
 
@@ -565,6 +563,11 @@ class GRUCell(HybridRecurrentCell):
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the hidden
     state of the previous layer at time `t` or :math:`\text{input}_t` for the first layer,
     and :math:`r_t`, :math:`i_t`, :math:`n_t` are the reset, input, and new gates, respectively.
+
+    .. note::
+        This is an implementation of the cuDNN version of GRUs
+        (slight modified compared to Cho et al. 2014: the reset gate :math:`r_t`
+        is applied after matrix multiplication).
 
     Parameters
     ----------

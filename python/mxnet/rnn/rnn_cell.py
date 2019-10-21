@@ -300,28 +300,24 @@ class BaseRNNCell(object):
         length : int
             Number of steps to unroll.
         inputs : Symbol, list of Symbol, or None
-            If `inputs` is a single Symbol (usually the output
-            of Embedding symbol), it should have shape
-            (batch_size, length, ...) if layout == 'NTC',
-            or (length, batch_size, ...) if layout == 'TNC'.
-
-            If `inputs` is a list of symbols (usually output of
-            previous unroll), they should all have shape
-            (batch_size, ...).
+            Inputs to be unrolled. If inputs is a single Symbol (usually the output
+            of Embedding symbol), it should have shape according to :attr:`layout`.
+            If inputs is a list of symbols (usually output of previous unroll),
+            this list is organized along 'T' dimension, so each elements has layout 'NC'.
         begin_state : nested list of Symbol, default None
-            Input states created by `begin_state()`
-            or output state of another cell.
-            Created from `begin_state()` if None.
+            Input states created by :meth:`begin_state`
+            or output state of another cell. Created from :meth:`begin_state` if ``None``.
         layout : str, optional
-            `layout` of input symbol. Only used if inputs
-            is a single Symbol.
+            Layout of input symbol. Only used if inputs is a single Symbol.
+            Support 'NTC' and 'TNC' in which 'N' is the batch size, 'T' is
+            the time step, and 'C' is spatial dimensions.
         merge_outputs : bool, optional
-            If False, return outputs as a list of Symbols.
-            If True, concatenate output across time steps
-            and return a single symbol with shape
-            (batch_size, length, ...) if layout == 'NTC',
-            or (length, batch_size, ...) if layout == 'TNC'.
-            If None, output whatever is faster.
+            Whether to merge ouputs across time steps:
+
+            - ``False``, return outputs as a list of Symbols.
+            
+            - ``True``, concatenate output across time steps
+              and return a single symbol according to :attr:`layout`.
 
         Returns
         -------

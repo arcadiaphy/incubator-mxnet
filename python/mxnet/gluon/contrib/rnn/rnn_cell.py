@@ -122,40 +122,33 @@ class VariationalDropoutCell(ModifierCell):
         length : int
             Number of steps to unroll.
         inputs : Symbol, list of Symbol, or None
-            If :attr:`inputs` is a single Symbol (usually the output
-            of Embedding symbol), it should have shape
-            (batch_size, length, ...) if `layout` is 'NTC',
-            or (length, batch_size, ...) if `layout` is 'TNC'.
-
-            If :attr:`inputs` is a list of symbols (usually output of
-            previous unroll), they should all have shape
-            (batch_size, ...).
+            Input to be unrolled. If :attr:`inputs` is a single Symbol (usually the output
+            of Embedding symbol), it should have shape according to :attr:`layout`.
+            If :attr:`inputs` is a list of symbols (usually output of previous unroll),
+            this list is organized along 'T' dimension, so each elements has layout 'NC'.
         begin_state : nested list of Symbol, optional
-            Input states created by ``begin_state()`` or output state of another cell.
-            Created from ``begin_state()`` if ``None``.
-        layout : str, optional
-            Layout of input symbol. Only used if inputs is a single Symbol.
+            Input states created by :meth:`begin_state` or output state of another cell.
+            Created from :meth:`begin_state` if ``None``.
+        layout : str, default 'TNC'
+            The format of input and output tensors. T, N and C stand for
+            sequence length, batch size, and feature dimensions respectively.
         merge_outputs : bool, optional
-            If ``False`` returns outputs as a list of Symbols.
+            Whether to merge ouputs across time steps:
 
-            If ``True`` concatenates output across time steps
-            and returns a single symbol with shape
-            (batch_size, length, ...) if layout is 'NTC',
-            or (length, batch_size, ...) if layout is 'TNC'.
+            - ``False``, return outputs as a list of Symbols.
 
-            If ``None``, output whatever is faster.
+            - ``True``, concatenate output across time steps
+              and return a single symbol according to :attr:`layout`.
         valid_length : Symbol, NDArray or None
-            The length of the sequences in the batch without padding.
-            This option is especially useful for building sequence-to-sequence models where
-            the input and output sequences would potentially be padded.
+            The length of the sequences in the batch without padding, so it should be less or equal
+            to :attr:`length`. This option is especially useful for building sequence-to-sequence
+            models where the input and output sequences would potentially be padded.
 
             If :attr:`valid_length` is None, all sequences are assumed to have the same length.
 
             If :attr:`valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
             The ith element will be the length of the ith sequence in the batch.
             The last valid state will be return and the padded outputs will be masked with 0.
-
-            Note that :attr:`valid_length` must be smaller or equal to :attr:`length`.
 
         Returns
         -------
@@ -167,7 +160,7 @@ class VariationalDropoutCell(ModifierCell):
 
         states : list of Symbol
             The new state of this RNN after this unrolling.
-            The type of this symbol is same as the output of ``begin_state()``.
+            The type of this symbol is same as the output of :meth:`begin_state`.
         """
 
         # Dropout on inputs and outputs can be performed on the whole sequence
@@ -339,28 +332,26 @@ def dynamic_unroll(cell, inputs, begin_state, drop_inputs=0, drop_outputs=0,
     cell : an object whose base class is RNNCell.
         The RNN cell to run on the input sequence.
     inputs : Symbol
-        It should have shape (batch_size, length, ...) if :attr:`layout` is 'NTC',
-        or (length, batch_size, ...) if :attr:`layout` is 'TNC'.
+        It should have shape according to :attr:`layout`.
     begin_state : nested list of Symbol
         The initial states of the RNN sequence.
     drop_inputs : float, default 0.
         The dropout rate for inputs. Won't apply dropout if it equals 0.
     drop_outputs : float, default 0.
         The dropout rate for outputs. Won't apply dropout if it equals 0.
-    layout : str, optional
-        Layout of input symbol. Only used if inputs is a single Symbol.
+    layout : str, default 'TNC'
+        The format of input and output tensors. T, N and C stand for
+        sequence length, batch size, and feature dimensions respectively.
     valid_length : Symbol, NDArray or None
-        The length of the sequences in the batch without padding.
-        This option is especially useful for building sequence-to-sequence models where
-        the input and output sequences would potentially be padded.
+        The length of the sequences in the batch without padding, so it should be less or equal
+        to :attr:`length`. This option is especially useful for building sequence-to-sequence models
+        where the input and output sequences would potentially be padded.
 
         If :attr:`valid_length` is None, all sequences are assumed to have the same length.
 
         If :attr:`valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
         The ith element will be the length of the ith sequence in the batch.
         The last valid state will be return and the padded outputs will be masked with 0.
-
-        Note that :attr:`valid_length` must be smaller or equal to :attr:`length`.
 
     Returns
     -------
@@ -369,7 +360,7 @@ def dynamic_unroll(cell, inputs, begin_state, drop_inputs=0, drop_outputs=0,
 
     states : list of Symbol
         The new state of this RNN after this unrolling.
-        The type of this symbol is same as the output of `begin_state`.
+        The type of this symbol is same as the output of :meth:`begin_state`.
 
     Examples
     --------
@@ -383,8 +374,8 @@ def dynamic_unroll(cell, inputs, begin_state, drop_inputs=0, drop_outputs=0,
     >>> states = [mx.nd.normal(loc=0, scale=1, shape=state_shape) for i in range(2)]
     >>> valid_length = mx.nd.array([2, 3])
     >>> output, states = mx.gluon.contrib.rnn.rnn_cell.dynamic_unroll(cell, rnn_data, states,
-                                                                      valid_length=valid_length,
-                                                                      layout='TNC')
+    ...                                                               valid_length=valid_length,
+    ...                                                               layout='TNC')
     >>> print(output)
     [[[ 0.00767238  0.00023103  0.03973929 -0.00925503 -0.05660512]
       [ 0.00881535  0.05428379 -0.02493718 -0.01834097  0.02189514]]

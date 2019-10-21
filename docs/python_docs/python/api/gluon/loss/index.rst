@@ -24,4 +24,3 @@ module.
 .. automodule:: mxnet.gluon.loss
     :members:
     :imported-members:
-    :autosummary:

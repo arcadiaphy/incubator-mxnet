@@ -334,7 +334,7 @@ class RNN(_RNNLayer):
         If non-zero, introduces a dropout layer on the outputs of each
         RNN layer except the last layer.
     bidirectional: bool, default False
-        If `True`, becomes a bidirectional RNN.
+        If ``True``, becomes a bidirectional RNN.
     i2h_weight_initializer : str or Initializer
         Initializer for the input weights matrix, used for the linear
         transformation of the inputs.
@@ -435,7 +435,7 @@ class LSTM(_RNNLayer):
         If non-zero, introduces a dropout layer on the outputs of each
         RNN layer except the last layer.
     bidirectional: bool, default False
-        If `True`, becomes a bidirectional RNN.
+        If ``True``, becomes a bidirectional RNN.
     i2h_weight_initializer : str or Initializer
         Initializer for the input weights matrix, used for the linear
         transformation of the inputs.
@@ -532,9 +532,6 @@ class LSTM(_RNNLayer):
 
 class GRU(_RNNLayer):
     r"""Applies a multi-layer gated recurrent unit (GRU) RNN to an input sequence.
-    Note: this is an implementation of the cuDNN version of GRUs
-    (slight modification compared to Cho et al. 2014; the reset gate :math:`r_t`
-    is applied after matrix multiplication).
 
     For each element in the input sequence, each layer computes the following
     function:
@@ -550,6 +547,11 @@ class GRU(_RNNLayer):
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the hidden
     state of the previous layer at time `t` or :math:`\text{input}_t` for the first layer,
     and :math:`r_t`, :math:`i_t`, :math:`n_t` are the reset, input, and new gates, respectively.
+
+    .. note::
+        This is an implementation of the cuDNN version of GRUs
+        (slight modified compared to Cho et al. 2014: the reset gate :math:`r_t`
+        is applied after matrix multiplication).
 
     Parameters
     ----------
