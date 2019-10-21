@@ -62,7 +62,7 @@ def get_gpu_memory(gpu_dev_id):
 def set_np_shape(active):
     """
     Turns on/off NumPy shape semantics, in which ``()`` represents the shape of scalar tensors,
-    and tuples with ``0`` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent the shapes
+    and tuples with 0 elements, for example, ``(0,)``, ``(1, 0, 2)``, represent the shapes
     of zero-size tensors. This is turned off by default for keeping backward compatibility.
 
     Please note that this is designed as an infrastructure for the incoming
@@ -79,7 +79,7 @@ def set_np_shape(active):
     -------
         A bool value indicating the previous state of NumPy shape semantics.
 
-    Example::
+    Examples::
 
         >>> import mxnet as mx
         >>> prev_state = mx.set_np_shape(True)
@@ -107,11 +107,11 @@ def set_np_shape(active):
 def is_np_shape():
     """Checks whether the NumPy shape semantics is currently turned on.
     In NumPy shape semantics, ``()`` represents the shape of scalar tensors,
-    and tuples with `0` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
+    and tuples with 0 elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
     the shapes of zero-size tensors. This is turned off by default for keeping
     backward compatibility.
 
-    In the NumPy shape semantics, ``-1`` indicates an unknown size. For example,
+    In the NumPy shape semantics, -1 indicates an unknown size. For example,
     ``(-1, 2, 2)`` means that the size of the first dimension is unknown. Its size
     may be inferred during shape inference.
 
@@ -124,14 +124,14 @@ def is_np_shape():
     -------
         A bool value indicating whether the NumPy shape semantics is currently on.
 
-    Example::
-
-        >>> import mxnet as mx
-        >>> prev_state = mx.set_np_shape(True)
-        >>> print(prev_state)
-        False
-        >>> print(mx.is_np_shape())
-        True
+    Example
+    -------
+    >>> import mxnet as mx
+    >>> prev_state = mx.set_np_shape(True)
+    >>> print(prev_state)
+    False
+    >>> print(mx.is_np_shape())
+    True
     """
     curr = ctypes.c_bool()
     check_call(_LIB.MXIsNumpyShape(ctypes.byref(curr)))
@@ -141,10 +141,13 @@ def is_np_shape():
 class _NumpyShapeScope(object):
     """Scope for managing NumPy shape semantics.
     In NumPy shape semantics, ``()`` represents the shape of scalar tensors,
-    and tuples with ``0`` elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
+    and tuples with 0 elements, for example, ``(0,)``, ``(1, 0, 2)``, represent
     the shapes of zero-size tensors.
 
     Do not use this class directly. Use ``np_shape(active)`` instead.
+
+    Examples
+    --------
 
     .. code-block:: python
 
@@ -174,6 +177,19 @@ def np_shape(active=True):
     Please note that this is designed as an infrastructure for the incoming MXNet-NumPy operators.
     Legacy operators registered in the modules :class:`mxnet.ndarray` and :class:`mxnet.symbol`
     are not guaranteed to behave like their counterparts in NumPy even within this scope.
+
+    Parameters
+    ----------
+    active : bool
+        Indicates whether to activate NumPy-shape semantics.
+
+    Returns
+    -------
+    _NumpyShapeScope
+        A scope object for wrapping the code w/ or w/o NumPy-shape semantics.
+
+    Examples
+    --------
 
     .. code-block:: python
 
@@ -220,16 +236,6 @@ def np_shape(active=True):
             arg_shapes, out_shapes, _ = ret.infer_shape_partial()
             assert arg_shapes[0] == ()
             assert out_shapes[0] == ()
-
-    Parameters
-    ----------
-    active : bool
-        Indicates whether to activate NumPy-shape semantics.
-
-    Returns
-    -------
-    _NumpyShapeScope
-        A scope object for wrapping the code w/ or w/o NumPy-shape semantics.
     """
     return _NumpyShapeScope(active)
 
@@ -247,10 +253,22 @@ def wraps_safely(wrapped, assigned=functools.WRAPPER_ASSIGNMENTS):
 
 def use_np_shape(func):
     """A decorator wrapping a function or class with activated NumPy-shape semantics.
-    When ``func`` is a function, this ensures that the execution of the function is scoped with NumPy
+    When :attr:`func` is a function, this ensures that the execution of the function is scoped with NumPy
     shape semantics, such as the support for zero-dim and zero size tensors. When
-    ``func`` is a class, it ensures that all the methods, static functions, and properties
+    :attr:`func` is a class, it ensures that all the methods, static functions, and properties
     of the class are executed with the NumPy shape semantics.
+
+    Parameters
+    ----------
+    func : a user-provided callable function or class to be scoped by the NumPy-shape semantics.
+
+    Returns
+    -------
+    Function or class
+        A function or class wrapped in the NumPy-shape scope.
+
+    Examples
+    --------
 
     .. code-block:: python
 
@@ -286,14 +304,6 @@ def use_np_shape(func):
         scalar_tensor = ScalarTensor()
         print(scalar_tensor)
 
-    Parameters
-    ----------
-    func : a user-provided callable function or class to be scoped by the NumPy-shape semantics.
-
-    Returns
-    -------
-    Function or class
-        A function or class wrapped in the NumPy-shape scope.
     """
 
     if inspect.isclass(func):
@@ -377,7 +387,7 @@ def np_array(active=True):
     Currently, this is used in Gluon to enforce array creation in :class:`~mxnet.gluon.Block`
     as type :class:`mxnet.numpy.ndarray`, instead of :class:`mxnet.ndarray.NDArray`.
 
-    It is recommended to use the decorator ``use_np_array`` to decorate the classes
+    It is recommended to use the decorator :func:`use_np_array` to decorate the classes
     that need this semantics, instead of using this function in a ``with`` statement
     unless you know exactly what has been scoped by this semantics.
 
@@ -431,6 +441,18 @@ def use_np_array(func):
     created in a :class:`~mxnet.gluon.Block`, an :class:`mxnet.numpy.ndarray` is created if it's
     decorated with this decorator.
 
+    Parameters
+    ----------
+    func : a user-provided callable function or class to be scoped by the NumPy-array semantics.
+
+    Returns
+    -------
+    Function or class
+        A function or class wrapped in the NumPy-array scope.
+
+    Examples
+    --------
+
     .. code-block:: python
 
         import mxnet as mx
@@ -474,14 +496,6 @@ def use_np_array(func):
             assert type(v.data()) is np.ndarray
         assert type(out) is np.ndarray
 
-    Parameters
-    ----------
-    func : a user-provided callable function or class to be scoped by the NumPy-array semantics.
-
-    Returns
-    -------
-    Function or class
-        A function or class wrapped in the NumPy-array scope.
     """
     if inspect.isclass(func):
         for name, method in inspect.getmembers(
@@ -509,11 +523,25 @@ def use_np_array(func):
 
 def use_np(func):
     """A convenience decorator for wrapping user provided functions and classes in the scope of
-    both NumPy-shape and NumPy-array semantics, which means that (1) empty tuples ``()`` and tuples
-    with zeros, such as ``(0, 1)``, ``(1, 0, 2)``, will be treated as scalar tensors' shapes and
-    zero-size tensors' shapes in shape inference functions of operators, instead of as unknown
-    in legacy mode; (2) ndarrays of type :class:`mxnet.numpy.ndarray` should be created instead of
-    :class:`mxnet.ndarray.NDArray`.
+    both NumPy-shape and NumPy-array semantics, which means that:
+    - empty tuples ``()`` and tuples with zeros, such as ``(0, 1)``, ``(1, 0, 2)``, will be treated
+      as scalar tensors' shapes and zero-size tensors' shapes in shape inference functions of operators,
+      instead of as unknown in legacy mode;
+    - ndarrays of type :class:`mxnet.numpy.ndarray` should be created instead of
+      :class:`mxnet.ndarray.NDArray`.
+
+    Parameters
+    ----------
+    func : a user-provided callable function or class to be scoped by the
+    NumPy-shape and NumPy-array semantics.
+
+    Returns
+    -------
+    Function or class
+        A function or class wrapped in the Numpy-shape and NumPy-array scope.
+
+    Examples
+    --------
 
     .. code-block:: python
 
@@ -558,15 +586,6 @@ def use_np(func):
             assert type(v.data()) is np.ndarray
         assert type(out) is np.ndarray
 
-    Parameters
-    ----------
-    func : a user-provided callable function or class to be scoped by the
-    NumPy-shape and NumPy-array semantics.
-
-    Returns
-    -------
-    Function or class
-        A function or class wrapped in the Numpy-shape and NumPy-array scope.
     """
     return use_np_shape(use_np_array(func))
 
@@ -722,7 +741,7 @@ _CUDA_SUCCESS = 0
 
 
 def get_cuda_compute_capability(ctx):
-    """Returns the cuda compute capability of the input ``ctx``.
+    """Returns the cuda compute capability of the input :attr:`ctx`.
 
     Parameters
     ----------

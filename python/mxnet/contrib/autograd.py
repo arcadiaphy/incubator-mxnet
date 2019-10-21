@@ -54,6 +54,9 @@ def set_is_training(is_train):
 class TrainingStateScope(object):
     """Scope for managing training state.
 
+    Examples
+    --------
+
     .. code-block:: python
 
         with TrainingStateScope(True):
@@ -90,6 +93,9 @@ def train_section():
 def test_section():
     """Returns a testing scope context to be used in ``with`` statement
     and captures testing code.
+
+    Examples
+    --------
 
     .. code-block:: python
 
@@ -198,6 +204,21 @@ def grad_and_loss(func, argnum=None):
 def grad(func, argnum=None):
     """Return function that computes gradient of arguments.
 
+    Parameters
+    ----------
+    func: a python function
+        The forward (loss) function.
+    argnum: an int or a list of int
+        The index of argument to calculate gradient for.
+
+    Returns
+    -------
+    grad_func: a python function
+        A function that would compute the gradient of arguments.
+
+    Examples
+    --------
+
     .. code-block:: python
 
         # autograd supports dynamic graph which is changed every instance
@@ -214,17 +235,6 @@ def grad(func, argnum=None):
             inputs = nd.array([[1, 2, 3], [4, 5, 6]])
             grad_vals = grad_func(inputs)
 
-    Parameters
-    ----------
-    func: a python function
-        The forward (loss) function.
-    argnum: an int or a list of int
-        The index of argument to calculate gradient for.
-
-    Returns
-    -------
-    grad_func: a python function
-        A function that would compute the gradient of arguments.
     """
     grad_with_loss_func = grad_and_loss(func, argnum)
     @functools.wraps(grad_with_loss_func)

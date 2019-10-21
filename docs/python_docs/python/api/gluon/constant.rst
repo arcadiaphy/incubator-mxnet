@@ -21,3 +21,4 @@ gluon.Constant
 
 .. autoclass:: mxnet.gluon.Constant
     :members:
+    :inherited-members:

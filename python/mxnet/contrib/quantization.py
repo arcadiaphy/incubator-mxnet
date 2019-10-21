@@ -45,7 +45,7 @@ from ..module import Module
 def _quantize_params(qsym, params, th_dict):
     """Given a quantized symbol and a dict of params that have not been quantized,
     generate quantized params. Currently only supports quantizing the arg_params
-    with names of ``weight`` or ``bias``, not aux_params. If ``qsym`` contains symbols
+    with names of `weight` or `bias`, not aux_params. If `qsym` contains symbols
     that are excluded from being quantized, their corresponding params will
     not be quantized, but saved together with quantized params of the symbols that
     have been quantized.
@@ -314,8 +314,8 @@ def _smooth_distribution(p, eps=0.0001):
 # pylint: disable=line-too-long
 def _get_optimal_threshold(hist_data, quantized_dtype, num_quantized_bins=255):
     """Given a dataset, find the optimal threshold for quantizing it.
-    The reference distribution is ``q``, and the candidate distribution is ``p``.
-    ``q`` is a truncated version of the original distribution.
+    The reference distribution is `q`, and the candidate distribution is `p`.
+    `q` is a truncated version of the original distribution.
 
     Ref: http://on-demand.gputechconf.com/gtc/2017/presentation/s7310-8-bit-inference-with-tensorrt.pdf
     """
@@ -456,7 +456,7 @@ def quantize_model(sym, arg_params, aux_params,
 
     Parameters
     ----------
-    sym : str or :class:`~mxnet.symbol.Symbol`
+    sym : str or Symbol
         Defines the structure of a neural network for FP32 data types.
     arg_params : dict
         Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
@@ -468,7 +468,7 @@ def quantize_model(sym, arg_params, aux_params,
     label_names : a list of strs
         Label names required for creating a Module object to run forward propagation on the
         calibration dataset.
-    ctx : :class:`~mxnet.context.Context`
+    ctx : Context
         Defines the device that users want to run forward propagation on the calibration
         dataset for collecting layer output statistics. Currently, only supports single context.
     excluded_sym_names : list of strings
@@ -487,7 +487,7 @@ def quantize_model(sym, arg_params, aux_params,
         If calib_mode='entropy' (default mode), the thresholds for quantization will be
         derived such that the KL divergence between the distributions of FP32 layer outputs and
         quantized layer outputs is minimized based upon the calibration dataset.
-    calib_data : :class:`~mxnet.io.DataIter`
+    calib_data : DataIter
         A data iterator initialized by the calibration dataset.
     num_calib_examples : int or None
         The maximum number of examples that user would like to use for calibration. If not provided,
@@ -506,7 +506,7 @@ def quantize_model(sym, arg_params, aux_params,
     Returns
     -------
     tuple
-        A tuple of quantized symbol, quantized ``arg_params``, and ``aux_params``.
+        A tuple of quantized symbol, quantized :attr:`arg_params`, and :attr:`aux_params`.
     """
     if logger is None:
         logger = logging
@@ -587,7 +587,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
 
     Parameters
     ----------
-    sym : str or :class:`~mxnet.symbol.Symbol`
+    sym : str or Symbol
         Defines the structure of a neural network for FP32 data types.
     arg_params : dict
         Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
@@ -599,7 +599,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
     label_names : a list of strs
         Label names required for creating a Module object to run forward propagation on the
         calibration dataset.
-    ctx : :class:`~mxnet.context.Context`
+    ctx : Context
         Defines the device that users want to run forward propagation on the calibration
         dataset for collecting layer output statistics. Currently, only supports single context.
     excluded_sym_names : list of strings
@@ -618,7 +618,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
         If calib_mode='entropy' (default mode), the thresholds for quantization will be
         derived such that the KL divergence between the distributions of FP32 layer outputs and
         quantized layer outputs is minimized based upon the calibration dataset.
-    calib_data : :class:`~mxnet.io.DataIter`
+    calib_data : DataIter
         A data iterator initialized by the calibration dataset.
     num_calib_examples : int or None
         The maximum number of examples that user would like to use for calibration. If not provided,
@@ -637,7 +637,7 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
     Returns
     -------
     tuple
-        A tuple of quantized symbol, quantized ``arg_params``, and ``aux_params``.
+        A tuple of quantized symbol, quantized :attr:`arg_params`, and :attr:`aux_params`.
     """
     if logger is None:
         logger = logging
@@ -670,9 +670,9 @@ def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
 
     Parameters
     ----------
-    sym : str or :class:`~mxnet.symbol.Symbol`
+    sym : str or Symbol
         Defines the structure of a neural network for FP32 data types.
-    ctx : :class:`~mxnet.context.Context`
+    ctx : Context
         Defines the device that users want to run forward propagation on the calibration
         dataset for collecting layer output statistics. Currently, only supports single context.
     arg_params : dict
@@ -704,7 +704,7 @@ def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
     Returns
     -------
     tuple
-        A tuple of quantized symbol, quantized ``arg_params``, ``aux_params`` and ``collector``.
+        A tuple of quantized symbol, quantized :attr:`arg_params`, :attr:`aux_params` and collector.
     """
     if logger is None:
         logger = logging
@@ -759,7 +759,7 @@ def calib_graph(qsym, arg_params, aux_params, collector,
 
     Parameters
     ----------
-    qsym : str or :class:`~mxnet.symbol.Symbol`
+    qsym : str or Symbol
         Defines the structure of a neural network for INT8 data types.
     arg_params : dict
         Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
@@ -787,7 +787,7 @@ def calib_graph(qsym, arg_params, aux_params, collector,
     Returns
     -------
     tuple
-        A tuple of calibrated symbol, quantized ``arg_params``, ``aux_params``.
+        A tuple of calibrated symbol, quantized :attr:`arg_params`, :attr:`aux_params`.
     """
     if logger is None:
         logger = logging
@@ -823,7 +823,7 @@ def quantize_net(network, quantized_dtype='auto',
 
     Parameters
     ----------
-    network : :class:`~mxnet.gluon.HybridBlock`
+    network : gluon.HybridBlock
         Defines the structure of a neural network for FP32 data types.
     quantized_dtype : str
         The quantized destination type for input data. Currently support 'int8' ,
@@ -836,10 +836,10 @@ def quantize_net(network, quantized_dtype='auto',
         from being quantized.
     exclude_operators : list of strings
         A list of strings representing the names of the operators that users want to excluding
-    calib_data : :class:`~mxnet.io.DataIter` or :class:`~mxnet.gluon.data.dataloader.DataLoader`
+    calib_data : DataIter or DataLoader
         A iterable data loading object.
     data_shapes : list
-        List of :class:`~mxnet.io.DataDesc`, required if ``calib_data`` is not provided
+        List of :class:`~mxnet.io.DataDesc`, required if :attr:`calib_data` is not provided
     calib_mode : str
         If calib_mode='none', no calibration will be used and the thresholds for
         requantization after the corresponding layers will be calculated at runtime by
@@ -861,7 +861,7 @@ def quantize_net(network, quantized_dtype='auto',
 
     Returns
     -------
-    network : :class:`~mxnet.gluon.HybridBlock`
+    network : gluon.HybridBlock
         Defines the structure of a neural network for INT8 data types.
     """
     if logger is None:

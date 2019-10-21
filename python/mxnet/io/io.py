@@ -41,21 +41,21 @@ from ..ndarray import concat
 from .utils import _init_data, _has_instance, _getdata_by_idx
 
 class DataDesc(namedtuple('DataDesc', ['name', 'shape'])):
-    """:class:`DataDesc` is used to store ``name``, ``shape``, ``type`` and ``layout``
+    """DataDesc is used to store name, shape, type and layout
     information of the data or the label.
 
-    The ``layout`` describes how the axes in ``shape`` should be interpreted,
+    The layout describes how the axes in shape should be interpreted,
     for example for image data setting ``layout=NCHW`` indicates that the axes
     of the data are ordered as number of examples in the batch (``N``),
     number of channels (``C``), the height (``H``) and the width (``W``) of the image.
 
-    For sequential data, by default ``layout`` is set to ``NTC``, where
+    For sequential data, by default layout is set to ``NTC``, where
     ``N`` is number of examples in the batch, ``T`` the temporal axis representing time
     and ``C`` the number of channels.
 
     Parameters
     ----------
-    cls : :class:`DataDesc`
+    cls : DataDesc
          The class.
     name : str
          Data name.
@@ -87,7 +87,7 @@ class DataDesc(namedtuple('DataDesc', ['name', 'shape'])):
         Parameters
         ----------
         layout : str
-            layout string. For example, ``NCHW``.
+            Layout string. For example, ``NCHW``.
 
         Returns
         -------
@@ -119,39 +119,36 @@ class DataBatch(object):
     """A data batch.
 
     MXNet's data iterator returns a batch of data for each ``next`` call.
-    This data contains ``batch_size`` number of examples.
 
     If the input data consists of images, then shape of these images depend on
-    the ``layout`` attribute of :class:`DataDesc` object in ``provide_data`` parameter.
+    the :attr:`layout` attribute of :class:`DataDesc` object in :attr:`provide_data` parameter.
 
-    If ``layout`` is set to ``NCHW``, then images should be stored in a 4-D matrix
-    of shape ``(batch_size, num_channel, height, width)``.
-    If ``layout`` is set to ``NHWC``, then images should be stored in a 4-D matrix
-    of shape ``(batch_size, height, width, num_channel)``.
+    If :attr:`layout` is set to ``NCHW``, then images should be stored in a 4-D matrix
+    of shape (batch_size, num_channel, height, width).
+    If :attr:`layout` is set to ``NHWC``, then images should be stored in a 4-D matrix
+    of shape (batch_size, height, width, num_channel).
     The channels are often in RGB order.
 
     Parameters
     ----------
-    data : list of :class:`~mxnet.ndarray.NDArray`
-          A list of input data, each array containing ``batch_size`` examples.
-    label : list of :class:`~mxnet.ndarray.NDArray`, optional
-          A list of input labels, each array often containing a 1-dimensional array. 
+    data : list of NDArray
+          A list of input data representing a batch of data.
+    label : list of NDArray, optional
+          A list of input labels, each array often containing a 1-dimensional array.
     pad : int, optional
           The number of examples padded at the end of a batch. It is used when the
-          total number of examples read is not divisible by the ``batch_size``.
+          total number of examples read is not divisible by the batch_size.
           These extra padded examples are ignored in prediction.
     index : numpy.array, optional
           The example indices in this batch.
     bucket_key : int, optional
           The bucket key, used for bucketing module.
-    provide_data : list of :class:`DataDesc`, optional
-          The list of :class:`DataDesc` is used to store ``name``, ``shape``, ``type``
-          and ``layout`` information for input ``data``. The *i*-th element describes
-          the name and shape of ``data[i]``.
-    provide_label : list of :class:`DataDesc`, optional
-          The list of :class:`DataDesc` is used to store ``name``, ``shape``, ``type``
-          and ``layout`` information for input ``label``. The *i*-th element describes
-          the name and shape of ``label[i]``.
+    provide_data : list of DataDesc, optional
+          The list of DataDesc is used to store information for input :attr:`data`.
+          The *i*-th element describes the name and shape of ``data[i]``.
+    provide_label : list of DataDesc, optional
+          The list of DataDesc is used to store information for input :attr:`label`.
+          The *i*-th element describes the name and shape of ``label[i]``.
     """
     def __init__(self, data, label=None, pad=None, index=None,
                  bucket_key=None, provide_data=None, provide_label=None):
@@ -245,7 +242,7 @@ class DataIter(object):
 
         Returns
         -------
-        list of :class:`~mxnet.ndarray.NDArray`
+        list of NDArray
             The data of the current batch.
         """
         pass
@@ -255,7 +252,7 @@ class DataIter(object):
 
         Returns
         -------
-        list of :class:`~mxnet.ndarray.NDArray`
+        list of NDArray
             The label of the current batch.
         """
         pass
@@ -285,7 +282,7 @@ class ResizeIter(DataIter):
 
     Parameters
     ----------
-    data_iter : :class:`DataIter`
+    data_iter : DataIter
         The data iterator to be resized.
     size : int
         The number of batches per epoch to resize to.
@@ -348,20 +345,20 @@ class ResizeIter(DataIter):
 class PrefetchingIter(DataIter):
     """Performs pre-fetch for other data iterators.
 
-    This iterator will create another thread to perform ``iter_next`` and then
+    This iterator will create another thread to perform :meth:`iter_next` and then
     store the data in memory. It potentially accelerates the data read, at the
     cost of more memory usage.
 
     Parameters
     ----------
-    iters : :class:`DataIter` or list of :class:`DataIter`
+    iters : DataIter or list of DataIter
         The data iterators to be pre-fetched.
     rename_data : None or list of dict
         The *i*-th element is a renaming map for the *i*-th iter, in the form of
         ``{'original_name' : 'new_name'}``. Should have one entry for each entry
         in ``iter[i].provide_data``.
     rename_label : None or list of dict
-        Similar to ``rename_data``.
+        Similar to :attr:`rename_data`.
 
     Examples
     --------
@@ -595,11 +592,12 @@ class NDArrayIter(DataIter):
         Only supported if no h5py.Dataset inputs are used.
     last_batch_handle : str, optional
         How to handle the last batch. This parameter can be 'pad', 'discard' or
-        'roll_over'.
-        If 'pad', the last batch will be padded with data starting from the begining
-        If 'discard', the last batch will be discarded
-        If 'roll_over', the remaining elements will be rolled over to the next iteration and
-        note that it is intended for training and can cause problems if used for prediction.
+        'roll_over':
+
+        - **pad**: the last batch will be padded with data starting from the begining
+        - **discard**: the last batch will be discarded
+        - **roll_over**: the remaining elements will be rolled over to the next iteration and
+          note that it is intended for training and can cause problems if used for prediction.
     data_name : str, optional
         The data name.
     label_name : str, optional
@@ -798,7 +796,7 @@ class MXDataIter(DataIter):
 
     Usually you don't need to interact with :class:`MXDataIter` directly unless you are
     implementing your own data iterators in C++. To do that, please refer to
-    examples under the `src/io` folder.
+    examples under the src/io folder.
 
     Parameters
     ----------

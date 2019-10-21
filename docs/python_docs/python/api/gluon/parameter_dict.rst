@@ -21,3 +21,4 @@ gluon.ParameterDict
 
 .. autoclass:: mxnet.gluon.ParameterDict
     :members:
+    :inherited-members:

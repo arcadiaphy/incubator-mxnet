@@ -207,24 +207,22 @@ expected to be sorted in ascending order**. Details of the LibSVM format are ava
 `here. <https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/>`_
 
 
-The ``data_shape`` parameter is used to set the shape of each line of the data.
-The dimension of both ``data_shape`` and ``label_shape`` are expected to be 1.
+The :attr:`data_shape` parameter is used to set the shape of each line of the data.
+The dimension of both :attr:`data_shape` and :attr:`label_shape` are expected to be 1.
 
-The ``data_libsvm`` parameter is used to set the path input LibSVM file.
+The :attr:`data_libsvm` parameter is used to set the path input LibSVM file.
 When it is set to a directory, all the files in the directory will be read.
 
-When ``label_libsvm`` is set to ``NULL``, both data and c
+When :attr:`label_libsvm` is set to ``NULL``, both data and label are read from the file specified
+by :attr:`data_libsvm`. In this case, the data is stored in `csr` storage type, while the label
+is a 1D dense array.
 
+The :class:`LibSVMIter` only support :attr:`round_batch` parameter set to ``True``. Therefore,
+if :attr:`batch_size` is 3 and there are 4 total rows in libsvm file, 2 more examples are
+consumed at the first round.
 
-label are read from the file specified
-by ``data_libsvm``. In this case, the data is stored in `csr` storage type, while the label is a 1D
-dense array.
-
-The :class:`LibSVMIter` only support ``round_batch`` parameter set to ``True``. Therefore, if ``batch_size``
-is 3 and there are 4 total rows in libsvm file, 2 more examples are consumed at the first round.
-
-When ``num_parts`` and ``part_index`` are provided, the data is split into ``num_parts`` partitions,
-and the iterator only reads the ``part_index``-th partition. However, the partitions are not
+When :attr:`num_parts` and :attr:`part_index` are provided, the data is split into :attr:`num_parts` partitions,
+and the iterator only reads the :attr:`part_index`-th partition. However, the partitions are not
 guaranteed to be even.
 
 ``reset()`` is expected to be called only after a complete pass of data.
@@ -266,10 +264,9 @@ Example::
   # To restart the iterator for the second pass of the data
   >>> data_iter.reset()
 
-If the label column in the ``data_libsvm` file is ignored.
-data is read from ``data_libsvm`` and label from ``label_libsvm``.
-In this case, both data and label are stored in the csr format.
-If the label column in the ``data_libsvm`` file is ignored.
+If the :attr:`label_libsvm` file is not ``None``, data is read from :attr:`data_libsvm`
+and label from :attr:`label_libsvm`. In this case, both data and label are stored
+in the `csr` format.
 
 Example::
 

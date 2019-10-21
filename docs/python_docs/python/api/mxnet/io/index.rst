@@ -18,6 +18,7 @@
 mxnet.io
 ========
 
-.. automodule:: mxnet.io.io
+.. automodule:: mxnet.io
     :members:
+    :imported-members:
     :autosummary:
