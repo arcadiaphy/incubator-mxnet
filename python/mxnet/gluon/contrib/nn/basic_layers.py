@@ -35,7 +35,15 @@ class Concurrent(Sequential):
     produce the output by concatenating all the children blocks' outputs
     on the specified axis.
 
-    Example::
+    Parameters
+    ----------
+    axis : int, default -1
+        The axis on which to concatenate the outputs.
+
+    Examples
+    --------
+
+    .. code-block:: python
 
         net = Concurrent()
         # use net's name_scope to give children blocks appropriate names.
@@ -44,10 +52,6 @@ class Concurrent(Sequential):
             net.add(nn.Dense(20))
             net.add(Identity())
 
-    Parameters
-    ----------
-    axis : int, default -1
-        The axis on which to concatenate the outputs.
     """
     def __init__(self, axis=-1, prefix=None, params=None):
         super(Concurrent, self).__init__(prefix=prefix, params=params)
@@ -68,7 +72,15 @@ class HybridConcurrent(HybridSequential):
     produce the output by concatenating all the children blocks' outputs
     on the specified axis.
 
-    Example::
+    Parameters
+    ----------
+    axis : int, default -1
+        The axis on which to concatenate the outputs.
+
+    Examples
+    --------
+
+    .. code-block:: python
 
         net = HybridConcurrent()
         # use net's name_scope to give children blocks appropriate names.
@@ -76,11 +88,6 @@ class HybridConcurrent(HybridSequential):
             net.add(nn.Dense(10, activation='relu'))
             net.add(nn.Dense(20))
             net.add(Identity())
-
-    Parameters
-    ----------
-    axis : int, default -1
-        The axis on which to concatenate the outputs.
     """
     def __init__(self, axis=-1, prefix=None, params=None):
         super(HybridConcurrent, self).__init__(prefix=prefix, params=params)
@@ -100,7 +107,10 @@ class Identity(HybridBlock):
     This block can be used in conjunction with :class:`HybridConcurrent`
     block for residual connection.
 
-    Example::
+    Examples
+    --------
+
+    .. code-block:: python
 
         net = HybridConcurrent()
         # use net's name_scope to give child Blocks appropriate names.
@@ -117,7 +127,7 @@ class Identity(HybridBlock):
 
 class SparseEmbedding(Block):
     r"""Turns non-negative integers (indexes/tokens) into dense vectors
-    of fixed size. eg. ``[4, 20] -> [[0.25, 0.1], [0.6, -0.2]]``
+    of fixed size.
 
     This SparseBlock is designed for distributed training with extremely large
     input dimension. Both weight and gradient w.r.t. weight are
@@ -125,7 +135,7 @@ class SparseEmbedding(Block):
 
     Note
     ----
-    if :attr:`sparse_grad` is set to True, the gradient w.r.t weight will be
+    If :attr:`sparse_grad` is set to True, the gradient w.r.t weight will be
     sparse. Only a subset of optimizers support sparse gradients, including SGD, AdaGrad
     and Adam. By default lazy updates is turned on, which may perform differently
     from standard updates. For more details, please check the `Optimization API
@@ -173,8 +183,11 @@ class SyncBatchNorm(BatchNorm):
     SyncBN normalizes the input within the whole mini-batch.
     We follow the implementation described in the paper [2]_.
 
-    Note: Current implementation of SyncBN does not support FP16 training.
-    For FP16 inference, use standard nn.BatchNorm instead of SyncBN.
+    Note
+    ----
+    Current implementation of SyncBN does not support FP16 training.
+    For FP16 inference, use standard :class:`~mxnet.gluon.nn.BatchNorm`
+    instead of SyncBN.
 
     Parameters
     ----------

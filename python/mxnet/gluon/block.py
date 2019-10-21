@@ -229,8 +229,8 @@ class Block(object):
     """Base class for all neural network layers and models. Your models should
     subclass this class.
 
-    :class:`Block` can be nested recursively in a tree structure. You can create and
-    assign child :class:`Block` as regular attributes::
+    Block can be nested recursively in a tree structure. You can create and
+    assign child Block as regular attributes::
 
         from mxnet.gluon import Block, nn
         from mxnet import ndarray as F
@@ -251,8 +251,7 @@ class Block(object):
         model.initialize(ctx=mx.cpu(0))
         model(F.zeros((10, 10), ctx=mx.cpu(0)))
 
-
-    Child :class:`Block` assigned this way will be registered and :meth:`collect_params`
+    Child Block assigned this way will be registered and :meth:`collect_params`
     will collect their Parameters recursively. You can also manually register
     child blocks with :meth:`register_child`.
 
@@ -262,10 +261,10 @@ class Block(object):
         Prefix acts like a name space. All children blocks created in parent block's
         :meth:`name_scope` will have parent block's prefix in their name.
         Please refer to
-        `naming tutorial </api/python/docs/tutorials/packages/gluon/blocks/naming.html>`_
+        `naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`_
         for more info on prefix and naming.
     params : ParameterDict or None
-        :class:`~mxnet.gluon.ParameterDict` for sharing weights with the new :class:`Block`.
+        :class:`~mxnet.gluon.ParameterDict` for sharing weights with the new Block.
         For example, if you want ``dense1`` to share ``dense0``'s weights, you can do::
 
             dense0 = nn.Dense(20)
@@ -351,14 +350,14 @@ class Block(object):
         return self._name
 
     def name_scope(self):
-        """Returns a name space object managing a child :class:`~mxnet.gluon.Block` and parameter
+        """Returns a name space object managing a child Block and parameter
         names. Should be used within a ``with`` statement::
 
             with self.name_scope():
                 self.dense = nn.Dense(20)
 
         Please refer to
-        `the naming tutorial </api/python/docs/tutorials/packages/gluon/blocks/naming.html>`_
+        `the naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`_
         for more info on prefix and naming.
         """
         return self._scope
@@ -479,10 +478,11 @@ class Block(object):
             must be in {'current', 'saved'}
             Only valid if ``cast_dtype=True``, specify the source of the dtype for casting
             the parameters
+
         References
         ----------
-        `Saving and Loading Gluon Models \
-        <https://mxnet.apache.org/api/python/docs/tutorials/packages/gluon/blocks/save_load_params.html>`_
+        `Saving and Loading Gluon Models
+        <https://mxnet.incubator.apache.org/tutorials/gluon/save_load_params.html>`_
         """
         if is_np_array():
             # failure may happen when loading parameters saved as NDArrays within
@@ -819,10 +819,28 @@ class Block(object):
 
 
 class HybridBlock(Block):
-    """:class:`HybridBlock` supports forwarding with both :class:`~mxnet.symbol.Symbol`
+    """HybridBlock supports forwarding with both :class:`~mxnet.symbol.Symbol`
     and :class:`~mxnet.ndarray.NDArray`.
 
-    :class:`HybridBlock` is similar to :class:`Block`, with a few differences::
+    HybridBlock is similar to :class:`Block`, with a few differences. Forward computation
+    in HybridBlock must be static to work with :class:`~mxnet.symbol.Symbol`, i.e. you cannot
+    call :meth:`~mxnet.ndarray.NDArray.asnumpy`, :attr:`~mxnet.ndarray.NDArray.shape`,
+    :attr:`~mxnet.ndarray.NDArray.dtype`, indexing (``x[i]``) etc on tensors. Also, you cannot
+    use branching or loop logic that bases on non-constant expressions like random numbers or
+    intermediate results, since they change the graph structure for each iteration.
+
+    Before activating with :meth:`hybridize()`, HybridBlock works just like normal
+    :class:`Block`. After activation, HybridBlock will create a symbolic graph
+    representing the forward computation and cache it. On subsequent forwards,
+    the cached graph will be used instead of :meth:`hybrid_forward`.
+
+    Please refer to `hybridize tutorial <../../tutorials/packages/gluon/blocks/hybridize.html>`_
+    for more information.
+
+    Examples
+    --------
+
+    .. code-block:: python
 
         import mxnet as mx
         from mxnet.gluon import HybridBlock, nn
@@ -844,24 +862,6 @@ class HybridBlock(Block):
         model.hybridize()
         model(mx.nd.zeros((10, 10), ctx=mx.cpu(0)))
 
-    Forward computation in :class:`HybridBlock` must be static to work with
-    :class:`~mxnet.symbol.Symbol`, i.e. you cannot call :meth:`~mxnet.ndarray.NDArray.asnumpy`,
-    :attr:`~mxnet.ndarray.NDArray.shape`, :attr:`~mxnet.ndarray.NDArray.dtype`, indexing (``x[i]``)
-    etc on tensors. Also, you cannot use branching or loop logic that bases on non-constant
-    expressions like random numbers or intermediate results, since they change
-    the graph structure for each iteration.
-
-    Before activating with :meth:`hybridize()`, :class:`HybridBlock` works just like normal
-    :class:`Block`. After activation, :class:`HybridBlock` will create a symbolic graph
-    representing the forward computation and cache it. On subsequent forwards,
-    the cached graph will be used instead of :meth:`hybrid_forward`.
-
-    Please see references for detailed tutorial.
-
-    References
-    ----------
-        `Hybrid - Faster training and easy deployment
-        <https://mxnet.io/tutorials/gluon/hybrid.html>`_
     """
     def __init__(self, prefix=None, params=None):
         super(HybridBlock, self).__init__(prefix=prefix, params=params)
@@ -1059,7 +1059,7 @@ class HybridBlock(Block):
         self._infer_attrs('infer_type', 'dtype', *args)
 
     def export(self, path, epoch=0, remove_amp_cast=True):
-        """Export :class:`~mxnet.gluon.HybridBlock` to json format that can be loaded by
+        """Export HybridBlock to json format that can be loaded by
         :meth:`~mxnet.gluon.SymbolBlock.imports`, :class:`~mxnet.module.Module` or the C++ interface.
 
         .. note:: When there are only one input, it will have name 'data'. When there
@@ -1221,8 +1221,8 @@ class SymbolBlock(HybridBlock):
 
         Returns
         -------
-        SymbolBlock
-            :class:`~mxnet.gluon.SymbolBlock` loaded from symbol and parameter files.
+        gluon.SymbolBlock
+            SymbolBlock loaded from symbol and parameter files.
 
         Examples
         --------

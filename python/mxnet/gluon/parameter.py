@@ -48,9 +48,10 @@ class DeferredInitializationError(MXNetError):
 class Parameter(object):
     """A Container holding parameters (weights) of Blocks.
 
-    :class:`Parameter` holds a copy of the parameter on each :class:`~mxnet.context.Context`
-    after it is initialized with ``Parameter.initialize(...)``. If :attr:`grad_req` is
-    not ``'null'``, it will also hold a gradient array on each :class:`~mxnet.context.Context`::
+    Parameter holds a copy of the parameter on each :class:`~mxnet.context.Context`
+    after it is initialized with :meth:`Parameter.initialize(...) <mxnet.gluon.Parameter.initialize>`.
+    If :attr:`grad_req` is not 'null', it will also hold a gradient array on each
+    :class:`~mxnet.context.Context`::
 
         ctx = mx.gpu(0)
         x = mx.nd.zeros((16, 100), ctx=ctx)
@@ -67,11 +68,11 @@ class Parameter(object):
     grad_req : {'write', 'add', 'null'}, default 'write'
         Specifies how to update gradient to grad arrays.
 
-        - ``'write'`` means everytime gradient is written to grad :class:`~mxnet.ndarray.NDArray`.
-        - ``'add'`` means everytime gradient is added to the grad :class:`~mxnet.ndarray.NDArray`.
+        - **write** means everytime gradient is written to grad :class:`~mxnet.ndarray.NDArray`.
+        - **add** means everytime gradient is added to the grad :class:`~mxnet.ndarray.NDArray`.
           You need to manually call :meth:`zero_grad` to clear the gradient buffer before each
           iteration when using this option.
-        - ``'null'`` means gradient is not requested for this parameter. gradient arrays
+        - **null** means gradient is not requested for this parameter. gradient arrays
           will not be allocated.
     shape : int or tuple of int, default None
         Shape of this parameter. By default shape is not specified. Parameter with
@@ -94,13 +95,11 @@ class Parameter(object):
     Attributes
     ----------
     grad_req : {'write', 'add', 'null'}
-        This can be set before or after initialization. Setting ``grad_req`` to ``'null'``
-        with ``x.grad_req = 'null'`` saves memory and computation when you don't
-        need gradient w.r.t x.
+        This can be set before or after initialization. Setting grad_req to 'null'
+        saves memory and computation when you don't need gradient.
     lr_mult : float
         Local learning rate multiplier for this Parameter. The actual learning rate
-        is calculated with ``learning_rate * lr_mult``. You can set it with
-        ``param.lr_mult = 2.0``
+        is calculated with ``learning_rate * lr_mult``.
     wd_mult : float
         Local weight decay multiplier for this Parameter.
     """
@@ -648,11 +647,12 @@ class Parameter(object):
 
 
 class Constant(Parameter):
-    """A constant parameter for holding immutable tensors. :class:`Constant` is ignored
-    by ``autograd`` and ``Trainer``, thus their values will not change during training.
-    But you can still update their values manually with the :meth:`~Parameter.set_data` method.
+    """A constant parameter for holding immutable tensors. Constant is ignored
+    by :mod:`~mxnet.autograd` and :class:`~mxnet.gluon.Trainer`, thus their values
+    will not change during training. But you can still update their values manually with
+    the :meth:`~Parameter.set_data` method.
 
-    :class:`Constant` can be created with either::
+    Constant can be created with either::
 
         const = mx.gluon.Constant('const', [[1,2],[3,4]])
 
@@ -827,8 +827,8 @@ class ParameterDict(object):
 
         Returns
         -------
-        Constant
-            The created or retrieved :class:`Constant`.
+        gluon.Constant
+            The created or retrieved Constant.
         """
         name = self.prefix + name
         param = self._get_impl(name)
