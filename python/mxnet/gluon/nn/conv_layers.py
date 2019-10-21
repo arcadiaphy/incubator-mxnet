@@ -49,8 +49,8 @@ class _Conv(HybridBlock):
 
     This layer creates a convolution kernel that is convolved
     with the layer input to produce a tensor of outputs.
-    If `use_bias` is `True`, a bias vector is created and added to the outputs.
-    Finally, if `activation` is not `None`,
+    If :attr:`use_bias` is ``True``, a bias vector is created and added to the outputs.
+    Finally, if :attr:`activation` is not ``None``,
     it is applied to the outputs as well.
 
     Parameters
@@ -80,17 +80,17 @@ class _Conv(HybridBlock):
         Convolution is performed over 'D', 'H', and 'W' dimensions.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias: bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer: str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer: str or Initializer
         Initializer for the bias vector.
     """
     def __init__(self, channels, kernel_size, strides, padding, dilation,
@@ -180,12 +180,12 @@ class Conv1D(_Conv):
     This layer creates a convolution kernel that is convolved
     with the layer input over a single spatial (or temporal) dimension
     to produce a tensor of outputs.
-    If `use_bias` is True, a bias vector is created and added to the outputs.
-    Finally, if `activation` is not `None`,
-    it is applied to the outputs as well.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`use_bias` is True, a bias vector is created and added to the outputs.
+    Finally, if :attr:`activation` is not ``None``, it is applied to the outputs as well.
+
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
 
@@ -215,29 +215,32 @@ class Conv1D(_Conv):
         respectively. Convolution is applied on the 'W' dimension.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, out_width)`
-          when `layout` is `NCW`. out_width is calculated as::
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, W_{out})`
+          when :attr:`layout` is 'NCW'. :math:`W_{out}` is calculated as:
 
-              out_width = floor((width+2*padding-dilation*(kernel_size-1)-1)/stride)+1
+          .. math::
+              W_{out} = \left\lfloor\frac
+              {W_{in} + 2 \times \text{padding} - (\text{dilation} \times (\text{kernel_size} - 1) - 1)}
+              {\text{stride}}\right\rfloor + 1
     """
     def __init__(self, channels, kernel_size, strides=1, padding=0, dilation=1,
                  groups=1, layout='NCW', activation=None, use_bias=True,
@@ -261,12 +264,12 @@ class Conv2D(_Conv):
 
     This layer creates a convolution kernel that is convolved
     with the layer input to produce a tensor of
-    outputs. If `use_bias` is True,
+    outputs. If :attr:`use_bias` is True,
     a bias vector is created and added to the outputs. Finally, if
-    `activation` is not `None`, it is applied to the outputs as well.
+    :attr:`activation` is not ``None``, it is applied to the outputs as well.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
     Parameters
@@ -296,32 +299,37 @@ class Conv2D(_Conv):
         'W' dimensions.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, out_height, out_width)` when `layout` is `NCHW`.
-          out_height and out_width are calculated as::
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCHW'.
+          :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_height = floor((height+2*padding[0]-dilation[0]*(kernel_size[0]-1)-1)/stride[0])+1
-              out_width = floor((width+2*padding[1]-dilation[1]*(kernel_size[1]-1)-1)/stride[1])+1
+          .. math::
+              H_{out} = \left\lfloor\frac
+              {H_{in} + 2 \times \text{padding}[0] - (\text{dilation}[0] \times (\text{kernel_size}[0] - 1) - 1)}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac
+              {W_{in} + 2 \times \text{padding}[1] - (\text{dilation}[1] \times (\text{kernel_size}[1] - 1) - 1)}
+              {\text{stride}[1]}\right\rfloor + 1
     """
     def __init__(self, channels, kernel_size, strides=(1, 1), padding=(0, 0),
                  dilation=(1, 1), groups=1, layout='NCHW',
@@ -341,16 +349,16 @@ class Conv2D(_Conv):
 
 
 class Conv3D(_Conv):
-    """3D convolution layer (e.g. spatial convolution over volumes).
+    r"""3D convolution layer (e.g. spatial convolution over volumes).
 
     This layer creates a convolution kernel that is convolved
     with the layer input to produce a tensor of
-    outputs. If `use_bias` is `True`,
+    outputs. If :attr:`use_bias` is ``True``,
     a bias vector is created and added to the outputs. Finally, if
-    `activation` is not `None`, it is applied to the outputs as well.
+    :attr:`activation` is not ``None``, it is applied to the outputs as well.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
     Parameters
@@ -380,33 +388,42 @@ class Conv3D(_Conv):
         'H' and 'W' dimensions.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCDHW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, out_depth, out_height, out_width)` when `layout` is `NCDHW`.
-          out_depth, out_height and out_width are calculated as::
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, D_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCDHW'.
+          :math:`D_{out}`, :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_depth = floor((depth+2*padding[0]-dilation[0]*(kernel_size[0]-1)-1)/stride[0])+1
-              out_height = floor((height+2*padding[1]-dilation[1]*(kernel_size[1]-1)-1)/stride[1])+1
-              out_width = floor((width+2*padding[2]-dilation[2]*(kernel_size[2]-1)-1)/stride[2])+1
+          .. math::
+              D_{out} = \left\lfloor\frac
+              {D_{in} + 2 \times \text{padding}[0] - (\text{dilation}[0] \times (\text{kernel_size}[0] - 1) - 1)}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              H_{out} = \left\lfloor\frac
+              {H_{in} + 2 \times \text{padding}[1] - (\text{dilation}[1] \times (\text{kernel_size}[1] - 1) - 1)}
+              {\text{stride}[1]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac
+              {W_{in} + 2 \times \text{padding}[2] - (\text{dilation}[2] \times (\text{kernel_size}[2] - 1) - 1)}
+              {\text{stride}[2]}\right\rfloor + 1
     """
     def __init__(self, channels, kernel_size, strides=(1, 1, 1), padding=(0, 0, 0),
                  dilation=(1, 1, 1), groups=1, layout='NCDHW', activation=None,
@@ -426,7 +443,7 @@ class Conv3D(_Conv):
 
 
 class Conv1DTranspose(_Conv):
-    """Transposed 1D convolution layer (sometimes called Deconvolution).
+    r"""Transposed 1D convolution layer (sometimes called Deconvolution).
 
     The need for transposed convolutions generally arises
     from the desire to use a transformation going in the opposite direction
@@ -435,8 +452,8 @@ class Conv1DTranspose(_Conv):
     while maintaining a connectivity pattern that is compatible with
     said convolution.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
     Parameters
@@ -469,29 +486,31 @@ class Conv1DTranspose(_Conv):
         respectively. Convolution is applied on the 'W' dimension.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, out_width)`
-          when `layout` is `NCW`. out_width is calculated as::
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, W_{out})`
+          when :attr:`layout` is 'NCW'. :math:`W_{out}` is calculated as:
 
-              out_width = (width-1)*strides-2*padding+kernel_size+output_padding
+          .. math::
+              W_{out} = (W_{in} - 1) \times \text{stride} - 2 \times \text{padding}
+              + \text{kernel_size} + \text{output_padding}
     """
     def __init__(self, channels, kernel_size, strides=1, padding=0, output_padding=0,
                  dilation=1, groups=1, layout='NCW', activation=None, use_bias=True,
@@ -515,7 +534,7 @@ class Conv1DTranspose(_Conv):
 
 
 class Conv2DTranspose(_Conv):
-    """Transposed 2D convolution layer (sometimes called Deconvolution).
+    r"""Transposed 2D convolution layer (sometimes called Deconvolution).
 
     The need for transposed convolutions generally arises
     from the desire to use a transformation going in the opposite direction
@@ -524,8 +543,8 @@ class Conv2DTranspose(_Conv):
     while maintaining a connectivity pattern that is compatible with
     said convolution.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
 
@@ -560,32 +579,35 @@ class Conv2DTranspose(_Conv):
         'W' dimensions.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, out_height, out_width)` when `layout` is `NCHW`.
-          out_height and out_width are calculated as::
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCHW'.
+          :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_height = (height-1)*strides[0]-2*padding[0]+kernel_size[0]+output_padding[0]
-              out_width = (width-1)*strides[1]-2*padding[1]+kernel_size[1]+output_padding[1]
+          .. math::
+              H_{out} = (H_{in} - 1) \times \text{stride}[0] - 2 \times \text{padding}[0]
+              + \text{kernel_size}[0] + \text{output_padding}[0]
+          .. math::
+              W_{out} = (W_{in} - 1) \times \text{stride}[1] - 2 \times \text{padding}[1]
+              + \text{kernel_size}[1] + \text{output_padding}[1]
     """
     def __init__(self, channels, kernel_size, strides=(1, 1), padding=(0, 0),
                  output_padding=(0, 0), dilation=(1, 1), groups=1, layout='NCHW',
@@ -609,7 +631,7 @@ class Conv2DTranspose(_Conv):
 
 
 class Conv3DTranspose(_Conv):
-    """Transposed 3D convolution layer (sometimes called Deconvolution).
+    r"""Transposed 3D convolution layer (sometimes called Deconvolution).
 
     The need for transposed convolutions generally arises
     from the desire to use a transformation going in the opposite direction
@@ -618,8 +640,8 @@ class Conv3DTranspose(_Conv):
     while maintaining a connectivity pattern that is compatible with
     said convolution.
 
-    If `in_channels` is not specified, `Parameter` initialization will be
-    deferred to the first time `forward` is called and `in_channels` will be
+    If :attr:`in_channels` is not specified, Parameter initialization will be
+    deferred to the first time ``forward`` is called and :attr:`in_channels` will be
     inferred from the shape of input data.
 
 
@@ -654,33 +676,39 @@ class Conv3DTranspose(_Conv):
         'H' and 'W' dimensions.
     in_channels : int, default 0
         The number of input channels to this layer. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
     activation : str
         Activation function to use. See :func:`~mxnet.ndarray.Activation`.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x)=x`).
     use_bias : bool
         Whether the layer uses a bias vector.
-    weight_initializer : str or `Initializer`
-        Initializer for the `weight` weights matrix.
-    bias_initializer : str or `Initializer`
+    weight_initializer : str or Initializer
+        Initializer for the weight matrix.
+    bias_initializer : str or Initializer
         Initializer for the bias vector.
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCDHW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, out_depth, out_height, out_width)` when `layout` is `NCDHW`.
-          out_depth, out_height and out_width are calculated as::
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, D_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCDHW'.
+          :math:`D_{out}`, :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-            out_depth = (depth-1)*strides[0]-2*padding[0]+kernel_size[0]+output_padding[0]
-            out_height = (height-1)*strides[1]-2*padding[1]+kernel_size[1]+output_padding[1]
-            out_width = (width-1)*strides[2]-2*padding[2]+kernel_size[2]+output_padding[2]
+          .. math::
+              D_{out} = (D_{in} - 1) \times \text{stride}[0] - 2 \times \text{padding}[0]
+              + \text{kernel_size}[0] + \text{output_padding}[0]
+          .. math::
+              H_{out} = (H_{in} - 1) \times \text{stride}[1] - 2 \times \text{padding}[1]
+              + \text{kernel_size}[1] + \text{output_padding}[1]
+          .. math::
+              W_{out} = (W_{in} - 1) \times \text{stride}[2] - 2 \times \text{padding}[2]
+              + \text{kernel_size}[2] + \text{output_padding}[2]
     """
     def __init__(self, channels, kernel_size, strides=(1, 1, 1), padding=(0, 0, 0),
                  output_padding=(0, 0, 0), dilation=(1, 1, 1), groups=1, layout='NCDHW',
@@ -738,7 +766,7 @@ class _Pooling(HybridBlock):
 
 
 class MaxPool1D(_Pooling):
-    """Max pooling operation for one dimensional data.
+    r"""Max pooling operation for one dimensional data.
 
 
     Parameters
@@ -747,7 +775,7 @@ class MaxPool1D(_Pooling):
         Size of the max pooling windows.
     strides: int, or None
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -756,20 +784,22 @@ class MaxPool1D(_Pooling):
         'N', 'C', 'W' stands for batch, channel, and width (time) dimensions
         respectively. Pooling is applied on the W dimension.
     ceil_mode : bool, default False
-        When `True`, will use ceil instead of floor to compute the output shape.
+        When ``True``, will use ceil instead of floor to compute the output shape.
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, out_width)`
-          when `layout` is `NCW`. out_width is calculated as::
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, W_{out})`
+          when :attr:`layout` is 'NCW'. :math:`W_{out}` is calculated as:
 
-              out_width = floor((width+2*padding-pool_size)/strides)+1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding} - \text{pool_size}}
+              {\text{stride}}\right\rfloor + 1
 
-          When `ceil_mode` is `True`, ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=2, strides=None, padding=0, layout='NCW',
@@ -784,7 +814,7 @@ class MaxPool1D(_Pooling):
 
 
 class MaxPool2D(_Pooling):
-    """Max pooling operation for two dimensional (spatial) data.
+    r"""Max pooling operation for two dimensional (spatial) data.
 
 
     Parameters
@@ -793,7 +823,7 @@ class MaxPool2D(_Pooling):
         Size of the max pooling windows.
     strides: int, list/tuple of 2 ints, or None.
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int or list/tuple of 2 ints,
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -802,23 +832,26 @@ class MaxPool2D(_Pooling):
         'N', 'C', 'H', 'W' stands for batch, channel, height, and width
         dimensions respectively. padding is applied on 'H' and 'W' dimension.
     ceil_mode : bool, default False
-        When `True`, will use ceil instead of floor to compute the output shape.
+        When ``True``, will use ceil instead of floor to compute the output shape.
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, out_height, out_width)` when `layout` is `NCHW`.
-          out_height and out_width are calculated as::
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCHW'.
+          :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_height = floor((height+2*padding[0]-pool_size[0])/strides[0])+1
-              out_width = floor((width+2*padding[1]-pool_size[1])/strides[1])+1
+          .. math::
+              H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[0] - \text{pool_size}[0]}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
+              {\text{stride}[1]}\right\rfloor + 1
 
-          When `ceil_mode` is `True`, ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=(2, 2), strides=None, padding=0, layout='NCHW',
@@ -833,7 +866,7 @@ class MaxPool2D(_Pooling):
 
 
 class MaxPool3D(_Pooling):
-    """Max pooling operation for 3D data (spatial or spatio-temporal).
+    r"""Max pooling operation for 3D data (spatial or spatio-temporal).
 
 
     Parameters
@@ -842,7 +875,7 @@ class MaxPool3D(_Pooling):
         Size of the max pooling windows.
     strides: int, list/tuple of 3 ints, or None.
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int or list/tuple of 3 ints,
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -852,24 +885,30 @@ class MaxPool3D(_Pooling):
         depth dimensions respectively. padding is applied on 'D', 'H' and 'W'
         dimension.
     ceil_mode : bool, default False
-        When `True`, will use ceil instead of floor to compute the output shape.
+        When ``True``, will use ceil instead of floor to compute the output shape.
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, out_depth, out_height, out_width)` when `layout` is `NCDHW`.
-          out_depth, out_height and out_width are calculated as::
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, D_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCDHW'.
+          :math:`D_{out}`, :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_depth = floor((depth+2*padding[0]-pool_size[0])/strides[0])+1
-              out_height = floor((height+2*padding[1]-pool_size[1])/strides[1])+1
-              out_width = floor((width+2*padding[2]-pool_size[2])/strides[2])+1
+          .. math::
+              D_{out} = \left\lfloor\frac{D_{in} + 2 \times \text{padding}[0] - \text{pool_size}[0]}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
+              {\text{stride}[1]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[3] - \text{pool_size}[3]}
+              {\text{stride}[3]}\right\rfloor + 1
 
-          When `ceil_mode` is `True`, ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=(2, 2, 2), strides=None, padding=0,
@@ -884,7 +923,7 @@ class MaxPool3D(_Pooling):
 
 
 class AvgPool1D(_Pooling):
-    """Average pooling operation for temporal data.
+    r"""Average pooling operation for temporal data.
 
     Parameters
     ----------
@@ -892,7 +931,7 @@ class AvgPool1D(_Pooling):
         Size of the average pooling windows.
     strides: int, or None
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -901,22 +940,24 @@ class AvgPool1D(_Pooling):
         'N', 'C', 'W' stands for batch, channel, and width (time) dimensions
         respectively. padding is applied on 'W' dimension.
     ceil_mode : bool, default False
-        When `True`, will use ceil instead of floor to compute the output shape.
+        When ``True``, will use ceil instead of floor to compute the output shape.
     count_include_pad : bool, default True
-        When 'False', will exclude padding elements when computing the average value.
+        When ``False``, will exclude padding elements when computing the average value.
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, out_width)`
-          when `layout` is `NCW`. out_width is calculated as::
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, W_{out})`
+          when :attr:`layout` is 'NCW'. :math:`W_{out}` is calculated as:
 
-              out_width = floor((width+2*padding-pool_size)/strides)+1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding} - \text{pool_size}}
+              {\text{stride}}\right\rfloor + 1
 
-          When `ceil_mode` is `True`, ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=2, strides=None, padding=0, layout='NCW',
@@ -932,7 +973,7 @@ class AvgPool1D(_Pooling):
 
 
 class AvgPool2D(_Pooling):
-    """Average pooling operation for spatial data.
+    r"""Average pooling operation for spatial data.
 
     Parameters
     ----------
@@ -940,7 +981,7 @@ class AvgPool2D(_Pooling):
         Size of the average pooling windows.
     strides: int, list/tuple of 2 ints, or None.
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int or list/tuple of 2 ints,
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -951,23 +992,26 @@ class AvgPool2D(_Pooling):
     ceil_mode : bool, default False
         When True, will use ceil instead of floor to compute the output shape.
     count_include_pad : bool, default True
-        When 'False', will exclude padding elements when computing the average value.
+        When ``False``, will exclude padding elements when computing the average value.
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, out_height, out_width)` when `layout` is `NCHW`.
-          out_height and out_width are calculated as::
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCHW'.
+          :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_height = floor((height+2*padding[0]-pool_size[0])/strides[0])+1
-              out_width = floor((width+2*padding[1]-pool_size[1])/strides[1])+1
+          .. math::
+              H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[0] - \text{pool_size}[0]}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
+              {\text{stride}[1]}\right\rfloor + 1
 
-          When `ceil_mode` is `True`, ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=(2, 2), strides=None, padding=0,
@@ -983,7 +1027,7 @@ class AvgPool2D(_Pooling):
 
 
 class AvgPool3D(_Pooling):
-    """Average pooling operation for 3D data (spatial or spatio-temporal).
+    r"""Average pooling operation for 3D data (spatial or spatio-temporal).
 
     Parameters
     ----------
@@ -991,7 +1035,7 @@ class AvgPool3D(_Pooling):
         Size of the average pooling windows.
     strides: int, list/tuple of 3 ints, or None.
         Factor by which to downscale. E.g. 2 will halve the input size.
-        If `None`, it will default to `pool_size`.
+        If ``None``, it will default to :attr:`pool_size`.
     padding: int or list/tuple of 3 ints,
         If padding is non-zero, then the input is implicitly
         zero-padded on both sides for padding number of points.
@@ -1003,24 +1047,30 @@ class AvgPool3D(_Pooling):
     ceil_mode : bool, default False
         When True, will use ceil instead of floor to compute the output shape.
     count_include_pad : bool, default True
-        When 'False', will exclude padding elements when computing the average value.
+        When ``False``, will exclude padding elements when computing the average value.
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCDHW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, out_depth, out_height, out_width)` when `layout` is `NCDHW`.
-          out_depth, out_height and out_width are calculated as::
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, D_{out}, H_{out}, W_{out})` when :attr:`layout` is 'NCDHW'.
+          :math:`D_{out}`, :math:`H_{out}` and :math:`W_{out}` are calculated as:
 
-              out_depth = floor((depth+2*padding[0]-pool_size[0])/strides[0])+1
-              out_height = floor((height+2*padding[1]-pool_size[1])/strides[1])+1
-              out_width = floor((width+2*padding[2]-pool_size[2])/strides[2])+1
+          .. math::
+              D_{out} = \left\lfloor\frac{D_{in} + 2 \times \text{padding}[0] - \text{pool_size}[0]}
+              {\text{stride}[0]}\right\rfloor + 1
+          .. math::
+              H_{out} = \left\lfloor\frac{H_{in} + 2 \times \text{padding}[1] - \text{pool_size}[1]}
+              {\text{stride}[1]}\right\rfloor + 1
+          .. math::
+              W_{out} = \left\lfloor\frac{W_{in} + 2 \times \text{padding}[3] - \text{pool_size}[3]}
+              {\text{stride}[3]}\right\rfloor + 1
 
-          When `ceil_mode` is `True,` ceil will be used instead of floor in this
+          When :attr:`ceil_mode` is ``True``, ceil will be used instead of floor in this
           equation.
     """
     def __init__(self, pool_size=(2, 2, 2), strides=None, padding=0,
@@ -1048,12 +1098,12 @@ class GlobalMaxPool1D(_Pooling):
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, 1)`
-          when `layout` is `NCW`.
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, 1)`
+          when :attr:`layout` is 'NCW'.
     """
     def __init__(self, layout='NCW', **kwargs):
         assert layout in ('NCW', 'NWC'),\
@@ -1075,13 +1125,12 @@ class GlobalMaxPool2D(_Pooling):
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, 1, 1)` when `layout` is `NCHW`.
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, 1, 1)` when :attr:`layout` is 'NCHW'.
     """
     def __init__(self, layout='NCHW', **kwargs):
         assert layout in ('NCHW', 'NHWC'),\
@@ -1104,13 +1153,13 @@ class GlobalMaxPool3D(_Pooling):
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, 1, 1, 1)` when `layout` is `NCDHW`.
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, 1, 1, 1)` when :attr:`layout` is 'NCDHW'.
     """
     def __init__(self, layout='NCDHW', **kwargs):
         assert layout in ('NCDHW', 'NDHWC'),\
@@ -1131,11 +1180,12 @@ class GlobalAvgPool1D(_Pooling):
 
 
     Inputs:
-        - **data**: 3D input tensor with shape `(batch_size, in_channels, width)`
-          when `layout` is `NCW`. For other layouts shape is permuted accordingly.
+        - :attr:`data` 3D input tensor with shape :math:`(N, C_{in}, W_{in})`
+          when :attr:`layout` is 'NCW'. For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 3D output tensor with shape `(batch_size, channels, 1)`.
+        - :attr:`out` 3D output tensor with shape :math:`(N, C_{out}, 1)`
+          when :attr:`layout` is 'NCW'.
     """
     def __init__(self, layout='NCW', **kwargs):
         assert layout in ('NCW', 'NWC'),\
@@ -1156,13 +1206,12 @@ class GlobalAvgPool2D(_Pooling):
 
 
     Inputs:
-        - **data**: 4D input tensor with shape
-          `(batch_size, in_channels, height, width)` when `layout` is `NCHW`.
-          For other layouts shape is permuted accordingly.
+        - :attr:`data` 4D input tensor with shape :math:`(N, C_{in}, H_{in}, W_{in})`
+          when :attr:`layout` is 'NCHW'.  For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 4D output tensor with shape
-          `(batch_size, channels, 1, 1)` when `layout` is `NCHW`.
+        - :attr:`out` 4D output tensor with shape
+          :math:`(N, C_{out}, 1, 1)` when :attr:`layout` is 'NCHW'.
     """
     def __init__(self, layout='NCHW', **kwargs):
         assert layout in ('NCHW', 'NHWC'),\
@@ -1184,13 +1233,13 @@ class GlobalAvgPool3D(_Pooling):
 
 
     Inputs:
-        - **data**: 5D input tensor with shape
-          `(batch_size, in_channels, depth, height, width)` when `layout` is `NCDHW`.
+        - :attr:`data` 5D input tensor with shape
+          :math:`(N, C_{in}, D_{in}, H_{in}, W_{in})` when :attr:`layout` is 'NCDHW'.
           For other layouts shape is permuted accordingly.
 
     Outputs:
-        - **out**: 5D output tensor with shape
-          `(batch_size, channels, 1, 1, 1)` when `layout` is `NCDHW`.
+        - :attr:`out` 5D output tensor with shape
+          :math:`(N, C_{out}, 1, 1, 1)` when :attr:`layout` is 'NCDHW'.
     """
     def __init__(self, layout='NCDHW', **kwargs):
         assert layout in ('NCDHW', 'NDHWC'),\
@@ -1209,17 +1258,13 @@ class ReflectionPad2D(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with the shape :math:`(N, C, H_{in}, W_{in})`.
+        - :attr:`data` input tensor with the shape :math:`(N, C, H_{in}, W_{in})`.
 
     Outputs:
-        - **out**: output tensor with the shape :math:`(N, C, H_{out}, W_{out})`, where
+        - :attr:`out` output tensor with the shape :math:`(N, C, H_{out}, W_{out})`, where
 
-          .. math::
-
-            H_{out} = H_{in} + 2 \cdot padding
-
-            W_{out} = W_{in} + 2 \cdot padding
-
+          .. math:: H_{out} = H_{in} + 2 \times \text{padding}[0]
+          .. math:: W_{out} = W_{in} + 2 \times \text{padding}[1]
 
     Examples
     --------

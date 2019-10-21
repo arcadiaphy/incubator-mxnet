@@ -36,10 +36,10 @@ class Activation(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, activation, **kwargs):
         self._act_type = activation
@@ -79,10 +79,10 @@ class LeakyReLU(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, alpha, **kwargs):
         assert alpha >= 0, "Slope coefficient for LeakyReLU must be no less than 0."
@@ -101,7 +101,7 @@ class LeakyReLU(HybridBlock):
 
 class PReLU(HybridBlock):
     r"""Parametric leaky version of a Rectified Linear Unit.
-    <https://arxiv.org/abs/1502.01852>`_ paper.
+    https://arxiv.org/abs/1502.01852.
 
     It learns a gradient when the unit is not active
 
@@ -123,10 +123,10 @@ class PReLU(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, alpha_initializer=initializer.Constant(0.25), **kwargs):
         super(PReLU, self).__init__(**kwargs)
@@ -138,11 +138,10 @@ class PReLU(HybridBlock):
 
 
 class ELU(HybridBlock):
-    r"""
-    Exponential Linear Unit (ELU)
-        "Fast and Accurate Deep Network Learning by Exponential Linear Units", Clevert et al, 2016
-        https://arxiv.org/abs/1511.07289
-        Published as a conference paper at ICLR 2016
+    """Exponential Linear Unit (ELU)
+
+    "Fast and Accurate Deep Network Learning by Exponential Linear Units", Clevert et al, 2016
+    https://arxiv.org/abs/1511.07289 Published as a conference paper at ICLR 2016
 
     Parameters
     ----------
@@ -151,10 +150,10 @@ class ELU(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
 
     def __init__(self, alpha=1.0, **kwargs):
@@ -166,17 +165,17 @@ class ELU(HybridBlock):
 
 
 class SELU(HybridBlock):
-    r"""
-    Scaled Exponential Linear Unit (SELU)
-        "Self-Normalizing Neural Networks", Klambauer et al, 2017
-        https://arxiv.org/abs/1706.02515
+    """Scaled Exponential Linear Unit (SELU)
+
+    "Self-Normalizing Neural Networks", Klambauer et al, 2017
+    https://arxiv.org/abs/1706.02515
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, **kwargs):
         super(SELU, self).__init__(**kwargs)
@@ -185,17 +184,17 @@ class SELU(HybridBlock):
         return F.LeakyReLU(x, act_type='selu', name='fwd')
 
 class GELU(HybridBlock):
-    r"""
-    Gaussian Exponential Linear Unit (GELU)
-        "Gaussian Error Linear Units (GELUs)", Hendrycks et al, 2016
-        https://arxiv.org/abs/1606.08415
+    """Gaussian Exponential Linear Unit (GELU)
+
+    "Gaussian Error Linear Units (GELUs)", Hendrycks et al, 2016
+    https://arxiv.org/abs/1606.08415
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, **kwargs):
         super(GELU, self).__init__(**kwargs)
@@ -205,21 +204,22 @@ class GELU(HybridBlock):
 
 
 class Swish(HybridBlock):
-    r"""
-    Swish Activation function
-        https://arxiv.org/pdf/1710.05941.pdf
+    r"""Swish Activation function https://arxiv.org/pdf/1710.05941.pdf
+
 
     Parameters
     ----------
     beta : float
-        swish(x) = x * sigmoid(beta*x)
+        The beta parameter in the following equation:
+
+        .. math:: \text{swish}(x) = x * \text{sigmoid}(beta * x)
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
 
     def __init__(self, beta=1.0, **kwargs):

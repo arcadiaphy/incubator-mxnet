@@ -77,7 +77,7 @@ class Sequential(Block):
         return len(self._children)
 
     def hybridize(self, active=True, **kwargs):
-        """Activates or deactivates `HybridBlock` s recursively. Has no effect on
+        """Activates or deactivates HybridBlocks recursively. Has no effect on
         non-hybrid children.
 
         Parameters
@@ -149,20 +149,20 @@ class Dense(HybridBlock):
     where `activation` is the element-wise activation function
     passed as the `activation` argument, `weight` is a weights matrix
     created by the layer, and `bias` is a bias vector created by the layer
-    (only applicable if `use_bias` is `True`).
+    (only applicable if :attr:`use_bias` is ``True``).
 
     .. note::
-        the input must be a tensor with rank 2. Use `flatten` to convert it
-        to rank 2 manually if necessary.
+        the input must be a tensor with rank 2. Use :class:`~mxnet.ndarray.flatten`
+        to convert it to rank 2 manually if necessary.
 
     Parameters
     ----------
     units : int
         Dimensionality of the output space.
     activation : str
-        Activation function to use. See help on `Activation` layer.
+        Activation function to use. See help on :class:`~mxnet.gluon.nn.Activation` layer.
         If you don't specify anything, no activation is applied
-        (ie. "linear" activation: `a(x) = x`).
+        (ie. "linear" activation: :math:`a(x) = x`).
     use_bias : bool, default True
         Whether the layer uses a bias vector.
     flatten: bool, default True
@@ -178,24 +178,24 @@ class Dense(HybridBlock):
         Initializer for the bias vector.
     in_units : int, optional
         Size of the input data. If not specified, initialization will be
-        deferred to the first time `forward` is called and `in_units`
+        deferred to the first time ``forward`` is called and in_units
         will be inferred from the shape of input data.
     prefix : str or None
-        See document of `Block`.
+        See document of :class:`~mxnet.gluon.Block`.
     params : ParameterDict or None
-        See document of `Block`.
+        See document of :class:`~mxnet.gluon.Block`.
 
 
     Inputs:
-        - **data**: if `flatten` is True, `data` should be a tensor with shape
-          `(batch_size, x1, x2, ..., xn)`, where x1 * x2 * ... * xn is equal to
-          `in_units`. If `flatten` is False, `data` should have shape
-          `(x1, x2, ..., xn, in_units)`.
+        - :attr:`data` If ``flatten = True``, data should be a tensor with shape
+          :math:`(\text{batch_size}, x_1, x_2, \dots, x_n)`, where
+          :math:`\text{in_units} = x_1 * x_2 * \dots * x_n`. If ``flatten = False``,
+          data should have shape :math:`(x_1, x_2, \dots, x_n, \text{in_units})`.
 
     Outputs:
-        - **out**: if `flatten` is True, `out` will be a tensor with shape
-          `(batch_size, units)`. If `flatten` is False, `out` will have shape
-          `(x1, x2, ..., xn, units)`.
+        - :attr:`out` If ``flatten = True``, out will be a tensor with shape
+          :math:`(\text{batch_size}, \text{units})`. If ``flatten = False``,
+          out will have shape :math:`(x_1, x_2, \dots, x_n, \text{units})`.
     """
     def __init__(self, units, activation=None, use_bias=True, flatten=True,
                  dtype='float32', weight_initializer=None, bias_initializer='zeros',
@@ -238,7 +238,7 @@ class Dense(HybridBlock):
 class Dropout(HybridBlock):
     """Applies Dropout to the input.
 
-    Dropout consists in randomly setting a fraction `rate` of input units
+    Dropout consists in randomly setting a fraction :attr:`rate` of input units
     to 0 at each update during training time, which helps prevent overfitting.
 
     Parameters
@@ -250,10 +250,10 @@ class Dropout(HybridBlock):
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
 
     References
     ----------
@@ -300,32 +300,31 @@ class BatchNorm(HybridBlock):
         If False, `beta` is ignored.
     scale: bool, default True
         If True, multiply by `gamma`. If False, `gamma` is not used.
-        When the next layer is linear (also e.g. `nn.relu`),
-        this can be disabled since the scaling
-        will be done by the next layer.
+        When the next layer is linear (also e.g. ``nn.relu``),
+        this can be disabled since the scaling will be done by the next layer.
     use_global_stats: bool, default False
         If True, use global moving statistics instead of local batch-norm. This will force
         change batch-norm into a scale shift operator.
         If False, use local batch-norm.
-    beta_initializer: str or `Initializer`, default 'zeros'
+    beta_initializer: str or Initializer, default 'zeros'
         Initializer for the beta weight.
-    gamma_initializer: str or `Initializer`, default 'ones'
+    gamma_initializer: str or Initializer, default 'ones'
         Initializer for the gamma weight.
-    running_mean_initializer: str or `Initializer`, default 'zeros'
+    running_mean_initializer: str or Initializer, default 'zeros'
         Initializer for the running mean.
-    running_variance_initializer: str or `Initializer`, default 'ones'
+    running_variance_initializer: str or Initializer, default 'ones'
         Initializer for the running variance.
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
     """
     def __init__(self, axis=1, momentum=0.9, epsilon=1e-5, center=True, scale=True,
                  use_global_stats=False, beta_initializer='zeros', gamma_initializer='ones',
@@ -378,15 +377,14 @@ class BatchNorm(HybridBlock):
 
 class Embedding(HybridBlock):
     r"""Turns non-negative integers (indexes/tokens) into dense vectors
-    of fixed size. eg. [4, 20] -> [[0.25, 0.1], [0.6, -0.2]]
+    of fixed size. eg. ``[4, 20] -> [[0.25, 0.1], [0.6, -0.2]]``
 
     .. note::
-        if `sparse_grad` is set to True, the gradient w.r.t weight will be
+        If :attr:`sparse_grad` is set to True, the gradient w.r.t weight will be
         sparse. Only a subset of optimizers support sparse gradients, including SGD,
         AdaGrad and Adam. By default lazy updates is turned on, which may perform
         differently from standard updates. For more details, please check the
-        Optimization API at:
-        https://mxnet.incubator.apache.org/api/python/optimization/optimization.html
+        `Optimization API <../../optimizer/index.html>`_.
 
     Parameters
     ----------
@@ -401,11 +399,12 @@ class Embedding(HybridBlock):
     sparse_grad: bool
         If True, gradient w.r.t. weight will be a 'row_sparse' NDArray.
 
+
     Inputs:
-        - **data**: (N-1)-D tensor with shape: `(x1, x2, ..., xN-1)`.
+        - :attr:`data` (N-1)-D tensor with shape: :math:`(x_1, x_2, \dots, x_{N-1})`.
 
     Output:
-        - **out**: N-D tensor with shape: `(x1, x2, ..., xN-1, output_dim)`.
+        - :attr:`out` N-D tensor with shape: :math:`(x_1, x_2, \dots, x_{N-1}, \text{output_dim})`.
     """
     def __init__(self, input_dim, output_dim, dtype='float32',
                  weight_initializer=None, sparse_grad=False, **kwargs):
@@ -431,10 +430,10 @@ class Flatten(HybridBlock):
     r"""Flattens the input to two dimensional.
 
     Inputs:
-        - **data**: input tensor with arbitrary shape `(N, x1, x2, ..., xn)`
+        - :attr:`data` input tensor with arbitrary shape :math:`(N, x_1, x_2, \dots, x_n)`
 
     Output:
-        - **out**: 2D tensor with shape: `(N, x1 \cdot x2 \cdot ... \cdot xn)`
+        - :attr:`out` 2D tensor with shape: :math:`(N, x_1 * x_2 * \dots * x_n)`
     """
     def __init__(self, **kwargs):
         super(Flatten, self).__init__(**kwargs)
@@ -448,17 +447,16 @@ class Flatten(HybridBlock):
 
 
 class InstanceNorm(HybridBlock):
-    r"""
-    Applies instance normalization to the n-dimensional input array.
+    r"""Applies instance normalization to the n-dimensional input array.
+
     This operator takes an n-dimensional input array where (n>2) and normalizes
-    the input using the following formula:
+    the input along axis :math:`\bar{C} = \{i \mid i \neq 0, i \neq \text{axis} \}`
+    using the following formula:
 
     .. math::
 
-      \bar{C} = \{i \mid i \neq 0, i \neq axis\}
-
-      out = \frac{x - mean[data, \bar{C}]}{ \sqrt{Var[data, \bar{C}]} + \epsilon}
-       * gamma + beta
+        \text{out} = \frac{x - \text{mean}[\text{data}, \bar{C}]}{ \sqrt{Var[\text{data}, \bar{C}]} + \epsilon}
+        * \text{gamma} + \text{beta}
 
     Parameters
     ----------
@@ -477,21 +475,21 @@ class InstanceNorm(HybridBlock):
         When the next layer is linear (also e.g. `nn.relu`),
         this can be disabled since the scaling
         will be done by the next layer.
-    beta_initializer: str or `Initializer`, default 'zeros'
+    beta_initializer: str or Initializer, default 'zeros'
         Initializer for the beta weight.
-    gamma_initializer: str or `Initializer`, default 'ones'
+    gamma_initializer: str or Initializer, default 'ones'
         Initializer for the gamma weight.
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
 
     References
     ----------
@@ -551,7 +549,8 @@ class LayerNorm(HybridBlock):
 
     .. math::
 
-      out = \frac{x - mean[data, axis]}{ \sqrt{Var[data, axis] + \epsilon}} * gamma + beta
+      \text{out} = \frac{x - \text{mean}[\text{data}, \text{axis}]}{ \sqrt{Var[\text{data}, \text{axis}] + \epsilon}}
+      * \text{gamma} + \text{beta}
 
     Parameters
     ----------
@@ -564,21 +563,21 @@ class LayerNorm(HybridBlock):
         If False, `beta` is ignored.
     scale: bool, default True
         If True, multiply by `gamma`. If False, `gamma` is not used.
-    beta_initializer: str or `Initializer`, default 'zeros'
+    beta_initializer: str or Initializer, default 'zeros'
         Initializer for the beta weight.
-    gamma_initializer: str or `Initializer`, default 'ones'
+    gamma_initializer: str or Initializer, default 'ones'
         Initializer for the gamma weight.
     in_channels : int, default 0
         Number of channels (feature maps) in input data. If not specified,
-        initialization will be deferred to the first time `forward` is called
-        and `in_channels` will be inferred from the shape of input data.
+        initialization will be deferred to the first time ``forward`` is called
+        and in_channels will be inferred from the shape of input data.
 
 
     Inputs:
-        - **data**: input tensor with arbitrary shape.
+        - :attr:`data` input tensor with arbitrary shape.
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
 
     References
     ----------
@@ -630,14 +629,17 @@ class LayerNorm(HybridBlock):
 class GroupNorm(HybridBlock):
     r"""
     Applies group normalization to the n-dimensional input array.
-    This operator takes an n-dimensional input array where the leftmost 2 axis are
-    `batch` and `channel` respectively:
+
+    This operator takes an n-dimensional input array with shape :math:`(N, C, \dots)`
+    where :math:`N` is batch size, and :math:`C` is channel respectively. In order to
+    apply norm on group, the input array is first reshaped to
+    :math:`(N, \text{num_groups}, C / \text{num_groups}, \dots)`. Then for
+    :math:`\text{axis} = (2, \dots)`, the outpus array is calculated as:
 
     .. math::
 
-      x = x.reshape((N, num_groups, C // num_groups, ...))
-      axis = (2, ...)
-      out = \frac{x - mean[x, axis]}{ \sqrt{Var[x, axis] + \epsilon}} * gamma + beta
+        \text{out} = \frac{x - \text{mean}[\text{data}, \text{axis}]}{\sqrt{Var[\text{data}, \text{axis}] + \epsilon}}
+        * \text{gamma} + \text{beta}
 
     Parameters
     ----------
@@ -650,17 +652,17 @@ class GroupNorm(HybridBlock):
         If False, `beta` is ignored.
     scale: bool, default True
         If True, multiply by `gamma`. If False, `gamma` is not used.
-    beta_initializer: str or `Initializer`, default 'zeros'
+    beta_initializer: str or Initializer, default 'zeros'
         Initializer for the beta weight.
-    gamma_initializer: str or `Initializer`, default 'ones'
+    gamma_initializer: str or Initializer, default 'ones'
         Initializer for the gamma weight.
 
 
     Inputs:
-        - **data**: input tensor with shape (N, C, ...).
+        - :attr:`data` input tensor with shape :math:`(N, C, \dots)`
 
     Outputs:
-        - **out**: output tensor with the same shape as `data`.
+        - :attr:`out` output tensor with the same shape as :attr:`data`.
 
     References
     ----------
@@ -723,6 +725,7 @@ class Lambda(Block):
     ----------
     function : str or function
         Function used in lambda must be one of the following:
+
         1) the name of an operator that is available in ndarray. For example::
 
             block = Lambda('tanh')
@@ -731,11 +734,12 @@ class Lambda(Block):
 
             block = Lambda(lambda x: nd.LeakyReLU(x, slope=0.1))
 
+
     Inputs:
-        - ** *args **: one or more input data. Their shapes depend on the function.
+        - :attr:`*args` one or more input data. Their shapes depend on the function.
 
     Output:
-        - ** *outputs **: one or more output data. Their shapes depend on the function.
+        - :attr:`*outputs` one or more output data. Their shapes depend on the function.
     """
     def __init__(self, function, prefix=None):
         super(Lambda, self).__init__(prefix=prefix)
@@ -765,6 +769,7 @@ class HybridLambda(HybridBlock):
     ----------
     function : str or function
         Function used in lambda must be one of the following:
+
         1) The name of an operator that is available in both symbol and ndarray. For example::
 
             block = HybridLambda('tanh')
@@ -774,11 +779,11 @@ class HybridLambda(HybridBlock):
             block = HybridLambda(lambda F, x: F.LeakyReLU(x, slope=0.1))
 
     Inputs:
-        - ** *args **: one or more input data. First argument must be symbol or ndarray. Their \
-            shapes depend on the function.
+        - :attr:`*args` one or more input data. First argument must be symbol or ndarray.
+          Their shapes depend on the function.
 
     Output:
-        - ** *outputs **: one or more output data. Their shapes depend on the function.
+        - :attr:`*outputs` one or more output data. Their shapes depend on the function.
 
     """
     def __init__(self, function, prefix=None):
