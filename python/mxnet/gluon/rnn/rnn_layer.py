@@ -198,11 +198,13 @@ class _RNNLayer(HybridBlock):
         func : callable, default `ndarray.zeros`
             Function for creating initial state.
 
-            For Symbol API, func can be `symbol.zeros`, `symbol.uniform`,
-            `symbol.var` etc. Use `symbol.var` if you want to directly
-            feed input as states.
+            For Symbol API, func can be :func:`symbol.zeros <mxnet.symbol.zeros>`,
+            :func:`symbol.uniform <mxnet.symbol.uniform>`, etc.
+            Use :func:`symbol.var <mxnet.symbol.var>` if you want to directly feed
+            input as states.
 
-            For NDArray API, func can be `ndarray.zeros`, `ndarray.ones`, etc.
+            For NDArray API, func can be :func:`ndarray.zeros <mxnet.ndarray.zeros>`,
+            :func:`ndarray.ones <mxnet.ndarray.ones>`, etc.
 
         **kwargs :
             Additional keyword arguments passed to func. For example
@@ -305,7 +307,7 @@ class _RNNLayer(HybridBlock):
 
 
 class RNN(_RNNLayer):
-    r"""Applies a multi-layer Elman RNN with `tanh` or `ReLU` non-linearity to an input sequence.
+    r"""Applies a multi-layer Elman RNN with tanh or ReLU non-linearity to an input sequence.
 
     For each element in the input sequence, each layer computes the following
     function:
@@ -314,8 +316,8 @@ class RNN(_RNNLayer):
         h_t = \tanh(w_{ih} * x_t + b_{ih}  +  w_{hh} * h_{(t-1)} + b_{hh})
 
     where :math:`h_t` is the hidden state at time `t`, and :math:`x_t` is the output
-    of the previous layer at time `t` or :math:`input_t` for the first layer.
-    If nonlinearity='relu', then `ReLU` is used instead of `tanh`.
+    of the previous layer at time `t` or :math:`\text{input}_t` for the first layer.
+    If nonlinearity='relu', then ReLU is used instead of :math:`\tanh`.
 
     Parameters
     ----------
@@ -349,28 +351,25 @@ class RNN(_RNNLayer):
     dtype : str, default 'float32'
         Type to initialize the parameters and default states to
     prefix : str or None
-        Prefix of this `Block`.
+        Prefix of this Block.
     params : ParameterDict or None
-        Shared Parameters for this `Block`.
+        Shared Parameters for this Block.
 
 
     Inputs:
-        - **data**: input tensor with shape `(sequence_length, batch_size, input_size)`
-          when `layout` is "TNC". For other layouts, dimensions are permuted accordingly
-          using transpose() operator which adds performance overhead. Consider creating
-          batches in TNC layout during data batching step.
-
-        - **states**: initial recurrent state tensor with shape
-          `(num_layers, batch_size, num_hidden)`. If `bidirectional` is True,
-          shape will instead be `(2*num_layers, batch_size, num_hidden)`. If
-          `states` is None, zeros will be used as default begin states.
+       - :attr:`data` input tensor with shape according to :attr:`layout`.
+         Using ``transpose`` operator to change layout will adds performance overhead.
+         Consider creating batches according to :attr:`layout` during data batching step.
+       - :attr:`states` initial recurrent state tensor with shape
+         (num_layers, batch_size, num_hidden). If :attr:`bidirectional` is True,
+         shape will instead be (2 * num_layers, batch_size, num_hidden). If
+         :attr:`states` is None, zeros will be used as default begin states.
 
     Outputs:
-        - **out**: output tensor with shape `(sequence_length, batch_size, num_hidden)`
-          when `layout` is "TNC". If `bidirectional` is True, output shape will instead
-          be `(sequence_length, batch_size, 2*num_hidden)`
-        - **out_states**: output recurrent state tensor with the same shape as `states`.
-          If `states` is None `out_states` will not be returned.
+       - :attr:`out` output tensor with shape (sequence_length, batch_size, num_hidden)
+         when layout is 'TNC'. If :attr:`bidirectional` is True, output shape will instead
+         be (sequence_length, batch_size, 2 * num_hidden).
+       - :attr:`out_states` updated recurrent state tensor with the same shape as :attr:`states`.
 
 
     Examples
@@ -409,17 +408,17 @@ class LSTM(_RNNLayer):
 
     .. math::
         \begin{array}{ll}
-        i_t = sigmoid(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
-        f_t = sigmoid(W_{if} x_t + b_{if} + W_{hf} h_{(t-1)} + b_{hf}) \\
+        i_t = \text{sigmoid}(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
+        f_t = \text{sigmoid}(W_{if} x_t + b_{if} + W_{hf} h_{(t-1)} + b_{hf}) \\
         g_t = \tanh(W_{ig} x_t + b_{ig} + W_{hc} h_{(t-1)} + b_{hg}) \\
-        o_t = sigmoid(W_{io} x_t + b_{io} + W_{ho} h_{(t-1)} + b_{ho}) \\
+        o_t = \text{sigmoid}(W_{io} x_t + b_{io} + W_{ho} h_{(t-1)} + b_{ho}) \\
         c_t = f_t * c_{(t-1)} + i_t * g_t \\
         h_t = o_t * \tanh(c_t)
         \end{array}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`c_t` is the
     cell state at time `t`, :math:`x_t` is the hidden state of the previous
-    layer at time `t` or :math:`input_t` for the first layer, and :math:`i_t`,
+    layer at time `t` or :math:`\text{input}_t` for the first layer, and :math:`i_t`,
     :math:`f_t`, :math:`g_t`, :math:`o_t` are the input, forget, cell, and
     out gates, respectively.
 
@@ -469,27 +468,26 @@ class LSTM(_RNNLayer):
         The number of expected features in the input x.
         If not specified, it will be inferred from input.
     prefix : str or None
-        Prefix of this `Block`.
-    params : `ParameterDict` or `None`
-        Shared Parameters for this `Block`.
+        Prefix of this Block.
+    params : ParameterDict or None
+        Shared Parameters for this Block.
 
 
     Inputs:
-        - **data**: input tensor with shape `(sequence_length, batch_size, input_size)`
-          when `layout` is "TNC". For other layouts, dimensions are permuted accordingly
-          using transpose() operator which adds performance overhead. Consider creating
-          batches in TNC layout during data batching step.
-        - **states**: a list of two initial recurrent state tensors. Each has shape
-          `(num_layers, batch_size, num_hidden)`. If `bidirectional` is True,
-          shape will instead be `(2*num_layers, batch_size, num_hidden)`. If
-          `states` is None, zeros will be used as default begin states.
+       - :attr:`data` input tensor with shape according to :attr:`layout`.
+         Using ``transpose`` operator to change layout will adds performance overhead.
+         Consider creating batches according to :attr:`layout` during data batching step.
+       - :attr:`states` a list of two initial recurrent state tensors. Each has shape
+         (num_layers, batch_size, num_hidden). If :attr:`bidirectional` is True,
+         shape will instead be (2 * num_layers, batch_size, num_hidden). If
+         :attr:`states` is None, zeros will be used as default begin states.
 
     Outputs:
-        - **out**: output tensor with shape `(sequence_length, batch_size, num_hidden)`
-          when `layout` is "TNC". If `bidirectional` is True, output shape will instead
-          be `(sequence_length, batch_size, 2*num_hidden)`
-        - **out_states**: a list of two output recurrent state tensors with the same
-          shape as in `states`. If `states` is None `out_states` will not be returned.
+       - :attr:`out` output tensor with shape (sequence_length, batch_size, num_hidden)
+         when layout is 'TNC'. If :attr:`bidirectional` is True, output shape will instead
+         be (sequence_length, batch_size, 2 * num_hidden)
+       - :attr:`out_states` a list of two updated output recurrent state tensors with the same
+         shape as in :attr:`states`.
 
 
     Examples
@@ -543,14 +541,14 @@ class GRU(_RNNLayer):
 
     .. math::
         \begin{array}{ll}
-        r_t = sigmoid(W_{ir} x_t + b_{ir} + W_{hr} h_{(t-1)} + b_{hr}) \\
-        i_t = sigmoid(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
+        r_t = \text{sigmoid}(W_{ir} x_t + b_{ir} + W_{hr} h_{(t-1)} + b_{hr}) \\
+        i_t = \text{sigmoid}(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
         n_t = \tanh(W_{in} x_t + b_{in} + r_t * (W_{hn} h_{(t-1)} + b_{hn})) \\
         h_t = (1 - i_t) * n_t + i_t * h_{(t-1)} \\
         \end{array}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the hidden
-    state of the previous layer at time `t` or :math:`input_t` for the first layer,
+    state of the previous layer at time `t` or :math:`\text{input}_t` for the first layer,
     and :math:`r_t`, :math:`i_t`, :math:`n_t` are the reset, input, and new gates, respectively.
 
     Parameters
@@ -583,27 +581,25 @@ class GRU(_RNNLayer):
         The number of expected features in the input x.
         If not specified, it will be inferred from input.
     prefix : str or None
-        Prefix of this `Block`.
+        Prefix of this Block.
     params : ParameterDict or None
-        Shared Parameters for this `Block`.
+        Shared Parameters for this Block.
 
 
     Inputs:
-        - **data**: input tensor with shape `(sequence_length, batch_size, input_size)`
-          when `layout` is "TNC". For other layouts, dimensions are permuted accordingly
-          using transpose() operator which adds performance overhead. Consider creating
-          batches in TNC layout during data batching step.
-        - **states**: initial recurrent state tensor with shape
-          `(num_layers, batch_size, num_hidden)`. If `bidirectional` is True,
-          shape will instead be `(2*num_layers, batch_size, num_hidden)`. If
-          `states` is None, zeros will be used as default begin states.
+       - :attr:`data` input tensor with shape according to :attr:`layout`.
+         Using ``transpose`` operator to change layout will adds performance overhead.
+         Consider creating batches according to :attr:`layout` during data batching step.
+       - :attr:`states` initial recurrent state tensor with shape
+         (num_layers, batch_size, num_hidden). If :attr:`bidirectional` is True,
+         shape will instead be (2 * num_layers, batch_size, num_hidden). If
+         :attr:`states` is None, zeros will be used as default begin states.
 
     Outputs:
-        - **out**: output tensor with shape `(sequence_length, batch_size, num_hidden)`
-          when `layout` is "TNC". If `bidirectional` is True, output shape will instead
-          be `(sequence_length, batch_size, 2*num_hidden)`
-        - **out_states**: output recurrent state tensor with the same shape as `states`.
-          If `states` is None `out_states` will not be returned.
+       - :attr:`out` output tensor with shape (sequence_length, batch_size, num_hidden)
+         when layout is 'TNC'. If :attr:`bidirectional` is True, output shape will instead
+         be (sequence_length, batch_size, 2 * num_hidden)
+       - :attr:`out_states` updated recurrent state tensor with the same shape as :attr:`states`.
 
 
     Examples

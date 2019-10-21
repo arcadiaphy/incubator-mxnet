@@ -128,12 +128,11 @@ class RecurrentCell(Block):
     Parameters
     ----------
     prefix : str, optional
-        Prefix for names of `Block`s
-        (this prefix is also used for names of weights if `params` is `None`
-        i.e. if `params` are being created and not reused)
+        Prefix for names of this Block (this prefix is also used for names of
+        weights if :attr:`params` is ``None``)
     params : Parameter or None, default None
-        Container for weight sharing between cells.
-        A new Parameter container is created if `params` is `None`.
+        Container for weight sharing between cells. If ``None``, a new Parameter
+        container is created.
     """
     def __init__(self, prefix=None, params=None):
         super(RecurrentCell, self).__init__(prefix=prefix, params=params)
@@ -159,15 +158,16 @@ class RecurrentCell(Block):
         func : callable, default symbol.zeros
             Function for creating initial state.
 
-            For Symbol API, func can be `symbol.zeros`, `symbol.uniform`,
-            `symbol.var etc`. Use `symbol.var` if you want to directly
-            feed input as states.
+            For Symbol API, func can be :func:`symbol.zeros <mxnet.symbol.zeros>`,
+            :func:`symbol.uniform <mxnet.symbol.uniform>`, etc.
+            Use :func:`symbol.var <mxnet.symbol.var>` if you want to directly feed
+            input as states.
 
-            For NDArray API, func can be `ndarray.zeros`, `ndarray.ones`, etc.
+            For NDArray API, func can be :func:`ndarray.zeros <mxnet.ndarray.zeros>`,
+            :func:`ndarray.ones <mxnet.ndarray.ones>`, etc.
         batch_size: int, default 0
             Only required for NDArray API. Size of the batch ('N' in layout)
             dimension of input.
-
         **kwargs :
             Additional keyword arguments passed to func. For example
             `mean`, `std`, `dtype`, etc.
@@ -201,48 +201,44 @@ class RecurrentCell(Block):
         length : int
             Number of steps to unroll.
         inputs : Symbol, list of Symbol, or None
-            If `inputs` is a single Symbol (usually the output
-            of Embedding symbol), it should have shape
-            (batch_size, length, ...) if `layout` is 'NTC',
-            or (length, batch_size, ...) if `layout` is 'TNC'.
-
-            If `inputs` is a list of symbols (usually output of
-            previous unroll), they should all have shape
-            (batch_size, ...).
+            Inputs to be unrolled. If inputs is a single Symbol (usually the output
+            of Embedding symbol), it should have shape according to :attr:`layout`.
+            If inputs is a list of symbols (usually output of previous unroll),
+            this list is organized along 'T' dimension, so each elements has layout 'TC'.
         begin_state : nested list of Symbol, optional
-            Input states created by `begin_state()`
-            or output state of another cell.
-            Created from `begin_state()` if `None`.
+            Input states created by :meth:`begin_state` or output state of another cell.
+            Created from :meth:`begin_state` if ``None``.
         layout : str, optional
-            `layout` of input symbol. Only used if inputs
-            is a single Symbol.
+            Layout of input symbol. Only used if inputs is a single Symbol.
         merge_outputs : bool, optional
-            If `False`, returns outputs as a list of Symbols.
-            If `True`, concatenates output across time steps
-            and returns a single symbol with shape
-            (batch_size, length, ...) if layout is 'NTC',
-            or (length, batch_size, ...) if layout is 'TNC'.
-            If `None`, output whatever is faster.
+            Whether to merge ouputs across time steps:
+
+            - ``False``, return outputs as a list of Symbols.
+            
+            - ``True``, concatenate output across time steps
+              and return a single symbol according to :attr:`layout`.
         valid_length : Symbol, NDArray or None
-            `valid_length` specifies the length of the sequences in the batch without padding.
-            This option is especially useful for building sequence-to-sequence models where
-            the input and output sequences would potentially be padded.
-            If `valid_length` is None, all sequences are assumed to have the same length.
-            If `valid_length` is a Symbol or NDArray, it should have shape (batch_size,).
-            The ith element will be the length of the ith sequence in the batch.
-            The last valid state will be return and the padded outputs will be masked with 0.
-            Note that `valid_length` must be smaller or equal to `length`.
+            Specifies the length of the sequences in the batch without padding, so it should
+            be less or equal to :attr:`length`. This option is especially useful for building
+            sequence-to-sequence models where the input and output sequences would potentially
+            be padded. For different types of input:
+
+            - ``None``, all sequences are assumed to have the same length.
+
+            - A Symbol or NDArray, it should have shape (batch_size,).
+              The *i*-th element will be the length of the *i*-th sequence in the batch.
+              The last valid state will be return and the padded outputs will be masked with 0.
 
         Returns
         -------
         outputs : list of Symbol or Symbol
-            Symbol (if `merge_outputs` is True) or list of Symbols
-            (if `merge_outputs` is False) corresponding to the output from
+            Symbol (if :attr:`merge_outputs` is True) or list of Symbols
+            (if :attr:`merge_outputs` is False) corresponding to the output from
             the RNN from this unrolling.
 
         states : list of Symbol
             The new state of this RNN after this unrolling.
-            The type of this symbol is same as the output of `begin_state()`.
+            The type of this symbol is same as the output of :meth:`begin_state`.
         """
         # pylint: disable=too-many-locals
         self.reset()
@@ -292,7 +288,7 @@ class RecurrentCell(Block):
         inputs : sym.Variable
             Input symbol, 2D, of shape (batch_size * num_units).
         states : list of sym.Variable
-            RNN state from previous step or the output of begin_state().
+            RNN state from previous step or the output of :meth:`begin_state`.
 
         Returns
         -------
@@ -301,7 +297,7 @@ class RecurrentCell(Block):
             for a single time step.
         states : list of Symbol
             The new state of this RNN after this unrolling.
-            The type of this symbol is same as the output of `begin_state()`.
+            The type of this symbol is same as the output of :meth:`begin_state`.
             This can be used as an input state to the next time step
             of this RNN.
 
@@ -334,8 +330,8 @@ class RNNCell(HybridRecurrentCell):
         h_t = \tanh(w_{ih} * x_t + b_{ih}  +  w_{hh} * h_{(t-1)} + b_{hh})
 
     where :math:`h_t` is the hidden state at time `t`, and :math:`x_t` is the hidden
-    state of the previous layer at time `t` or :math:`input_t` for the first layer.
-    If nonlinearity='relu', then `ReLU` is used instead of `tanh`.
+    state of the previous layer at time `t` or :math:`\text{input}_t` for the first layer.
+    If :attr:`activation` = 'relu', then ReLU is used instead of :math:`\tanh`.
 
     Parameters
     ----------
@@ -354,22 +350,20 @@ class RNNCell(HybridRecurrentCell):
     h2h_bias_initializer : str or Initializer, default 'zeros'
         Initializer for the bias vector.
     prefix : str, default ``'rnn_'``
-        Prefix for name of `Block`s
-        (and name of weight if params is `None`).
+        Prefix for name of this Block (and name of weight if :attr:`params` is ``None``).
     params : Parameter or None
-        Container for weight sharing between cells.
-        Created if `None`.
+        Container for weight sharing between cells. Created if ``None``.
 
 
     Inputs:
-        - **data**: input tensor with shape `(batch_size, input_size)`.
-        - **states**: a list of one initial recurrent state tensor with shape
-          `(batch_size, num_hidden)`.
+       - :attr:`data` input tensor with shape (batch_size, input_size).
+       - :attr:`states` a list of one initial recurrent state tensor with shape
+         (batch_size, num_hidden).
 
     Outputs:
-        - **out**: output tensor with shape `(batch_size, num_hidden)`.
-        - **next_states**: a list of one output recurrent state tensor with the
-          same shape as `states`.
+       - :attr:`out` output tensor with shape (batch_size, num_hidden).
+       - :attr:`next_states` a list of updated recurrent state tensor with the
+         same shape as :attr:`states`.
     """
     def __init__(self, hidden_size, activation='tanh',
                  i2h_weight_initializer=None, h2h_weight_initializer=None,
@@ -432,17 +426,17 @@ class LSTMCell(HybridRecurrentCell):
 
     .. math::
         \begin{array}{ll}
-        i_t = sigmoid(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
-        f_t = sigmoid(W_{if} x_t + b_{if} + W_{hf} h_{(t-1)} + b_{hf}) \\
+        i_t = \text{sigmoid}(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
+        f_t = \text{sigmoid}(W_{if} x_t + b_{if} + W_{hf} h_{(t-1)} + b_{hf}) \\
         g_t = \tanh(W_{ig} x_t + b_{ig} + W_{hc} h_{(t-1)} + b_{hg}) \\
-        o_t = sigmoid(W_{io} x_t + b_{io} + W_{ho} h_{(t-1)} + b_{ho}) \\
+        o_t = \text{sigmoid}(W_{io} x_t + b_{io} + W_{ho} h_{(t-1)} + b_{ho}) \\
         c_t = f_t * c_{(t-1)} + i_t * g_t \\
         h_t = o_t * \tanh(c_t)
         \end{array}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`c_t` is the
     cell state at time `t`, :math:`x_t` is the hidden state of the previous
-    layer at time `t` or :math:`input_t` for the first layer, and :math:`i_t`,
+    layer at time `t` or :math:`\text{input}_t` for the first layer, and :math:`i_t`,
     :math:`f_t`, :math:`g_t`, :math:`o_t` are the input, forget, cell, and
     out gates, respectively.
 
@@ -462,10 +456,10 @@ class LSTMCell(HybridRecurrentCell):
         Initializer for the bias vector.
     prefix : str, default ``'lstm_'``
         Prefix for name of `Block`s
-        (and name of weight if params is `None`).
+        (and name of weight if params is ``None``).
     params : Parameter or None, default None
         Container for weight sharing between cells.
-        Created if `None`.
+        Created if ``None``.
     activation : str, default 'tanh'
         Activation type to use. See nd/symbol Activation
         for supported types.
@@ -473,15 +467,16 @@ class LSTMCell(HybridRecurrentCell):
         Activation type to use for the recurrent step. See nd/symbol Activation
         for supported types.
 
+
     Inputs:
-        - **data**: input tensor with shape `(batch_size, input_size)`.
-        - **states**: a list of two initial recurrent state tensors. Each has shape
-          `(batch_size, num_hidden)`.
+       - :attr:`data` input tensor with shape (batch_size, input_size).
+       - :attr:`states` a list of two initial recurrent state tensors. Each has shape
+         (batch_size, num_hidden).
 
     Outputs:
-        - **out**: output tensor with shape `(batch_size, num_hidden)`.
-        - **next_states**: a list of two output recurrent state tensors. Each has
-          the same shape as `states`.
+       - :attr:`out` output tensor with shape (batch_size, num_hidden).
+       - :attr:`next_states` a list of two updated recurrent state tensors. Each has
+         the same shape as :attr:`states`.
     """
     # pylint: disable=too-many-instance-attributes
     def __init__(self, hidden_size,
@@ -561,14 +556,14 @@ class GRUCell(HybridRecurrentCell):
 
     .. math::
         \begin{array}{ll}
-        r_t = sigmoid(W_{ir} x_t + b_{ir} + W_{hr} h_{(t-1)} + b_{hr}) \\
-        i_t = sigmoid(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
+        r_t = \text{sigmoid}(W_{ir} x_t + b_{ir} + W_{hr} h_{(t-1)} + b_{hr}) \\
+        i_t = \text{sigmoid}(W_{ii} x_t + b_{ii} + W_{hi} h_{(t-1)} + b_{hi}) \\
         n_t = \tanh(W_{in} x_t + b_{in} + r_t * (W_{hn} h_{(t-1)} + b_{hn})) \\
         h_t = (1 - i_t) * n_t + i_t * h_{(t-1)} \\
         \end{array}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the hidden
-    state of the previous layer at time `t` or :math:`input_t` for the first layer,
+    state of the previous layer at time `t` or :math:`\text{input}_t` for the first layer,
     and :math:`r_t`, :math:`i_t`, :math:`n_t` are the reset, input, and new gates, respectively.
 
     Parameters
@@ -587,21 +582,21 @@ class GRUCell(HybridRecurrentCell):
         Initializer for the bias vector.
     prefix : str, default ``'gru_'``
         prefix for name of `Block`s
-        (and name of weight if params is `None`).
+        (and name of weight if params is ``None``).
     params : Parameter or None, default None
         Container for weight sharing between cells.
-        Created if `None`.
+        Created if ``None``.
 
 
     Inputs:
-        - **data**: input tensor with shape `(batch_size, input_size)`.
-        - **states**: a list of one initial recurrent state tensor with shape
-          `(batch_size, num_hidden)`.
+       - :attr:`data` input tensor with shape (batch_size, input_size).
+       - :attr:`states` a list of one initial recurrent state tensor with shape
+         (batch_size, num_hidden).
 
     Outputs:
-        - **out**: output tensor with shape `(batch_size, num_hidden)`.
-        - **next_states**: a list of one output recurrent state tensor with the
-          same shape as `states`.
+       - :attr:`out` output tensor with shape (batch_size, num_hidden).
+       - :attr:`next_states` a list of one updated recurrent state tensor with the
+         same shape as :attr:`states`.
     """
     def __init__(self, hidden_size,
                  i2h_weight_initializer=None, h2h_weight_initializer=None,
@@ -845,12 +840,12 @@ class DropoutCell(HybridRecurrentCell):
 
 
     Inputs:
-        - **data**: input tensor with shape `(batch_size, size)`.
-        - **states**: a list of recurrent state tensors.
+       - :attr:`data` input tensor with shape (batch_size, size).
+       - :attr:`states` a list of recurrent state tensors.
 
     Outputs:
-        - **out**: output tensor with shape `(batch_size, size)`.
-        - **next_states**: returns input `states` directly.
+       - :attr:`out` output tensor with shape (batch_size, size).
+       - :attr:`next_states` returns input :attr:`states` directly.
     """
     def __init__(self, rate, axes=(), prefix=None, params=None):
         super(DropoutCell, self).__init__(prefix, params)
