@@ -22,4 +22,3 @@ gluon.HybridBlock
 .. autoclass:: mxnet.gluon.HybridBlock
     :members:
     :inherited-members:
-    :autosummary:

@@ -22,4 +22,3 @@ gluon.Block
 .. autoclass:: mxnet.gluon.Block
     :members:
     :inherited-members:
-    :autosummary:

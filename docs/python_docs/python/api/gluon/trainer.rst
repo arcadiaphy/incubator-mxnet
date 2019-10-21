@@ -22,4 +22,3 @@ gluon.Trainer
 .. autoclass:: mxnet.gluon.Trainer
     :members:
     :inherited-members:
-    :autosummary:

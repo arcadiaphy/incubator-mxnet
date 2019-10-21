@@ -21,4 +21,3 @@ gluon.Constant
 
 .. autoclass:: mxnet.gluon.Constant
     :members:
-    :autosummary:
