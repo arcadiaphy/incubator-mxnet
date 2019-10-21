@@ -426,8 +426,8 @@ class Block(object):
 
         References
         ----------
-        `Saving and Loading Gluon Models \
-        <https://mxnet.apache.org/api/python/docs/tutorials/packages/gluon/blocks/save_load_params.html>`_
+        `Saving and Loading Gluon Models
+        <../../tutorials/packages/gluon/blocks/save_load_params.html>`_
         """
         params = self._collect_params_with_prefix()
         arg_dict = {key : val._reduce() for key, val in params.items()}
@@ -620,8 +620,8 @@ class Block(object):
 
     def initialize(self, init=initializer.Uniform(), ctx=None, verbose=False,
                    force_reinit=False):
-        """Initializes :class:`~mxnet.gluon.Parameter` of this Block
-        and its children. Equivalent to ``block.collect_params().initialize(...)``
+        """Initializes the parameters of this Block and its children.
+        Equivalent to ``block.collect_params().initialize(...)``
 
         Parameters
         ----------
@@ -1110,7 +1110,7 @@ class HybridBlock(Block):
 
     def forward(self, x, *args):
         """Defines the forward computation. Arguments can be either
-        :py:class:`NDArray` or :py:class:`Symbol`."""
+        :class:`~mxnet.ndarray.NDArray` or :class:`~mxnet.symbol.Symbol`."""
         has_symbol, has_ndarray, ctx_set, first_ctx = _gather_type_ctx_info([x] + list(args))
         if has_symbol and has_ndarray:
             raise ValueError('In HybridBlock, we do not support mixed NDArrays and Symbols'
