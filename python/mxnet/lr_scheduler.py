@@ -30,13 +30,13 @@ class LRScheduler(object):
     base_lr : float, optional
         The initial learning rate.
     warmup_steps: int
-        number of warmup steps used before this scheduler starts decay
+        Number of warmup steps used before this scheduler starts decay
     warmup_begin_lr: float
-        if using warmup, the learning rate from which it starts warming up
-    warmup_mode: string
-        warmup can be done in two modes.
-        'linear' mode gradually increases lr with each step in equal increments
-        'constant' mode keeps lr at warmup_begin_lr for warmup_steps
+        If using warmup, the learning rate from which it starts warming up
+    warmup_mode: str
+        Warmup can be done in two modes:
+        - **linear** mode gradually increases lr with each step in equal increments;
+        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
     """
     def __init__(self, base_lr=0.01,
                  warmup_steps=0, warmup_begin_lr=0, warmup_mode='linear'):
@@ -149,10 +149,10 @@ class MultiFactorScheduler(LRScheduler):
         number of warmup steps used before this scheduler starts decay
     warmup_begin_lr: float
         if using warmup, the learning rate from which it starts warming up
-    warmup_mode: string
-        warmup can be done in two modes.
-        'linear' mode gradually increases lr with each step in equal increments
-        'constant' mode keeps lr at warmup_begin_lr for warmup_steps
+    warmup_mode: str
+        Warmup can be done in two modes:
+        - **linear** mode gradually increases lr with each step in equal increments;
+        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
     """
     def __init__(self, step, factor=1, base_lr=0.01, warmup_steps=0, warmup_begin_lr=0,
                  warmup_mode='linear'):
@@ -188,7 +188,7 @@ class MultiFactorScheduler(LRScheduler):
         return self.base_lr
 
 class PolyScheduler(LRScheduler):
-    """ Reduce the learning rate according to a polynomial of given power.
+    """Reduce the learning rate according to a polynomial of given power.
 
     Calculate the new learning rate, after warmup if any, by::
 
@@ -197,22 +197,22 @@ class PolyScheduler(LRScheduler):
 
     Parameters
     ----------
-        max_update: int
-            maximum number of updates before the decay reaches final learning rate.
-        base_lr: float
-            base learning rate to start from
-        pwr:   int
-            power of the decay term as a function of the current number of updates.
-        final_lr:   float
-            final learning rate after all steps
-        warmup_steps: int
-            number of warmup steps used before this scheduler starts decay
-        warmup_begin_lr: float
-            if using warmup, the learning rate from which it starts warming up
-        warmup_mode: string
-            warmup can be done in two modes.
-            'linear' mode gradually increases lr with each step in equal increments
-            'constant' mode keeps lr at warmup_begin_lr for warmup_steps
+    max_update: int
+        maximum number of updates before the decay reaches final learning rate.
+    base_lr: float
+        base learning rate to start from
+    pwr:   int
+        power of the decay term as a function of the current number of updates.
+    final_lr:   float
+        final learning rate after all steps
+    warmup_steps: int
+        number of warmup steps used before this scheduler starts decay
+    warmup_begin_lr: float
+        if using warmup, the learning rate from which it starts warming up
+    warmup_mode: str
+        Warmup can be done in two modes:
+        - **linear** mode gradually increases lr with each step in equal increments;
+        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
     """
 
     def __init__(self, max_update, base_lr=0.01, pwr=2, final_lr=0,
@@ -236,7 +236,7 @@ class PolyScheduler(LRScheduler):
         return self.base_lr
 
 class CosineScheduler(LRScheduler):
-    """ Reduce the learning rate according to a cosine function
+    """Reduce the learning rate according to a cosine function
 
     Calculate the new learning rate by::
 
@@ -245,20 +245,20 @@ class CosineScheduler(LRScheduler):
 
     Parameters
     ----------
-        max_update: int
-            maximum number of updates before the decay reaches 0
-        base_lr: float
-            base learning rate
-        final_lr: float
-            final learning rate after all steps
-        warmup_steps: int
-            number of warmup steps used before this scheduler starts decay
-        warmup_begin_lr: float
-            if using warmup, the learning rate from which it starts warming up
-        warmup_mode: string
-            warmup can be done in two modes.
-            'linear' mode gradually increases lr with each step in equal increments
-            'constant' mode keeps lr at warmup_begin_lr for warmup_steps
+    max_update: int
+        maximum number of updates before the decay reaches 0
+    base_lr: float
+        base learning rate
+    final_lr: float
+        final learning rate after all steps
+    warmup_steps: int
+        number of warmup steps used before this scheduler starts decay
+    warmup_begin_lr: float
+        if using warmup, the learning rate from which it starts warming up
+    warmup_mode: str
+        Warmup can be done in two modes:
+        - **linear** mode gradually increases lr with each step in equal increments;
+        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
     """
 
     def __init__(self, max_update, base_lr=0.01, final_lr=0,

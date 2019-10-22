@@ -102,7 +102,7 @@ class KVStore(object):
         Parameters
         ----------
         handle : KVStoreHandle
-            `KVStore` handle of C API.
+            KVStore handle of C API.
         """
         assert isinstance(handle, KVStoreHandle)
         self.handle = handle
@@ -114,11 +114,11 @@ class KVStore(object):
         check_call(_LIB.MXKVStoreFree(self.handle))
 
     def init(self, key, value):
-        """ Initializes a single or a sequence of key-value pairs into the store.
+        """Initializes a single or a sequence of key-value pairs into the store.
 
-        For each key, one must `init` it before calling `push` or `pull`.
-        When multiple workers invoke `init` for the same key, only
-        the value supplied by worker with rank `0` is used. This function returns
+        For each key, one must :meth:`init <init>` it before calling :meth:`push <push>`
+        or :meth:`pull <pull>`. When multiple workers invoke :meth:`init` for the same key, only
+        the value supplied by worker with rank 0 is used. This function returns
         after data has been initialized successfully.
 
         Parameters
@@ -139,11 +139,9 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 2.  2.  2.]
         [ 2.  2.  2.]]
-
         >>> # init a list of key-value pairs
         >>> keys = ['5', '7', '9']
         >>> kv.init(keys, [mx.nd.ones(shape)]*len(keys))
-
         >>> # init a row_sparse value
         >>> kv.init('4', mx.nd.ones(shape).tostype('row_sparse'))
         >>> b = mx.nd.sparse.zeros('row_sparse', shape)
@@ -158,7 +156,7 @@ class KVStore(object):
             check_call(_LIB.MXKVStoreInit(self.handle, mx_uint(len(ckeys)), ckeys, cvals))
 
     def push(self, key, value, priority=0):
-        """ Pushes a single or a sequence of key-value pairs into the store.
+        """Pushes a single or a sequence of key-value pairs into the store.
 
         This function returns immediately after adding an operator to the engine.
         The actual operation is executed asynchronously. If there are consecutive
@@ -190,7 +188,6 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 8.  8.  8.]
         [ 8.  8.  8.]]
-
         >>> # aggregate the value and the push
         >>> gpus = [mx.gpu(i) for i in range(4)]
         >>> b = [mx.nd.ones(shape, gpu) for gpu in gpus]
@@ -199,7 +196,6 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 4.  4.  4.]
         [ 4.  4.  4.]]
-
         >>> # push a list of keys.
         >>> # single device
         >>> keys = ['4', '5', '6']
@@ -209,7 +205,6 @@ class KVStore(object):
         >>> print b[1].asnumpy()
         [[ 1.  1.  1.]
         [ 1.  1.  1.]]
-
         >>> # multiple devices:
         >>> keys = ['7', '8', '9']
         >>> b = [[mx.nd.ones(shape, gpu) for gpu in gpus]] * len(keys)
@@ -218,7 +213,6 @@ class KVStore(object):
         >>> print b[1][1].asnumpy()
         [[ 4.  4.  4.]
         [ 4.  4.  4.]]
-
         >>> # push a row_sparse value
         >>> b = mx.nd.sparse.zeros('row_sparse', shape)
         >>> kv.init('10', mx.nd.sparse.zeros('row_sparse', shape))
@@ -238,19 +232,19 @@ class KVStore(object):
 
 
     def pull(self, key, out=None, priority=0, ignore_sparse=True):
-        """ Pulls a single value or a sequence of values from the store.
+        """Pulls a single value or a sequence of values from the store.
 
         This function returns immediately after adding an operator to the engine.
-        Subsequent attempts to read from the `out` variable will be blocked until the
+        Subsequent attempts to read from the :attr:`out` variable will be blocked until the
         pull operation completes.
 
-        `pull` is executed asynchronously after all previous `pull` calls and only
-        the last `push` call for the same input key(s) are finished.
+        :meth:`pull <pull>` is executed asynchronously after all previous :meth:`pull <pull>`
+        calls and only the last :meth:`push <push>` call for the same input key(s) are finished.
 
         The returned values are guaranteed to be the latest values in the store.
 
-        pull with `RowSparseNDArray` is not supported for dist kvstore.
-        Please use ``row_sparse_pull`` instead.
+        pull with :class:`~mxnet.ndarray.sparse.RowSparseNDArray` is not supported for dist kvstore.
+        Please use :meth:`row_sparse_pull <row_sparse_pull>` instead.
 
         Parameters
         ----------
@@ -276,14 +270,12 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 2.  2.  2.]
         [ 2.  2.  2.]]
-
         >>> # pull into multiple devices
         >>> b = [mx.nd.ones(shape, gpu) for gpu in gpus]
         >>> kv.pull('3', out=b)
         >>> print b[1].asnumpy()
         [[ 2.  2.  2.]
         [ 2.  2.  2.]]
-
         >>> # pull a list of key-value pairs.
         >>> # On single device
         >>> keys = ['5', '7', '9']
@@ -312,18 +304,18 @@ class KVStore(object):
                                                     ctypes.c_bool(ignore_sparse)))
 
     def pushpull(self, key, value, out=None, priority=0):
-        """ Performs push and pull a single value or a sequence of values from the store.
+        """Performs push and pull a single value or a sequence of values from the store.
 
         This function is coalesced form of push and pull operations. This function returns
         immediately after adding an operator to the engine. Subsequent attempts to read
-        from the `out` variable will be blocked until the pull operation completes.
+        from the :attr:`out` variable will be blocked until the pull operation completes.
 
-        `value` is pushed to the kvstore server for the specified keys and the updated
-        values are pulled from the server to `out`. If `out` is not specified the pulled
-        values are written to `value`. The returned values are guaranteed to be the latest
+        :attr:`value` is pushed to the kvstore server for the specified keys and the updated
+        values are pulled from the server to :attr:`out`. If :attr:`out` is not specified the pulled
+        values are written to :attr:`value`. The returned values are guaranteed to be the latest
         values in the store.
 
-        pushpull with `RowSparseNDArray` is not supported for dist kvstore.
+        pushpull with :class:`~mxnet.ndarray.sparse.RowSparseNDArray` is not supported for dist kvstore.
 
         Parameters
         ----------
@@ -349,7 +341,6 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 8.  8.  8.]
         [ 8.  8.  8.]]
-
         >>> # aggregate the value and the push
         >>> gpus = [mx.gpu(i) for i in range(4)]
         >>> b = [mx.nd.ones(shape, gpu) for gpu in gpus]
@@ -357,7 +348,6 @@ class KVStore(object):
         >>> print a.asnumpy()
         [[ 4.  4.  4.]
         [ 4.  4.  4.]]
-
         >>> # push a list of keys.
         >>> # single device
         >>> keys = ['4', '5', '6']
@@ -366,7 +356,6 @@ class KVStore(object):
         >>> print b[1].asnumpy()
         [[ 1.  1.  1.]
         [ 1.  1.  1.]]
-
         >>> # multiple devices:
         >>> keys = ['7', '8', '9']
         >>> b = [[mx.nd.ones(shape, gpu) for gpu in gpus]] * len(keys)
@@ -393,13 +382,13 @@ class KVStore(object):
                 cvals, couts, ctypes.c_int(priority)))
 
     def row_sparse_pull(self, key, out=None, priority=0, row_ids=None):
-        """ Pulls a single RowSparseNDArray value or a sequence of RowSparseNDArray values \
-        from the store with specified row_ids. When there is only one row_id, KVStoreRowSparsePull \
+        """Pulls a single RowSparseNDArray value or a sequence of RowSparseNDArray values
+        from the store with specified row_ids. When there is only one row_id, KVStoreRowSparsePull
         is invoked just once and the result is broadcast to all the rest of outputs.
 
-        `row_sparse_pull` is executed asynchronously after all previous
-        `pull`/`row_sparse_pull` calls and the last `push` call for the
-        same input key(s) are finished.
+        :meth:`row_sparse_pull <row_sparse_pull>` is executed asynchronously after all previous
+        :meth:`pull <pull>`/:meth:`row_sparse_pull <row_sparse_pull>` calls and the last
+        :meth:`push <push>` call for the same input key(s) are finished.
 
         The returned values are guaranteed to be the latest values in the store.
 
@@ -473,7 +462,7 @@ class KVStore(object):
                 out[0].copyto(out_i)
 
     def set_gradient_compression(self, compression_params):
-        """ Specifies type of low-bit quantization for gradient compression \
+        """Specifies type of low-bit quantization for gradient compression \
          and additional arguments depending on the type of compression being used.
 
         2bit Gradient Compression takes a positive float `threshold`.
@@ -529,7 +518,7 @@ class KVStore(object):
             raise Exception('Gradient compression is not supported for this type of kvstore')
 
     def set_optimizer(self, optimizer):
-        """ Registers an optimizer with the kvstore.
+        """Registers an optimizer with the kvstore.
 
         When using a single machine, this function updates the local optimizer.
         If using multiple machines and this operation is invoked from a worker node,
@@ -579,7 +568,7 @@ class KVStore(object):
 
     @property
     def type(self):
-        """ Returns the type of this kvstore.
+        """Returns the type of this kvstore.
 
         Returns
         -------
@@ -597,7 +586,7 @@ class KVStore(object):
         Returns
         -------
         rank : int
-            The rank of this node, which is in range [0, num_workers())
+            The rank of this node, which is in range ``[0, num_workers())``
         """
         rank = ctypes.c_int()
         check_call(_LIB.MXKVStoreGetRank(self.handle, ctypes.byref(rank)))
@@ -647,7 +636,7 @@ class KVStore(object):
         """Sets a push updater into the store.
 
         This function only changes the local store. When running on multiple machines one must
-        use `set_optimizer`.
+        use :meth:`set_optimizer`.
 
         Parameters
         ----------
@@ -687,10 +676,10 @@ class KVStore(object):
     def _barrier(self):
         """Invokes global barrier among all worker nodes.
 
-        For example, assume there are `n` machines. We would like machine `0` to first
-        `init` the values and then have all the workers `pull` the initialized value.
-        Before pulling, we can place invoke `_barrier()` to guarantee that the
-        initialization is finished.
+        For example, assume there are `n` machines. We would like machine 0 to first
+        :meth:`init <init>` the values and then have all the workers :meth:`pull <pull>`
+        the initialized value. Before pulling, we can place invoke :meth:`_barrier`
+        to guarantee that the initialization is finished.
         """
         check_call(_LIB.MXKVStoreBarrier(self.handle))
 
@@ -718,26 +707,26 @@ def create(name='local'):
 
     For single machine training, there are two commonly used types:
 
-    ``local``: Copies all gradients to CPU memory and updates weights there.
+    - **local** Copies all gradients to CPU memory and updates weights there.
 
-    ``device``: Aggregates gradients and updates weights on GPUs. With this setting,
-    the KVStore also attempts to use GPU peer-to-peer communication,
-    potentially accelerating the communication.
+    - **device** Aggregates gradients and updates weights on GPUs. With this setting,
+      the KVStore also attempts to use GPU peer-to-peer communication,
+      potentially accelerating the communication.
 
     For distributed training, KVStore also supports a number of types:
 
-    ``dist_sync``: Behaves similarly to ``local`` but with one major difference.
-    With ``dist_sync``, batch-size now means the batch size used on each machine.
-    So if there are ``n`` machines and we use batch size ``b``,
-    then ``dist_sync`` behaves like ``local`` with batch size ``n * b``.
+    - **dist_sync** Behaves similarly to ``local`` but with one major difference.
+      With ``dist_sync``, batch-size now means the batch size used on each machine.
+      So if there are ``n`` machines and we use batch size ``b``,
+      then ``dist_sync`` behaves like ``local`` with batch size ``n * b``.
 
-    ``dist_device_sync``: Identical to ``dist_sync`` with the difference similar
-    to ``device`` vs ``local``.
+    - **dist_device_sync** Identical to ``dist_sync`` with the difference similar
+      to ``device`` vs ``local``.
 
-    ``dist_async``: Performs asynchronous updates.
-    The weights are updated whenever gradients are received from any machine.
-    No two updates happen on the same weight at the same time. However, the order is not
-    guaranteed.
+    - **dist_async** Performs asynchronous updates.
+      The weights are updated whenever gradients are received from any machine.
+      No two updates happen on the same weight at the same time. However, the order is not
+      guaranteed.
 
     Parameters
     ----------

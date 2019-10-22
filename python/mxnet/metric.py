@@ -35,15 +35,12 @@ def check_label_shapes(labels, preds, wrap=False, shape=False):
 
     Parameters
     ----------
-    labels : list of `NDArray`
+    labels : list of NDArray
         The labels of the data.
-
-    preds : list of `NDArray`
+    preds : list of NDArray
         Predicted values.
-
     wrap : boolean
         If True, wrap labels/preds in a list if they are single NDArray
-
     shape : boolean
         If True, check the shape of labels and preds;
         Otherwise only check their length.
@@ -99,7 +96,7 @@ class EvalMetric(object):
 
     def get_config(self):
         """Save configurations of metric. Can be recreated
-        from configs with metric.create(``**config``)
+        from configs with ``metric.create(**config)``.
         """
         config = self._kwargs.copy()
         config.update({
@@ -116,7 +113,6 @@ class EvalMetric(object):
         ----------
         labels : OrderedDict of str -> NDArray
             name to array mapping for labels.
-
         preds : OrderedDict of str -> NDArray
             name to array mapping of predicted outputs.
         """
@@ -137,10 +133,9 @@ class EvalMetric(object):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         raise NotImplementedError()
@@ -242,7 +237,7 @@ def create(metric, *args, **kwargs):
         This argument must be one of the below:
 
         - Name of a metric.
-        - An instance of `EvalMetric`.
+        - An instance of :class:`EvalMetric`.
         - A list, each element of which is a metric or a metric name.
         - An evaluation function that computes custom metric for a given batch of
           labels and predictions.
@@ -354,10 +349,9 @@ class CompositeEvalMetric(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         for metric in self.metrics:
@@ -438,13 +432,13 @@ class CompositeEvalMetric(EvalMetric):
 @register
 @alias('acc')
 class Accuracy(EvalMetric):
-    """Computes accuracy classification score.
+    r"""Computes accuracy classification score.
 
     The accuracy score is defined as
 
     .. math::
-        \\text{accuracy}(y, \\hat{y}) = \\frac{1}{n} \\sum_{i=0}^{n-1}
-        \\text{1}(\\hat{y_i} == y_i)
+        \text{accuracy}(y, \hat{y}) = \frac{1}{n} \sum_{i=0}^{n-1}
+        \text{1}(\hat{y_i} == y_i)
 
     Parameters
     ----------
@@ -481,10 +475,9 @@ class Accuracy(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data with class indices as values, one per sample.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Prediction values for samples. Each prediction value can either be the class index,
             or a vector of likelihoods for all classes.
         """
@@ -513,11 +506,11 @@ class Accuracy(EvalMetric):
 class TopKAccuracy(EvalMetric):
     """Computes top k predictions accuracy.
 
-    `TopKAccuracy` differs from Accuracy in that it considers the prediction
+    TopKAccuracy differs from Accuracy in that it considers the prediction
     to be ``True`` as long as the ground truth label is in the top K
     predicated labels.
 
-    If `top_k` = ``1``, then `TopKAccuracy` is identical to `Accuracy`.
+    If ``top_k = 1``, then TopKAccuracy is identical to :class:`Accuracy`.
 
     Parameters
     ----------
@@ -559,10 +552,9 @@ class TopKAccuracy(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -616,10 +608,10 @@ class _BinaryClassificationMetrics(object):
 
         Parameters
         ----------
-        label : `NDArray`
+        label : NDArray
             The labels of the data.
 
-        pred : `NDArray`
+        pred : NDArray
             Predicted values.
         """
         pred = pred.asnumpy()
@@ -776,9 +768,9 @@ class F1(EvalMetric):
         Name of labels that should be used when updating with update_dict.
         By default include all labels.
     average : str, default 'macro'
-        Strategy to be used for aggregating across mini-batches.
-            "macro": average the F1 scores for each batch.
-            "micro": compute a single F1 score across all batches.
+        Strategy to be used for aggregating across mini-batches:
+        - **macro**: average the F1 scores for each batch;
+        - **micro**: compute a single F1 score across all batches.
 
     Examples
     --------
@@ -803,10 +795,9 @@ class F1(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -843,7 +834,7 @@ class F1(EvalMetric):
 
 @register
 class MCC(EvalMetric):
-    """Computes the Matthews Correlation Coefficient of a binary classification problem.
+    r"""Computes the Matthews Correlation Coefficient of a binary classification problem.
 
     While slower to compute than F1 the MCC can give insight that F1 or Accuracy cannot.
     For instance, if the network always predicts the same result
@@ -853,14 +844,14 @@ class MCC(EvalMetric):
     MCC of 0 is uncorrelated, 1 is completely correlated, and -1 is negatively correlated.
 
     .. math::
-        \\text{MCC} = \\frac{ TP \\times TN - FP \\times FN }
-        {\\sqrt{ (TP + FP) ( TP + FN ) ( TN + FP ) ( TN + FN ) } }
+        \text{MCC} = \frac{\text{TP} \times \text{TN} - \text{FP} \times \text{FN} }
+        {\sqrt{ (\text{TP} + \text{FP}) (\text{TP}+ \text{FN} ) ( \text{TN} + \text{FP} ) ( \text{TN} + \text{FN} ) } }
 
     where 0 terms in the denominator are replaced by 1.
 
     .. note::
 
-        This version of MCC only supports binary classification.  See PCC.
+        This version of MCC only supports binary classification. See :class:`PCC`.
 
     Parameters
     ----------
@@ -873,9 +864,9 @@ class MCC(EvalMetric):
         Name of labels that should be used when updating with update_dict.
         By default include all labels.
     average : str, default 'macro'
-        Strategy to be used for aggregating across mini-batches.
-            "macro": average the MCC for each batch.
-            "micro": compute a single MCC across all batches.
+        Strategy to be used for aggregating across mini-batches:
+        - **macro**: average the F1 scores for each batch;
+        - **micro**: compute a single F1 score across all batches.
 
     Examples
     --------
@@ -917,10 +908,9 @@ class MCC(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -958,7 +948,7 @@ class MCC(EvalMetric):
 
 @register
 class Perplexity(EvalMetric):
-    """Computes perplexity.
+    r"""Computes perplexity.
 
     Perplexity is a measurement of how well a probability distribution
     or model predicts a sample. A low perplexity indicates the model
@@ -967,8 +957,8 @@ class Perplexity(EvalMetric):
     The perplexity of a model q is defined as
 
     .. math::
-        b^{\\big(-\\frac{1}{N} \\sum_{i=1}^N \\log_b q(x_i) \\big)}
-        = \\exp \\big(-\\frac{1}{N} \\sum_{i=1}^N \\log q(x_i)\\big)
+        b^{\big(-\frac{1}{N} \sum_{i=1}^N \log_b q(x_i) \big)}
+        = \exp \\big(-\frac{1}{N} \sum_{i=1}^N \log q(x_i) \big)
 
     where we let `b = e`.
 
@@ -980,14 +970,14 @@ class Perplexity(EvalMetric):
     Suppose our model predicts :math:`q(x_1) = p(y_1 = 0 | x_1) = 0.3`
     and :math:`q(x_2) = 1.0`,
     :math:`q(x_3) = 0.6`. The perplexity of model q is
-    :math:`exp\\big(-(\\log 0.3 + \\log 1.0 + \\log 0.6) / 3\\big) = 1.77109762852`.
+    :math:`exp\big(-(\log 0.3 + \log 1.0 + \log 0.6) / 3 \big) = 1.77109762852`.
 
     Parameters
     ----------
     ignore_label : int or None
         Index of invalid label to ignore when
         counting. By default, sets to -1.
-        If set to `None`, it will include all entries.
+        If set to ``None``, it will include all entries.
     axis : int (default -1)
         The axis from prediction that was used to
         compute softmax. By default use the last
@@ -1024,10 +1014,9 @@ class Perplexity(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         assert len(labels) == len(preds)
@@ -1082,12 +1071,12 @@ class Perplexity(EvalMetric):
 
 @register
 class MAE(EvalMetric):
-    """Computes Mean Absolute Error (MAE) loss.
+    r"""Computes Mean Absolute Error (MAE) loss.
 
     The mean absolute error is given by
 
     .. math::
-        \\frac{\\sum_i^n |y_i - \\hat{y}_i|}{n}
+        \frac{\sum_i^n |y_i - \hat{y}_i|}{n}
 
     Parameters
     ----------
@@ -1121,10 +1110,9 @@ class MAE(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1147,12 +1135,12 @@ class MAE(EvalMetric):
 
 @register
 class MSE(EvalMetric):
-    """Computes Mean Squared Error (MSE) loss.
+    r"""Computes Mean Squared Error (MSE) loss.
 
     The mean squared error is given by
 
     .. math::
-        \\frac{\\sum_i^n (y_i - \\hat{y}_i)^2}{n}
+        \frac{\sum_i^n (y_i - \hat{y}_i)^2}{n}
 
     Parameters
     ----------
@@ -1185,10 +1173,9 @@ class MSE(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1211,12 +1198,12 @@ class MSE(EvalMetric):
 
 @register
 class RMSE(EvalMetric):
-    """Computes Root Mean Squred Error (RMSE) loss.
+    r"""Computes Root Mean Squred Error (RMSE) loss.
 
     The root mean squared error is given by
 
     .. math::
-        \\sqrt{\\frac{\\sum_i^n (y_i - \\hat{y}_i)^2}{n}}
+        \sqrt{\frac{\sum_i^n (y_i - \hat{y}_i)^2}{n}}
 
     Parameters
     ----------
@@ -1249,10 +1236,9 @@ class RMSE(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1276,12 +1262,12 @@ class RMSE(EvalMetric):
 @register
 @alias('ce')
 class CrossEntropy(EvalMetric):
-    """Computes Cross Entropy loss.
+    r"""Computes Cross Entropy loss.
 
     The cross entropy over a batch of sample size :math:`N` is given by
 
     .. math::
-       -\\sum_{n=1}^{N}\\sum_{k=1}^{K}t_{nk}\\log (y_{nk}),
+       -\sum_{n=1}^{N}\sum_{k=1}^{K}t_{nk}\log (y_{nk}),
 
     where :math:`t_{nk}=1` if and only if sample :math:`n` belongs to class :math:`k`.
     :math:`y_{nk}` denotes the probability of sample :math:`n` belonging to
@@ -1323,10 +1309,9 @@ class CrossEntropy(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1348,12 +1333,12 @@ class CrossEntropy(EvalMetric):
 @register
 @alias('nll_loss')
 class NegativeLogLikelihood(EvalMetric):
-    """Computes the negative log-likelihood loss.
+    r"""Computes the negative log-likelihood loss.
 
     The negative log-likelihoodd loss over a batch of sample size :math:`N` is given by
 
     .. math::
-       -\\sum_{n=1}^{N}\\sum_{k=1}^{K}t_{nk}\\log (y_{nk}),
+       -\sum_{n=1}^{N}\sum_{k=1}^{K}t_{nk}\log (y_{nk}),
 
     where :math:`K` is the number of classes, :math:`y_{nk}` is the prediceted probability for
     :math:`k`-th class for :math:`n`-th sample. :math:`t_{nk}=1` if and only if sample
@@ -1395,10 +1380,9 @@ class NegativeLogLikelihood(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1420,12 +1404,12 @@ class NegativeLogLikelihood(EvalMetric):
 @register
 @alias('pearsonr')
 class PearsonCorrelation(EvalMetric):
-    """Computes Pearson correlation.
+    r"""Computes Pearson correlation.
 
     The pearson correlation is given by
 
     .. math::
-        \\frac{cov(y, \\hat{y})}{\\sigma{y}\\sigma{\\hat{y}}}
+        \frac{cov(y, \hat{y})}{\sigma{y}\sigma{\hat{y}}}
 
     Parameters
     ----------
@@ -1458,9 +1442,9 @@ class PearsonCorrelation(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1478,15 +1462,15 @@ class PearsonCorrelation(EvalMetric):
 
 @register
 class PCC(EvalMetric):
-    """PCC is a multiclass equivalent for the Matthews correlation coefficient derived
+    r"""PCC is a multiclass equivalent for the Matthews correlation coefficient derived
     from a discrete solution to the Pearson correlation coefficient.
 
     .. math::
-        \\text{PCC} = \\frac {\\sum _{k}\\sum _{l}\\sum _{m}C_{kk}C_{lm}-C_{kl}C_{mk}}
-        {{\\sqrt {\\sum _{k}(\\sum _{l}C_{kl})(\\sum _{k'|k'\\neq k}\\sum _{l'}C_{k'l'})}}
-         {\\sqrt {\\sum _{k}(\\sum _{l}C_{lk})(\\sum _{k'|k'\\neq k}\\sum _{l'}C_{l'k'})}}}
+        \text{PCC} = \frac {\sum _{k}\sum _{l}\sum _{m}C_{kk}C_{lm}-C_{kl}C_{mk}}
+        {{\sqrt {\sum _{k}(\sum _{l}C_{kl})(\sum _{k'|k'\neq k}\sum _{l'}C_{k'l'})}}
+         {\sqrt {\sum _{k}(\sum _{l}C_{lk})(\sum _{k'|k'\neq k}\sum _{l'}C_{l'k'})}}}
 
-    defined in terms of a K x K confusion matrix C.
+    defined in terms of a :math:`K \times K` confusion matrix C.
 
     When there are more than two labels the PCC will no longer range between -1 and +1.
     Instead the minimum value will be between -1 and 0 depending on the true distribution.
@@ -1561,10 +1545,9 @@ class PCC(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         labels, preds = check_label_shapes(labels, preds, True)
@@ -1666,8 +1649,8 @@ class Caffe(Loss):
 class CustomMetric(EvalMetric):
     """Computes a customized evaluation metric.
 
-    The `feval` function can return a `tuple` of (sum_metric, num_inst) or return
-    an `int` sum_metric.
+    The :attr:`feval` function can return a tuple of ``(sum_metric, num_inst)`` or return
+    an int ``sum_metric``.
 
     Parameters
     ----------
@@ -1717,10 +1700,9 @@ class CustomMetric(EvalMetric):
 
         Parameters
         ----------
-        labels : list of `NDArray`
+        labels : list of NDArray
             The labels of the data.
-
-        preds : list of `NDArray`
+        preds : list of NDArray
             Predicted values.
         """
         if not self._allow_extra_outputs:

@@ -53,45 +53,37 @@ class Optimizer(object):
 
     Parameters
     ----------
-    rescale_grad : float, optional, default 1.0
-        Multiply the gradient with `rescale_grad` before updating. Often
-        choose to be ``1.0/batch_size``.
-
+    rescale_grad : float, optional, default 1.
+        Multiply the gradient with :attr:`rescale_grad` before updating. Often
+        choose to be ``1./batch_size``.
     param_idx2name : dict from int to string, optional, default None
         A dictionary that maps int index to string name.
-
     clip_gradient : float, optional, default None
         Clip the gradient by projecting onto the box ``[-clip_gradient, clip_gradient]``.
-
     learning_rate : float, optional, default None
         The initial learning rate. If None, the optimization will use the
-        learning rate from ``lr_scheduler``. If not None, it will overwrite
-        the learning rate in ``lr_scheduler``. If None and ``lr_scheduler``
+        learning rate from :attr:`lr_scheduler`. If not None, it will overwrite
+        the learning rate in :attr:`lr_scheduler`. If None and :attr:`lr_scheduler`
         is also None, then it will be set to 0.01 by default.
-
     lr_scheduler : LRScheduler, optional, default None
         The learning rate scheduler.
-
     wd : float, optional, default 0.0
         The weight decay (or L2 regularization) coefficient. Modifies objective
         by adding a penalty for having large weights.
-
     sym: Symbol, optional, default None
         The Symbol this optimizer is applying to.
-
     begin_num_update : int, optional, default 0
         The initial number of updates.
-
     multi_precision : bool, optional, default False
        Flag to control the internal precision of the optimizer.
        False: results in using the same precision as the weights (default),
        True: makes internal 32-bit copy of the weights and applies gradients
        in 32-bit precision even if actual weights used in the model have lower precision.
        Turning this on can improve convergence and accuracy when training with float16.
-
     param_dict : dict of int -> gluon.Parameter, default None
         Dictionary of parameter index to gluon.Parameter, used to lookup parameter attributes
         such as lr_mult, wd_mult, etc. param_dict shall not be deep copied.
+
 
     Properties
     ----------
@@ -144,7 +136,7 @@ class Optimizer(object):
         """Registers a new optimizer.
 
         Once an optimizer is registered, we can create an instance of this
-        optimizer with `create_optimizer` later.
+        optimizer with :meth:`create_optimizer` later.
 
         Examples
         --------
@@ -178,7 +170,6 @@ class Optimizer(object):
         name: str
             Name of the optimizer. Should be the name
             of a subclass of Optimizer. Case insensitive.
-
         kwargs: dict
             Parameters for the optimizer.
 
@@ -213,7 +204,7 @@ class Optimizer(object):
 
         Some optimizers require additional states, e.g. as momentum, in addition
         to gradients in order to update weights. This function creates state
-        for a given weight which will be used in `update`. This function is
+        for a given weight which will be used in :meth:`update`. This function is
         called only once for each weight.
 
         Parameters
@@ -267,7 +258,7 @@ class Optimizer(object):
         index : int
             The unique index of the parameter into the individual learning
             rates and weight decays. Learning rates and weight decay
-            may be set via `set_lr_mult()` and `set_wd_mult()`, respectively.
+            may be set via :meth:`set_lr_mult()` and :meth:`set_wd_mult()`, respectively.
         weight : NDArray
             The parameter to be updated.
         grad : NDArray
@@ -286,13 +277,13 @@ class Optimizer(object):
         index : int
             The unique index of the parameter into the individual learning
             rates and weight decays. Learning rates and weight decay
-            may be set via `set_lr_mult()` and `set_wd_mult()`, respectively.
+            may be set via :meth:`set_lr_mult()` and :meth:`set_wd_mult()`, respectively.
         weight : NDArray
             The parameter to be updated.
         grad : NDArray
             The gradient of the objective with respect to this parameter.
         state : any obj
-            The state returned by `create_state()`.
+            The state returned by :meth:`create_state`.
         """
         if self.multi_precision and weight.dtype == numpy.float16:
             # Wrapper for mixed precision
@@ -322,7 +313,8 @@ class Optimizer(object):
             self.lr = lr
 
     def set_lr_scale(self, args_lrscale): # pylint: disable=unused-argument
-        """[DEPRECATED] Sets lr scale. Use set_lr_mult instead."""
+        """[DEPRECATED] Sets lr scale. Use
+        :meth:`set_lr_mult <mxnet.optimizer.Optimizer.set_lr_mult>` instead."""
         raise DeprecationWarning
 
     def set_lr_mult(self, args_lr_mult):
@@ -330,10 +322,10 @@ class Optimizer(object):
 
         If you specify a learning rate multiplier for a parameter, then
         the learning rate for the parameter will be set as the product of
-        the global learning rate `self.lr` and its multiplier.
+        the global learning rate ``self.lr`` and its multiplier.
 
         .. note:: The default learning rate multiplier of a `Variable`
-            can be set with `lr_mult` argument in the constructor.
+            can be set with :attr:`lr_mult` argument in the constructor.
 
         Parameters
         ----------
@@ -342,10 +334,10 @@ class Optimizer(object):
             parameter specified in the key will be set as the given value.
 
             You can specify the parameter with either its name or its index.
-            If you use the name, you should pass `sym` in the constructor,
-            and the name you specified in the key of `args_lr_mult` should match
-            the name of the parameter in `sym`. If you use the index, it should
-            correspond to the index of the parameter used in the `update` method.
+            If you use the name, you should pass symbol in the constructor,
+            and the name you specified in the key of :attr:`args_lr_mult` should match
+            the name of the parameter in the symbol. If you use the index, it should
+            correspond to the index of the parameter used in the :meth:`update` method.
 
             Specifying a parameter by its index is only supported for backward
             compatibility, and we recommend to use the name instead.
@@ -361,13 +353,13 @@ class Optimizer(object):
     def set_wd_mult(self, args_wd_mult):
         """Sets an individual weight decay multiplier for each parameter.
 
-        By default, if `param_idx2name` was provided in the
+        By default, if :attr:`param_idx2name` was provided in the
         constructor, the weight decay multipler is set as 0 for all
         parameters whose name don't end with ``_weight`` or
         ``_gamma``.
 
         .. note:: The default weight decay multiplier for a `Variable`
-            can be set with its `wd_mult` argument in the constructor.
+            can be set with its :attr:`wd_mult` argument in the constructor.
 
         Parameters
         ----------
@@ -376,10 +368,10 @@ class Optimizer(object):
             parameter specified in the key will be set as the given value.
 
             You can specify the parameter with either its name or its index.
-            If you use the name, you should pass `sym` in the constructor,
-            and the name you specified in the key of `args_lr_mult` should match
-            the name of the parameter in `sym`. If you use the index, it should
-            correspond to the index of the parameter used in the `update` method.
+            If you use the name, you should pass symbol in the constructor,
+            and the name you specified in the key of :attr:`args_lr_mult` should match
+            the name of the parameter in the symbol. If you use the index, it should
+            correspond to the index of the parameter used in the :meth:`update` method.
 
             Specifying a parameter by its index is only supported for backward
             compatibility, and we recommend to use the name instead.
@@ -468,7 +460,7 @@ class Optimizer(object):
 
     def _get_wds(self, indices):
         """Gets weight decays for indices.
-        Returns 0 for non-weights if the name of weights are provided for `__init__`.
+        Returns 0 for non-weights if the name of weights are provided for ``__init__``.
 
         Parameters
         ----------
@@ -492,7 +484,7 @@ class Optimizer(object):
 
     def _get_wd(self, index):
         """Gets weight decay for index.
-        Returns 0 for non-weights if the name of weights are provided for `__init__`.
+        Returns 0 for non-weights if the name of weights are provided for ``__init__``.
 
         Parameters
         ----------
@@ -525,7 +517,7 @@ register = Optimizer.register   # pylint: disable=invalid-name
 class SGD(Optimizer):
     """The SGD optimizer with momentum and weight decay.
 
-    If the storage types of grad is ``row_sparse`` and ``lazy_update`` is True, \
+    If the storage types of grad is ``row_sparse`` and :attr:`lazy_update` is True, \
     **lazy updates** are applied by::
 
         for row in grad.indices:
@@ -540,7 +532,7 @@ class SGD(Optimizer):
     provides slightly different semantics than the original update, and
     may lead to different empirical results.
 
-    In the case when ``update_on_kvstore`` is set to False (either globally via
+    In the case when :attr:`update_on_kvstore` is set to False (either globally via
     MXNET_UPDATE_ON_KVSTORE=0 environment variable or as a parameter in
     :class:`~mxnet.gluon.Trainer`) SGD optimizer can perform aggregated update
     of parameters, which may lead to improved performance. The aggregation size
@@ -557,14 +549,14 @@ class SGD(Optimizer):
     :class:`~mxnet.ndarray.sgd_update` and :class:`~mxnet.ndarray.sgd_mom_update`.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
     momentum : float, optional
         The momentum value.
     lazy_update : bool, optional
-        Default is True. If True, lazy updates are applied \
+        Default is True. If True, lazy updates are applied
         if the storage types of weight and grad are both ``row_sparse``.
     multi_precision: bool, optional
         Flag to control the internal precision of the optimizer.
@@ -677,26 +669,23 @@ class Signum(Optimizer):
         state = momentum * state + (1-momentum)*rescaled_grad
         weight = (1 - lr * wd_lh) * weight - lr * sign(state)
 
-    References
-    ----------
-    Jeremy Bernstein, Yu-Xiang Wang, Kamyar Azizzadenesheli & Anima Anandkumar. (2018).
-    signSGD: Compressed Optimisation for Non-Convex Problems. In ICML'18.
-
-    See: https://arxiv.org/abs/1802.04434
-
     For details of the update algorithm see
     :class:`~mxnet.ndarray.signsgd_update` and :class:`~mxnet.ndarray.signum_update`.
 
+    References
+    ----------
+    `signSGD: Compressed Optimisation for Non-Convex Problems
+    <See: https://arxiv.org/abs/1802.04434>`_
+
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
     momentum : float, optional
        The momentum value.
     wd_lh : float, optional
-       The amount of decoupled weight decay regularization, see details in the original paper at:\
-       https://arxiv.org/abs/1711.05101
+       The amount of decoupled weight decay regularization.
     """
     def __init__(self, learning_rate=0.01, momentum=0.9, wd_lh=0.0, **kwargs):
         super(Signum, self).__init__(learning_rate=learning_rate, **kwargs)
@@ -739,8 +728,8 @@ class FTML(Optimizer):
     """The FTML optimizer.
 
     This class implements the optimizer described in
-    *FTML - Follow the Moving Leader in Deep Learning*,
-    available at http://proceedings.mlr.press/v70/zheng17a/zheng17a.pdf.
+    `FTML - Follow the Moving Leader in Deep Learning
+    <http://proceedings.mlr.press/v70/zheng17a/zheng17a.pdf>`_.
 
     Denote time step by t. The optimizer updates the weight by::
 
@@ -753,7 +742,7 @@ class FTML(Optimizer):
     For details of the update algorithm, see :class:`~mxnet.ndarray.ftml_update`.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
@@ -794,34 +783,35 @@ class FTML(Optimizer):
 
 @register
 class LARS(Optimizer):
-    """the LARS optimizer from 'Large Batch Training of Convolution Networks' \
-    (https://arxiv.org/abs/1708.03888)
+    """the LARS optimizer from
+    `Large Batch Training of Convolution Networks
+    <https://arxiv.org/abs/1708.03888>`_
 
-    Behave mostly like SGD with momentum and weight decay but is scaling \
-    adaptively the learning for each layer (except bias and batch norm parameters):
-    w_norm = L2norm(weights)
-    g_norm = L2norm(gradients)
-    if w_norm > 0 and g_norm > 0:
-        lr_layer = lr * lr_mult * eta * w_norm / (g_norm + weight_decay * w_norm + eps)
-    else:
-        lr_layer = lr * lr_mult
+    Behave mostly like SGD with momentum and weight decay but is scaling
+    adaptively the learning for each layer (except bias and batch norm parameters)::
+
+        w_norm = L2norm(weights)
+        g_norm = L2norm(gradients)
+        if w_norm > 0 and g_norm > 0:
+            lr_layer = lr * lr_mult * eta * w_norm / (g_norm + weight_decay * w_norm + eps)
+        else:
+            lr_layer = lr * lr_mult
 
     Parameters
     ----------
     momentum : float, optional
         The momentum value.
     lazy_update : bool, optional
-        Default is True. If True, lazy updates are applied \
+        Default is True. If True, lazy updates are applied
         if the storage types of weight and grad are both ``row_sparse``.
-    lars_eta : float, optional
-        LARS coefficient used to scale the learning rate. Default set to 0.001.
-    lars_epsilon : float, optional
-        Optional epsilon in case of very small gradients. Default set to 0.
-    momentum_correction : bool, optional
-        If True scale momentum w.r.t global learning rate change (with an lr_scheduler) \
-        as indicated in 'Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour` \
-        (https://arxiv.org/pdf/1706.02677.pdf)
-        Default set to True.
+    lars_eta : float, optional, default 0.001
+        LARS coefficient used to scale the learning rate.
+    lars_epsilon : float, optional, default 0.
+        Optional epsilon in case of very small gradients.
+    momentum_correction : bool, optional, default True
+        If True scale momentum w.r.t global learning rate change (with an lr_scheduler)
+        as indicated in `Accurate, Large Minibatch SGD: Training ImageNet in 1 Hour
+        <https://arxiv.org/pdf/1706.02677.pdf>`_.
     """
     def __init__(self, momentum=0.0, lazy_update=True, eta=0.001, eps=0,
                  momentum_correction=True, **kwargs):
@@ -1068,24 +1058,28 @@ class LBSGD(Optimizer):
     layer of the network, which leads to better stability over large batch sizes.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
     momentum : float, optional
         The momentum value.
-    multi_precision: bool, optional
+    multi_precision : bool, optional
         Flag to control the internal precision of the optimizer.
         False: results in using the same precision as the weights (default),
         True: makes internal 32-bit copy of the weights and applies gradients
         in 32-bit precision even if actual weights used in the model have lower precision.
         Turning this on can improve convergence and accuracy when training with float16.
-
-    warmup_strategy: string ('linear', 'power2', 'sqrt'. , 'lars'   default : 'linear')
-    warmup_epochs: unsigned, default: 5
-    batch_scale:   unsigned, default: 1 (same as batch size * numworkers)
-    updates_per_epoch: updates_per_epoch (default: 32, Default might not reflect true number batches per epoch. Used for warmup.)
-    begin_epoch: unsigned, default 0, starting epoch.
+    warmup_strategy : str, optional, default 'linear'
+        Can be 'linear', 'power2', 'sqrt' or 'lars'.
+    warmup_epochs : unsigned, optional, default 5
+        Number of epochs for warmup.
+    batch_scale : unsigned, optional, default 1
+        Same as batch size * numworkers.
+    updates_per_epoch : updates_per_epoch, optional, default 32
+        Default might not reflect true number batches per epoch. Used for warmup.
+    begin_epoch: unsigned, optional, default 0
+        Starting epoch.
     """
     def __init__(self, momentum=0.0, multi_precision=False, warmup_strategy='linear',
                  warmup_epochs=5, batch_scale=1, updates_per_epoch=32, begin_epoch=0, num_epochs=60,
@@ -1249,12 +1243,12 @@ class LBSGD(Optimizer):
 class DCASGD(Optimizer):
     """The DCASGD optimizer.
 
-    This class implements the optimizer described in *Asynchronous Stochastic Gradient Descent
-    with Delay Compensation for Distributed Deep Learning*,
-    available at https://arxiv.org/abs/1609.08326.
+    This class implements the optimizer described in
+    `Asynchronous Stochastic Gradient Descent with Delay Compensation for Distributed Deep Learning
+    <https://arxiv.org/abs/1609.08326>`_.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
@@ -1383,9 +1377,9 @@ class NAG(Optimizer):
 class SGLD(Optimizer):
     """Stochastic Gradient Riemannian Langevin Dynamics.
 
-    This class implements the optimizer described in the paper *Stochastic Gradient
-    Riemannian Langevin Dynamics on the Probability Simplex*, available at
-    https://papers.nips.cc/paper/4883-stochastic-gradient-riemannian-langevin-dynamics-on-the-probability-simplex.pdf.
+    This class implements the optimizer described in the paper
+    `Stochastic Gradient Riemannian Langevin Dynamics on the Probability Simplex
+    <https://papers.nips.cc/paper/4883-stochastic-gradient-riemannian-langevin-dynamics-on-the-probability-simplex.pdf>`_.
 
     """
     def __init__(self, **kwargs):
@@ -1412,7 +1406,8 @@ class SGLD(Optimizer):
 
 @register  # pylint: disable=invalid-name
 class ccSGD(SGD):
-    """[DEPRECATED] Same as `SGD`. Left here for backward compatibility."""
+    """[DEPRECATED] Same as :class:`~mxnet.optimizer.SGD`.
+    Left here for backward compatibility."""
     def __init__(self, *args, **kwargs):
         super(ccSGD, self).__init__(*args, **kwargs)
 
@@ -1420,10 +1415,11 @@ class ccSGD(SGD):
 class Adam(Optimizer):
     """The Adam optimizer.
 
-    This class implements the optimizer described in *Adam: A Method for
-    Stochastic Optimization*, available at http://arxiv.org/abs/1412.6980.
+    This class implements the optimizer described in
+    `Adam: A Method for Stochastic Optimization
+    <http://arxiv.org/abs/1412.6980>`_.
 
-    If the storage types of grad is ``row_sparse``, and ``lazy_update`` is True, \
+    If the storage types of grad is ``row_sparse``, and :attr:`lazy_update` is True,
     **lazy updates** at step t are applied by::
 
         for row in grad.indices:
@@ -1448,20 +1444,20 @@ class Adam(Optimizer):
         w = w - lr * m / (sqrt(v) + epsilon)
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     For details of the update algorithm, see :class:`~mxnet.ndarray.adam_update`.
 
     Parameters
     ----------
-    beta1 : float, optional
+    beta1 : float, optional, default 0.9
         Exponential decay rate for the first moment estimates.
-    beta2 : float, optional
+    beta2 : float, optional, default 0.999
         Exponential decay rate for the second moment estimates.
-    epsilon : float, optional
+    epsilon : float, optional, default 1e-8
         Small value to avoid division by 0.
-    lazy_update : bool, optional
-       Default is True. If True, lazy updates are applied \
+    lazy_update : bool, optional, default True
+       If True, lazy updates are applied
        if the storage types of weight and grad are both ``row_sparse``.
     """
     def __init__(self, learning_rate=0.001, beta1=0.9, beta2=0.999, epsilon=1e-8,
@@ -1504,9 +1500,9 @@ class Adam(Optimizer):
 class AdaGrad(Optimizer):
     """AdaGrad optimizer.
 
-    This class implements the AdaGrad optimizer described in *Adaptive Subgradient
-    Methods for Online Learning and Stochastic Optimization*, and available at
-    http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf.
+    This class implements the AdaGrad optimizer described in
+    `Adaptive Subgradient Methods for Online Learning and Stochastic Optimization
+    <http://www.jmlr.org/papers/volume12/duchi11a/duchi11a.pdf>`_.
 
     This optimizer updates each weight by::
 
@@ -1516,7 +1512,7 @@ class AdaGrad(Optimizer):
         weight += (div + weight * wd) * -lr
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     See Also
     ----------
@@ -1575,22 +1571,20 @@ class RMSProp(Optimizer):
     For details of the update algorithm see :class:`~mxnet.ndarray.rmspropalex_update`.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
     gamma1: float, optional
         A decay factor of moving average over past squared gradient.
     gamma2: float, optional
-        A "momentum" factor. Only used if `centered`=``True``.
+        A "momentum" factor. Only used if ``centered=True``.
     epsilon : float, optional
         Small value to avoid division by 0.
     centered : bool, optional
-        Flag to control which version of RMSProp to use.::
-
-            True: will use Graves's version of `RMSProp`,
-            False: will use Tieleman & Hinton's version of `RMSProp`.
-
+        Flag to control which version of RMSProp to use:
+        - True: will use Graves's version of RMSProp;
+        - False: will use Tieleman & Hinton's version of RMSProp.
     clip_weights : float, optional
         Clips weights into range ``[-clip_weights, clip_weights]``.
     """
@@ -1641,8 +1635,8 @@ class RMSProp(Optimizer):
 class AdaDelta(Optimizer):
     """The AdaDelta optimizer.
 
-    This class implements AdaDelta, an optimizer described in  *ADADELTA: An adaptive
-    learning rate method*, available at https://arxiv.org/abs/1212.5701.
+    This class implements AdaDelta, an optimizer described in
+    `ADADELTA: An adaptive learning rate method <https://arxiv.org/abs/1212.5701>`_.
 
     This optimizer updates each weight by::
 
@@ -1653,7 +1647,7 @@ class AdaDelta(Optimizer):
         weight -= (delta + wd * weight)
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
@@ -1699,14 +1693,14 @@ class AdaDelta(Optimizer):
 #pylint: disable=line-too-long
 @register
 class Ftrl(Optimizer):
-    """The Ftrl optimizer.
+    r"""The Ftrl optimizer.
 
-    Referenced from *Ad Click Prediction: a View from the Trenches*, available at
-    http://dl.acm.org/citation.cfm?id=2488200.
+    Referenced from `Ad Click Prediction: a View from the Trenches
+    <http://dl.acm.org/citation.cfm?id=2488200>`_.
 
     eta :
         .. math::
-           \\eta_{t,i} = \\frac{learningrate}{\\beta+\\sqrt{\\sum_{s=1}^tg_{s,i}^2}}
+           \eta_{t,i} = \frac{\text{learnin_grate}}{\beta+\sqrt{\sum_{s=1}^tg_{s,i}^2}}
 
     The optimizer updates the weight by::
 
@@ -1715,7 +1709,7 @@ class Ftrl(Optimizer):
         n += rescaled_grad**2
         w = (sign(z) * lamda1 - z) / ((beta + sqrt(n)) / learning_rate + wd) * (abs(z) > lamda1)
 
-    If the storage types of weight, state and grad are all ``row_sparse``, \
+    If the storage types of weight, state and grad are all ``row_sparse``,
     **sparse updates** are applied by::
 
         for row in grad.indices:
@@ -1734,7 +1728,7 @@ class Ftrl(Optimizer):
     For details of the update algorithm, see :class:`~mxnet.ndarray.ftrl_update`.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
@@ -1788,7 +1782,7 @@ class Adamax(Optimizer):
         weight -= lr / (1 - beta1**t) * m / u
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
@@ -1839,7 +1833,7 @@ class Nadam(Optimizer):
     at http://cs229.stanford.edu/proj2015/054_report.pdf.
 
     This optimizer accepts the following parameters in addition to those accepted
-    by :class:`.Optimizer`.
+    by :class:`Optimizer`.
 
     Parameters
     ----------
