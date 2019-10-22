@@ -35,8 +35,9 @@ class LRScheduler(object):
         If using warmup, the learning rate from which it starts warming up
     warmup_mode: str
         Warmup can be done in two modes:
+
         - **linear** mode gradually increases lr with each step in equal increments;
-        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
+        - **constant** mode keeps lr at :attr:`warmup_begin_lr` for :attr:`warmup_steps`.
     """
     def __init__(self, base_lr=0.01,
                  warmup_steps=0, warmup_begin_lr=0, warmup_mode='linear'):
@@ -151,8 +152,9 @@ class MultiFactorScheduler(LRScheduler):
         if using warmup, the learning rate from which it starts warming up
     warmup_mode: str
         Warmup can be done in two modes:
+
         - **linear** mode gradually increases lr with each step in equal increments;
-        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
+        - **constant** mode keeps lr at :attr:`warmup_begin_lr` for :attr:`warmup_steps`.
     """
     def __init__(self, step, factor=1, base_lr=0.01, warmup_steps=0, warmup_begin_lr=0,
                  warmup_mode='linear'):
@@ -211,8 +213,9 @@ class PolyScheduler(LRScheduler):
         if using warmup, the learning rate from which it starts warming up
     warmup_mode: str
         Warmup can be done in two modes:
+
         - **linear** mode gradually increases lr with each step in equal increments;
-        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
+        - **constant** mode keeps lr at :attr:`warmup_begin_lr` for :attr:`warmup_steps`.
     """
 
     def __init__(self, max_update, base_lr=0.01, pwr=2, final_lr=0,
@@ -257,8 +260,9 @@ class CosineScheduler(LRScheduler):
         if using warmup, the learning rate from which it starts warming up
     warmup_mode: str
         Warmup can be done in two modes:
+
         - **linear** mode gradually increases lr with each step in equal increments;
-        - **constant** mode keeps lr at :attr:`warmup_begin_lri` for :attr:`warmup_steps`.
+        - **constant** mode keeps lr at :attr:`warmup_begin_lr` for :attr:`warmup_steps`.
     """
 
     def __init__(self, max_update, base_lr=0.01, final_lr=0,

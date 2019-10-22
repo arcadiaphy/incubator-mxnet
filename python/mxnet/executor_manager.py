@@ -209,7 +209,7 @@ class DataParallelExecutorGroup(object):
     sym: Symbol
         The network configuration.
     arg_names: list of str
-        Equals `sym.list_arguments()`
+        Equals :meth:`sym.list_arguments() <mxnet.symbol.Symbol.list_arguments>`
     param_names: list of str
         List of names of all trainable parameters.
     ctx: list of Context
@@ -217,7 +217,7 @@ class DataParallelExecutorGroup(object):
     slices: list of int
         Describes how the data parallelization splits data into different devices.
     train_data: DataIter (or DataBatch)
-        The dataset for training. It could be any object with `provide_data` and
+        The dataset for training. It could be any object with ``provide_data`` and
         `provide_label` properties. Loading of actual data is not necessarily needed
         at this stage.
     shared_grop: DataParallelExecutorGroup
@@ -296,7 +296,7 @@ class DataParallelExecutorGroup(object):
             metric.update(labels_slice, texec.outputs)
 
 class DataParallelExecutorManager(object):
-    """ Helper class to manage multiple executors for data parallelism.
+    """Helper class to manage multiple executors for data parallelism.
 
     Parameters
     ----------
@@ -375,7 +375,9 @@ class DataParallelExecutorManager(object):
             texec.copy_params_from(arg_params, aux_params)
 
     def copy_to(self, arg_params, aux_params):
-        """ Copy data from each executor to ```arg_params`` and ``aux_params``.
+        """ Copy data from each executor to :attr:`arg_params` and :attr:`aux_params`.
+
+        .. note:: This function will inplace update the NDArrays in arg_params and aux_params.
 
         Parameters
         ----------
@@ -383,10 +385,6 @@ class DataParallelExecutorManager(object):
             Target parameter arrays.
         aux_params : list of NDArray
             Target aux arrays.
-
-        Notes
-        -----
-        - This function will inplace update the NDArrays in arg_params and aux_params.
         """
         for name, block in zip(self.param_names, self.param_arrays):
             weight = sum(w.copyto(cpu()) for w in block) / len(block)

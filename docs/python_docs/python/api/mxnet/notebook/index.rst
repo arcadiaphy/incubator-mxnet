@@ -18,6 +18,6 @@
 mxnet.notebook
 ===============
 
-.. automodule:: mxnet.notebook
+.. automodule:: mxnet.notebook.callback
     :members:
     :autosummary:

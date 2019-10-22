@@ -1700,7 +1700,7 @@ class Ftrl(Optimizer):
 
     eta :
         .. math::
-           \eta_{t,i} = \frac{\text{learnin_grate}}{\beta+\sqrt{\sum_{s=1}^tg_{s,i}^2}}
+           \eta_{t,i} = \frac{\text{learning_rate}}{\beta+\sqrt{\sum_{s=1}^tg_{s,i}^2}}
 
     The optimizer updates the weight by::
 

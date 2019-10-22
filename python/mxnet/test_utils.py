@@ -141,7 +141,8 @@ def _validate_csr_generation_inputs(num_rows, num_cols, density,
 
 
 def shuffle_csr_column_indices(csr):
-    """Shuffle CSR column indices per row
+    """Shuffle CSR column indices per row.
+
     This allows validation of unordered column indices, which is not a requirement
     for a valid CSR matrix
     """
@@ -156,7 +157,7 @@ def shuffle_csr_column_indices(csr):
 
 def _get_uniform_dataset_csr(num_rows, num_cols, density=0.1, dtype=None,
                              data_init=None, shuffle_csr_indices=False):
-    """Returns CSRNDArray with uniform distribution
+    """Returns CSRNDArray with uniform distribution.
     This generates a csr matrix with totalnnz unique randomly chosen numbers
     from num_rows*num_cols and arranges them in the 2d array in the
     following way:
@@ -508,7 +509,9 @@ def same(a, b):
     Parameters
     ----------
     a : np.ndarray
+        Input array.
     b : np.ndarray
+        Input array.
     """
     return np.array_equal(a, b)
 
@@ -538,7 +541,9 @@ def assert_almost_equal(a, b, rtol=None, atol=None, names=('a', 'b'), equal_nan=
     Parameters
     ----------
     a : np.ndarray or mx.nd.array
+        Input array.
     b : np.ndarray or mx.nd.array
+        Input array.
     rtol : None or float
         The relative threshold. Default threshold will be used if set to ``None``.
     atol : None or float
@@ -576,7 +581,7 @@ def assert_almost_equal(a, b, rtol=None, atol=None, names=('a', 'b'), equal_nan=
         b = b.asnumpy()
 
     def locationError(a, b, index, names, maxError=False):
-        """Create element mismatch comment
+        """Create element mismatch comment.
 
         Parameters
         ----------
@@ -634,7 +639,9 @@ def assert_almost_equal_with_err(a, b, rtol=None, atol=None, etol=None, names=('
     Parameters
     ----------
     a : np.ndarray
+        Input array.
     b : np.ndarray
+        Input array.
     threshold : None or float
         The checking threshold. Default threshold will be used if set to ``None``.
     etol : None or float
@@ -675,6 +682,7 @@ def assert_almost_equal_with_err(a, b, rtol=None, atol=None, etol=None, names=('
 def almost_equal_ignore_nan(a, b, rtol=None, atol=None):
     """Test that two NumPy arrays are almost equal (ignoring NaN in either array).
     Combines a relative and absolute measure of approximate eqality.
+
     If either the relative or absolute check passes, the arrays are considered equal.
     Including an absolute check resolves issues with the relative check where all
     array values are close to zero.
@@ -682,7 +690,9 @@ def almost_equal_ignore_nan(a, b, rtol=None, atol=None):
     Parameters
     ----------
     a : np.ndarray
+        Input array.
     b : np.ndarray
+        Input array.
     rtol : None or float
         The relative threshold. Default threshold will be used if set to ``None``.
     atol : None or float
@@ -700,6 +710,7 @@ def almost_equal_ignore_nan(a, b, rtol=None, atol=None):
 def assert_almost_equal_ignore_nan(a, b, rtol=None, atol=None, names=('a', 'b')):
     """Test that two NumPy arrays are almost equal (ignoring NaN in either array).
     Combines a relative and absolute measure of approximate eqality.
+
     If either the relative or absolute check passes, the arrays are considered equal.
     Including an absolute check resolves issues with the relative check where all
     array values are close to zero.
@@ -707,7 +718,9 @@ def assert_almost_equal_ignore_nan(a, b, rtol=None, atol=None, names=('a', 'b'))
     Parameters
     ----------
     a : np.ndarray
+        Input array.
     b : np.ndarray
+        Input array.
     rtol : None or float
         The relative threshold. Default threshold will be used if set to ``None``.
     atol : None or float
@@ -763,8 +776,9 @@ def simple_forward(sym, ctx=None, is_train=False, **inputs):
 
     Returns
     -------
-    The result as a numpy array. Multiple results will
-    be returned as a list of NumPy arrays.
+    outputs : np.array or list of np.array
+        The result as a numpy array. Multiple results will
+        be returned as a list of NumPy arrays.
     """
     ctx = ctx or default_context()
     inputs = {k: array(v) for k, v in inputs.items()}
@@ -794,7 +808,8 @@ def _parse_location(sym, location, ctx, dtype=default_dtype()):
             ``sym.list_arguments()``.
         - if type is dict of str -> `np.ndarray`
             maps the name of arguments to the corresponding `np.ndarray`.
-        *In either case, value of all the arguments must be provided.*
+
+        In either case, value of all the arguments must be provided.
     ctx : Context
         Device context.
     dtype: "asnumpy" or np.float16 or np.float32 or np.float64
@@ -851,10 +866,11 @@ def _parse_aux_states(sym, aux_states, ctx, dtype=default_dtype()):
 
         - if type is list or tuple of `np.ndarray`
             inner elements are arrays correspoding to
-            ``sym.list_auxiliary_states()``.
+            :meth:`sym.list_auxiliary_states <mxnet.symbol.Symbol.list_auxiliary_states>`.
         - if type is dict of str -> `np.ndarray`
-            maps the name of arguments to the corresponding `np.ndarray`.
-        *In either case, all aux states of `sym` must be provided.*
+            maps the name of arguments to the corresponding ``np.ndarray``.
+
+        In either case, all aux states of :attr:`sym` must be provided.
     ctx : Context
         Device context.
     dtype: "asnumpy" or np.float16 or np.float32 or np.float64
@@ -905,7 +921,8 @@ def numeric_grad(executor, location, aux_states=None, eps=1e-4,
                  use_forward_train=True, dtype=default_dtype()):
     """Calculates a numeric gradient via finite difference method.
 
-    Class based on Theano's `theano.gradient.numeric_grad` [1]
+    Class based on Theano's `theano.gradient.numeric_grad
+    <https://github.com/theano/theano/blob/master/theano/gradient.py>`__.
 
     Parameters
     ----------
@@ -922,13 +939,9 @@ def numeric_grad(executor, location, aux_states=None, eps=1e-4,
     eps : float, optional
         Epsilon for the finite-difference method.
     use_forward_train : bool, optional
-        Whether to use `is_train=True` in testing.
+        Whether to use ``is_train=True`` in testing.
     dtype: np.float16 or np.float32 or np.float64
         Datatype for mx.nd.array.
-
-    References
-    ---------
-    ..[1] https://github.com/Theano/Theano/blob/master/theano/gradient.py
     """
     def as_stype(var, stype, dtype):
         return mx.nd.cast_storage(mx.nd.array(var, dtype=dtype), stype=stype)
@@ -980,7 +993,8 @@ def check_numeric_gradient(sym, location, aux_states=None, numeric_eps=1e-3, rto
                            grad_stype_dict=None, dtype=default_dtype()):
     """Verify an operation by checking backward pass via finite difference method.
 
-    Based on Theano's `theano.gradient.verify_grad` [1]
+    Based on Theano's `theano.gradient.verify_grad
+    <https://github.com/Theano/Theano/blob/master/theano/gradient.py>`_.
 
     Parameters
     ----------
@@ -989,13 +1003,13 @@ def check_numeric_gradient(sym, location, aux_states=None, numeric_eps=1e-3, rto
     location : list or tuple or dict
         Argument values used as location to compute gradient
 
-        - if type is list of numpy.ndarray, \
-            inner elements should have the same order as mxnet.sym.list_arguments().
+        - if type is list of numpy.ndarray,
+          inner elements should have the same order as mxnet.sym.list_arguments().
 
-        - if type is dict of str -> numpy.ndarray, \
-            maps the name of arguments to the corresponding numpy.ndarray.
+        - if type is dict of str -> numpy.ndarray,
+          maps the name of arguments to the corresponding numpy.ndarray.
 
-        *In either case, value of all the arguments must be provided.*
+        In either case, value of all the arguments must be provided.
     aux_states : list or tuple or dict, optional
         The auxiliary states required when generating the executor for the symbol.
     numeric_eps : float, optional
@@ -1005,17 +1019,13 @@ def check_numeric_gradient(sym, location, aux_states=None, numeric_eps=1e-3, rto
     grad_nodes : None or list or tuple or dict, optional
         Names of the nodes to check gradient on
     use_forward_train : bool
-        Whether to use is_train=True when computing the finite-difference.
+        Whether to use ``is_train=True`` when computing the finite-difference.
     ctx : Context, optional
         Check the gradient computation on the specified device.
     grad_stype_dict : dict of str->str, optional
         Storage type dictionary for gradient ndarrays.
     dtype: np.float16 or np.float32 or np.float64
         Datatype for mx.nd.array.
-
-    References
-    ---------
-    [1] https://github.com/Theano/Theano/blob/master/theano/gradient.py
     """
     assert dtype in (np.float16, np.float32, np.float64)
     # cannot use finite differences with small eps without high precision
@@ -1122,6 +1132,7 @@ def check_symbolic_forward(sym, location, expected, rtol=1E-4, atol=None,
                            aux_states=None, ctx=None, equal_nan=False,
                            dtype=default_dtype()):
     """Compares a symbol's forward results with the expected ones.
+
     Prints error messages if the forward results are not the same as the expected ones.
 
     Parameters
@@ -1132,23 +1143,25 @@ def check_symbolic_forward(sym, location, expected, rtol=1E-4, atol=None,
         The evaluation point
 
         - if type is list of np.ndarray
-            Contains all the numpy arrays corresponding to `sym.list_arguments()`.
+          Contains all the numpy arrays corresponding to sym.list_arguments().
         - if type is dict of str to np.ndarray
-            Contains the mapping between argument names and their values.
+          Contains the mapping between argument names and their values.
     expected : list of np.ndarray or dict of str to np.ndarray
         The expected output value
 
         - if type is list of np.ndarray
-            Contains arrays corresponding to exe.outputs.
+          Contains arrays corresponding to exe.outputs.
         - if type is dict of str to np.ndarray
-            Contains mapping between sym.list_output() and exe.outputs.
+          Contains mapping between :meth:`sym.list_output <mxnet.symbol.Symbol.list_outputs>`
+          and ``Executor.outputs``.
     check_eps : float, optional
         Relative error to check to.
     aux_states : list of np.ndarray of dict, optional
         - if type is list of np.ndarray
-            Contains all the NumPy arrays corresponding to sym.list_auxiliary_states
+          Contains all the NumPy arrays corresponding to
+          :meth:`sym.list_auxiliary_states <mxnet.symbol.Symbol.list_auxiliary_states>`.
         - if type is dict of str to np.ndarray
-            Contains the mapping between names of auxiliary states and their values.
+          Contains the mapping between names of auxiliary states and their values.
     ctx : Context, optional
         running context
     dtype: "asnumpy" or np.float16 or np.float32 or np.float64
@@ -1203,6 +1216,7 @@ def check_symbolic_backward(sym, location, out_grads, expected, rtol=1e-5, atol=
                             aux_states=None, grad_req='write', ctx=None, grad_stypes=None,
                             equal_nan=False, dtype=default_dtype()):
     """Compares a symbol's backward results with the expected ones.
+
     Prints error messages if the backward results are not the same as the expected results.
 
     Parameters
@@ -1213,23 +1227,24 @@ def check_symbolic_backward(sym, location, out_grads, expected, rtol=1e-5, atol=
         The evaluation point
 
         - if type is list of np.ndarray
-            Contains all the NumPy arrays corresponding to ``mx.sym.list_arguments``.
+          Contains all the NumPy arrays corresponding to ``mx.sym.list_arguments``.
         - if type is dict of str to np.ndarray
-            Contains the mapping between argument names and their values.
+          Contains the mapping between argument names and their values.
     out_grads : None or list of np.ndarray or dict of str to np.ndarray
         NumPys arrays corresponding to sym.outputs for incomming gradient.
 
         - if type is list of np.ndarray
-            Contains arrays corresponding to ``exe.outputs``.
+          Contains arrays corresponding to exe.outputs.
         - if type is dict of str to np.ndarray
-            contains mapping between mxnet.sym.list_output() and Executor.outputs
+          contains mapping between :meth:`sym.list_output <mxnet.symbol.Symbol.list_outputs>`
+          and ``Executor.outputs``.
     expected : list of np.ndarray or dict of str to np.ndarray
         expected gradient values
 
         - if type is list of np.ndarray
-            Contains arrays corresponding to exe.grad_arrays
+          Contains arrays corresponding to exe.grad_arrays
         - if type is dict of str to np.ndarray
-            Contains mapping between ``sym.list_arguments()`` and exe.outputs.
+          Contains mapping between sym.list_arguments() and exe.outputs.
     check_eps: float, optional
         Relative error to check to.
     aux_states : list of np.ndarray or dict of str to np.ndarray
@@ -1351,12 +1366,10 @@ def check_speed(sym, location=None, ctx=None, N=20, grad_req=None, typ="whole",
     grad_req : None or str or list of str or dict of str to str, optional
         Gradient requirements.
     typ : str, optional
-        "whole" or "forward"
+        Speed type:
 
-        - "whole"
-            Test the forward_backward speed.
-        - "forward"
-            Only test the forward speed.
+        - **whole** Test the forward_backward speed.
+        - **forward** Only test the forward speed.
     """
     if ctx is None:
         ctx = default_context()
@@ -1420,7 +1433,7 @@ def check_consistency(sym, ctx_list, scale=1.0, grad_req='write',
                       arg_params=None, aux_params=None, tol=None,
                       raise_on_err=True, ground_truth=None, equal_nan=False,
                       use_uniform=False, rand_type=np.float64):
-    """Check symbol gives the same output for different running context
+    """Check symbol gives the same output for different running context.
 
     Parameters
     ----------
@@ -1446,25 +1459,25 @@ def check_consistency(sym, ctx_list, scale=1.0, grad_req='write',
     >>> # create the symbol
     >>> sym = mx.sym.Convolution(num_filter=3, kernel=(3,3), name='conv')
     >>> # initialize the running context
-    >>> ctx_list =\
-[{'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float64}},\
- {'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float32}},\
- {'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float16}},\
- {'ctx': mx.cpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float64}},\
- {'ctx': mx.cpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float32}}]
+    >>> ctx_list =
+    ... [{'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float64}},\
+    ...  {'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float32}},\
+    ...  {'ctx': mx.gpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float16}},\
+    ...  {'ctx': mx.cpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float64}},\
+    ...  {'ctx': mx.cpu(0), 'conv_data': (2, 2, 10, 10), 'type_dict': {'conv_data': np.float32}}]
     >>> check_consistency(sym, ctx_list)
     >>> sym = mx.sym.Concat(name='concat', num_args=2)
-    >>> ctx_list = \
-[{'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
-  'type_dict': {'concat_arg0': np.float64, 'concat_arg1': np.float64}},\
- {'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
-  'type_dict': {'concat_arg0': np.float32, 'concat_arg1': np.float32}},\
- {'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
-  'type_dict': {'concat_arg0': np.float16, 'concat_arg1': np.float16}},\
- {'ctx': mx.cpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
-  'type_dict': {'concat_arg0': np.float64, 'concat_arg1': np.float64}},\
- {'ctx': mx.cpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
-  'type_dict': {'concat_arg0': np.float32, 'concat_arg1': np.float32}}]
+    >>> ctx_list =
+    ... [{'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
+    ...   'type_dict': {'concat_arg0': np.float64, 'concat_arg1': np.float64}},\
+    ...  {'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
+    ...   'type_dict': {'concat_arg0': np.float32, 'concat_arg1': np.float32}},\
+    ...  {'ctx': mx.gpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
+    ...   'type_dict': {'concat_arg0': np.float16, 'concat_arg1': np.float16}},\
+    ...  {'ctx': mx.cpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
+    ...   'type_dict': {'concat_arg0': np.float64, 'concat_arg1': np.float64}},\
+    ...  {'ctx': mx.cpu(0), 'concat_arg1': (2, 10), 'concat_arg0': (2, 10),\
+    ...   'type_dict': {'concat_arg0': np.float32, 'concat_arg1': np.float32}}]
     >>> check_consistency(sym, ctx_list)
     """
     if tol is None:
@@ -1585,22 +1598,20 @@ def check_consistency(sym, ctx_list, scale=1.0, grad_req='write',
     return gt
 
 def list_gpus():
-    """Return a list of GPUs
+    """Return a list of GPUs.
 
     Returns
     -------
     list of int:
-        If there are n GPUs, then return a list [0,1,...,n-1]. Otherwise returns
-        [].
+        If there are n GPUs, then return a list ``[0, 1, ..., n-1]``. Otherwise returns ``[]``.
     """
     return range(mx.util.get_gpu_count())
 
 def download(url, fname=None, dirname=None, overwrite=False, retries=5):
-    """Download an given URL
+    """Download an given URL.
 
     Parameters
     ----------
-
     url : str
         URL to download
     fname : str, optional
@@ -1666,7 +1677,7 @@ def download(url, fname=None, dirname=None, overwrite=False, retries=5):
     return fname
 
 def download_model(model_name, dst_dir='./', meta_info=None):
-    """Download a model from data.mxnet.io
+    """Download a model from data.mxnet.io.
 
     Parameters
     ----------
@@ -1680,7 +1691,8 @@ def download_model(model_name, dst_dir='./', meta_info=None):
 
     Returns
     -------
-    Two element tuple containing model_name and epoch for the params saved
+    tuple
+        Two element tuple containing model_name and epoch for the params saved
     """
     _base_model_url = 'http://data.mxnet.io/models/'
     _default_model_info = {
@@ -1732,7 +1744,7 @@ def download_model(model_name, dst_dir='./', meta_info=None):
 
 
 def get_mnist():
-    """Download and load the MNIST dataset
+    """Download and load the MNIST dataset.
 
     Returns
     -------
@@ -1761,7 +1773,7 @@ def get_mnist():
 
 def get_mnist_pkl():
     """Downloads MNIST dataset as a pkl.gz into a directory in the current directory
-    with the name `data`
+    with the name `data`.
     """
     if not os.path.isdir("data"):
         os.makedirs('data')
@@ -1843,8 +1855,8 @@ def get_zip_data(data_dir, url, data_origin_name):
     Examples
     --------
     >>> get_zip_data("data_dir",
-                     "http://files.grouplens.org/datasets/movielens/ml-10m.zip",
-                     "ml-10m.zip")
+    ...              "http://files.grouplens.org/datasets/movielens/ml-10m.zip",
+    ...              "ml-10m.zip")
     """
     data_origin_name = os.path.join(data_dir, data_origin_name)
     if not os.path.exists(data_origin_name):
@@ -1870,8 +1882,8 @@ def get_bz2_data(data_dir, data_name, url, data_origin_name):
     Examples
     --------
     >>> get_bz2_data("data_dir", "kdda.t",
-                     "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/kdda.t.bz2",
-                     "kdda.t.bz2")
+    ...              "https://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/kdda.t.bz2",
+    ...              "kdda.t.bz2")
     """
 
     data_name = os.path.join(data_dir, data_name)
@@ -1886,11 +1898,10 @@ def get_bz2_data(data_dir, data_name, url, data_origin_name):
         os.remove(data_origin_name)
 
 def set_env_var(key, val, default_val=""):
-    """Set environment variable
+    """Set environment variable.
 
     Parameters
     ----------
-
     key : str
         Env var to set
     val : str
@@ -1908,11 +1919,10 @@ def set_env_var(key, val, default_val=""):
     return prev_val
 
 def same_array(array1, array2):
-    """Check whether two NDArrays sharing the same memory block
+    """Check whether two NDArrays sharing the same memory block.
 
     Parameters
     ----------
-
     array1 : NDArray
         First NDArray to be checked
     array2 : NDArray
@@ -1933,10 +1943,12 @@ def same_array(array1, array2):
 @contextmanager
 def discard_stderr():
     """
-    Discards error output of a routine if invoked as:
+    Discards error output of a routine.
 
-    with discard_stderr():
-        ...
+    Use ``with`` to invoke::
+
+        with discard_stderr():
+            ...
     """
     with open(os.devnull, 'w') as bit_bucket:
         try:
@@ -1959,7 +1971,7 @@ class DummyIter(mx.io.DataIter):
 
     Parameters
     ----------
-    real_iter: mx.io.DataIter
+    real_iter: DataIter
         The real data iterator where the first batch of data comes from
     """
     def __init__(self, real_iter):
@@ -1986,7 +1998,7 @@ class DummyIter(mx.io.DataIter):
 
 def gen_buckets_probs_with_ppf(ppf, nbuckets):
     """Generate the buckets and probabilities for chi_square test when the ppf (Quantile function)
-     is specified.
+    is specified.
 
     Parameters
     ----------
@@ -2009,10 +2021,12 @@ def gen_buckets_probs_with_ppf(ppf, nbuckets):
     return buckets, probs
 
 def mean_check(generator, mu, sigma, nsamples=1000000):
-    """Test the generator by matching the mean.
+    r"""Test the generator by matching the mean.
 
-    We test the sample mean by checking if it falls inside the range
-        (mu - 3 * sigma / sqrt(n), mu + 3 * sigma / sqrt(n))
+    We test the sample mean by checking if it falls inside the range:
+
+    .. math::
+        (\mu - 3 * \frac {\sigma} {\sqrt{n}}, \mu + 3 * \frac {\sigma} {\sqrt{n}})
 
     References::
 
@@ -2033,8 +2047,11 @@ def mean_check(generator, mu, sigma, nsamples=1000000):
     generator : function
         The generator function. It's expected to generate N i.i.d samples by calling generator(N).
     mu : float
+        The :math:`\mu` parameter in the range.
     sigma : float
+        The :math:`\sigma` parameter in the range.
     nsamples : int
+        Number of samples.
 
     Returns
     -------
@@ -2048,11 +2065,10 @@ def mean_check(generator, mu, sigma, nsamples=1000000):
     return ret
 
 def get_im2rec_path(home_env="MXNET_HOME"):
-    """Get path to the im2rec.py tool
+    """Get path to the im2rec.py tool.
 
     Parameters
     ----------
-
     home_env : str
         Env variable that holds the path to the MXNET folder
 
@@ -2078,11 +2094,14 @@ def get_im2rec_path(home_env="MXNET_HOME"):
     raise IOError('Could not find path to tools/im2rec.py')
 
 def var_check(generator, sigma, nsamples=1000000):
-    """Test the generator by matching the variance.
-    It will need a large number of samples and is not recommended to use
+    r"""Test the generator by matching the variance.
 
-    We test the sample variance by checking if it falls inside the range
-        (sigma^2 - 3 * sqrt(2 * sigma^4 / (n-1)), sigma^2 + 3 * sqrt(2 * sigma^4 / (n-1)))
+    It will need a large number of samples and is not recommended to use.
+
+    We test the sample variance by checking if it falls inside the range:
+
+    .. math::
+         (\sigma^2 - 3 * \sqrt{2 * \frac {\sigma^4} {(n-1)}}, \sigma^2 + 3 * \sqrt{2 * \frac {\sigma^4} {(n-1)}})
 
     References::
 
@@ -2103,7 +2122,9 @@ def var_check(generator, sigma, nsamples=1000000):
     generator : function
         The generator function. It's expected to generate N i.i.d samples by calling generator(N).
     sigma : float
+        The :math:`\sigma` parameter in the range.
     nsamples : int
+        Number of samples.
 
     Returns
     -------
@@ -2119,14 +2140,14 @@ def var_check(generator, sigma, nsamples=1000000):
 def chi_square_check(generator, buckets, probs, nsamples=1000000):
     """Run the chi-square test for the generator. The generator can be both continuous and discrete.
 
-    If the generator is continuous, the buckets should contain tuples of (range_min, range_max) \
-    and the probs should be the corresponding ideal probability within the specific ranges. \
-    Otherwise, the buckets should contain all the possible values generated over the discrete distribution and the \
-    probs should be groud-truth probability.
+    If the generator is continuous, the buckets should contain tuples of (range_min, range_max)
+    and the probs should be the corresponding ideal probability within the specific ranges.
+    Otherwise, the buckets should contain all the possible values generated over the discrete
+    distribution and the probs should be groud-truth probability.
 
     Usually the user is required to specify the probs parameter.
 
-    After obtaining the p value, we could further use the standard p > 0.05 (alpha) threshold to get \
+    After obtaining the p value, we could further use the standard p > 0.05 (alpha) threshold to get
     the final result.
 
     Examples::
@@ -2198,7 +2219,7 @@ def verify_generator(generator, buckets, probs, nsamples=1000000, nrepeat=5, suc
     """Verify whether the generator is correct using chi-square testing.
 
     The test is repeated for "nrepeat" times and we check if the success rate is
-     above the threshold (25% by default).
+    above the threshold (25% by default).
 
     Parameters
     ----------
@@ -2288,6 +2309,7 @@ def compare_optimizer(opt1, opt2, shape, dtype, w_stype='default', g_stype='defa
 
 def same_symbol_structure(sym1, sym2):
     """Compare two symbols to check if they have the same computation graph structure.
+
     Returns true if operator corresponding to a particular node id is same in both
     symbols for all nodes
     """
@@ -2362,9 +2384,13 @@ def has_tvm_ops():
 
 
 def is_op_runnable():
-    """Returns True for all CPU tests. Returns True for GPU tests that are either of the following.
-    1. Built with USE_TVM_OP=0.
-    2. Built with USE_TVM_OP=1, but with compute capability >= 53."""
+    """Returns True for all CPU tests.
+
+    Returns True for GPU tests that are either of the following:
+
+    - Built with USE_TVM_OP=0.
+    - Built with USE_TVM_OP=1, but with compute capability >= 53.
+    """
     ctx = current_context()
     if ctx.device_type == 'gpu':
         if not _features.is_enabled("TVM_OP"):

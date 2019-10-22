@@ -358,7 +358,8 @@ def set_module(module):
 class _NumpyArrayScope(object):
     """Scope for managing NumPy array creation. This is often used
     with ``is_np_array=True`` in initializer to enforce array creation
-    as type :class:`mxnet.numpy.ndarray`, instead of :class:`mxnet.ndarray.NDArray` in Gluon.
+    as type :class:`mx.np.ndarray <mxnet.numpy.ndarray>`,
+    instead of :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>` in Gluon.
 
     Do not use this class directly. Use ``np_array(active)`` instead.
     """
@@ -385,7 +386,8 @@ def np_array(active=True):
     and captures code that needs the NumPy-array semantics.
 
     Currently, this is used in Gluon to enforce array creation in :class:`~mxnet.gluon.Block`
-    as type :class:`mxnet.numpy.ndarray`, instead of :class:`mxnet.ndarray.NDArray`.
+    as type :class:`mx.np.ndarray <mxnet.numpy.ndarray>`, instead of
+    :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>`.
 
     It is recommended to use the decorator :func:`use_np_array` to decorate the classes
     that need this semantics, instead of using this function in a ``with`` statement
@@ -412,10 +414,12 @@ def np_array(active=True):
 def is_np_array():
     """Checks whether the NumPy-array semantics is currently turned on.
     This is currently used in Gluon for checking whether an array of type
-    :class:`mxnet.numpy.ndarray` or :class:`mxnet.ndarray.NDArray` should be created.
-    For example, at the time when a parameter is created in a :class:`~mxnet.gluon.Block`,
-    an :class:`mxnet.numpy.ndarray` is created if this returns true; else an
-    :class:`mxnet.ndarray.NDArray` is created.
+    :class:`mx.np.ndarray <mxnet.numpy.ndarray>` or
+    :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>` should be created.
+    For example, at the time when a parameter is created in a
+    :class:`~mxnet.gluon.Block`, an :class:`mx.np.ndarray <mxnet.numpy.ndarray>`
+    is created if this returns true; else an :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>`
+    is created.
 
     Normally, users are not recommended to use this API directly unless you known exactly
     what is going on under the hood.
@@ -436,10 +440,10 @@ def is_np_array():
 def use_np_array(func):
     """A decorator wrapping Gluon :class:`~mxnet.gluon.Block` and all its methods, properties,
     and static functions with the semantics of NumPy-array, which means that where ndarrays
-    are created, :class:`mxnet.numpy.ndarray` should be created, instead of legacy ndarrays
-    of type :class:`mxnet.ndarray.NDArray`. For example, at the time when a parameter is
-    created in a :class:`~mxnet.gluon.Block`, an :class:`mxnet.numpy.ndarray` is created if it's
-    decorated with this decorator.
+    are created, :class:`mx.np.ndarray <mxnet.numpy.ndarray>` should be created, instead of
+    legacy ndarrays of type :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>`. For example,
+    at the time when a parameter is created in a :class:`~mxnet.gluon.Block`, an
+    :class:`mx.np.ndarray <mxnet.numpy.ndarray>` is created if it's decorated with this decorator.
 
     Parameters
     ----------
@@ -528,8 +532,8 @@ def use_np(func):
     - empty tuples ``()`` and tuples with zeros, such as ``(0, 1)``, ``(1, 0, 2)``, will be treated
       as scalar tensors' shapes and zero-size tensors' shapes in shape inference functions of operators,
       instead of as unknown in legacy mode;
-    - ndarrays of type :class:`mxnet.numpy.ndarray` should be created instead of
-      :class:`mxnet.ndarray.NDArray`.
+    - ndarrays of type :class:`mx.np.ndarray <mxnet.numpy.ndarray>` should be created instead of
+      :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>`.
 
     Parameters
     ----------
@@ -693,8 +697,8 @@ def wrap_np_binary_func(func):
 
 def _set_np_array(active):
     """Turns on/off NumPy array semantics for the current thread in which
-    :class:`mxnet.numpy.ndarray` is expected to be created, instead of the legacy
-    :class:`mxnet.ndarray.NDArray`.
+    :class:`mx.np.ndarray <mxnet.numpy.ndarray>` is expected to be created,
+    instead of the legacy :class:`mx.nd.NDArray <mxnet.ndarray.NDArray>`.
 
     Parameters
     ---------

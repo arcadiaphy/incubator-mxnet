@@ -47,7 +47,7 @@ class PythonOp(object):
     Parameters
     ----------
     need_top_grad : bool
-        the default need_top_grad() function returns this value.
+        the default :meth:`need_top_grad` function returns this value.
     """
     _ref_holder = []
 
@@ -71,7 +71,7 @@ class PythonOp(object):
 
         Returns
         -------
-        sym : mxnet.symbol.Symbol
+        sym : Symbol
         """
         raise NotImplementedError("Must override this")
 
@@ -105,7 +105,7 @@ class PythonOp(object):
         ----------
         in_shape : list
             List of argument shapes in the same order as
-            declared in list_arguments.
+            declared in :meth:`list_arguments`.
 
         Returns
         -------
@@ -113,7 +113,7 @@ class PythonOp(object):
             List of argument shapes. Can be modified from in_shape.
         out_shape : list
             List of output shapes calculated from in_shape,
-            in the same order as declared in list_arguments.
+            in the same order as declared in :meth:`list_arguments`.
         """
         return in_shape, [in_shape[0]]
 
@@ -134,7 +134,7 @@ class PythonOp(object):
         -------
         in_shape : list
             list of argument shapes in the same order as
-            declared in list_arguments.
+            declared in :meth:`list_arguments`.
         """
         return ['data']
 
@@ -477,20 +477,20 @@ class CustomOpProp(object):
     Parameters
     ----------
     need_top_grad : bool
-        The default declare_backward_dependency function. Use this value
+        The default :meth:`declare_backward_dependency` function. Use this value
         to determine whether this operator needs gradient input.
     """
     def __init__(self, need_top_grad=True):
         self.need_top_grad_ = need_top_grad
 
     def infer_shape(self, in_shape):
-        """infer_shape interface. Can override when creating new operators.
+        """Interface for ``infer_shape``. Can override when creating new operators.
 
         Parameters
         ----------
         in_shape : list
             List of argument shapes in the same order as
-            declared in list_arguments.
+            declared in :meth:`list_arguments`.
 
         Returns
         -------
@@ -498,21 +498,21 @@ class CustomOpProp(object):
             List of argument shapes. Can be modified from in_shape.
         out_shape : list
             List of output shapes calculated from in_shape,
-            in the same order as declared in list_outputs.
+            in the same order as declared in :meth:`list_outputs`.
         aux_shape : Optional, list
             List of aux shapes calculated from in_shape,
-            in the same order as declared in list_auxiliary_states.
+            in the same order as declared in :meth:`list_auxiliary_states`.
         """
         return in_shape, (in_shape[0],)*len(self.list_outputs()), ()
 
     def infer_type(self, in_type):
-        """infer_type interface. override to create new operators
+        """Interface for ``infer_type``. override to create new operators
 
         Parameters
         ----------
         in_type : list of np.dtype
             list of argument types in the same order as
-            declared in list_arguments.
+            declared in :meth:`list_arguments`.
 
         Returns
         -------
@@ -520,16 +520,16 @@ class CustomOpProp(object):
             list of argument types. Can be modified from in_type.
         out_type : list
             list of output types calculated from in_type,
-            in the same order as declared in list_outputs.
+            in the same order as declared in :meth:`list_outputs`.
         aux_type : Optional, list
             list of aux types calculated from in_type,
-            in the same order as declared in list_auxiliary_states.
+            in the same order as declared in :meth:`list_auxiliary_states`.
         """
         return in_type, [in_type[0]]*len(self.list_outputs()), \
             [in_type[0]]*len(self.list_auxiliary_states())
 
     def infer_storage_type(self, in_stype):
-        """infer_storage_type interface. Used to infer storage type of
+        """Interface for ``infer_storage_type``. Used to infer storage type of
         inputs and outputs in the forward pass. When this interface is not implemented,
         all stypes will be inferred as default.
 
@@ -544,10 +544,10 @@ class CustomOpProp(object):
             list of argument stypes.
         out_stype : list
             list of output types calculated from in_stype,
-            in the same order as declared in list_outputs.
+            in the same order as declared in :meth:`list_outputs`.
         aux_type : Optional, list
             list of aux types calculated from in_stype,
-            in the same order as declared in list_auxiliary_states.
+            in the same order as declared in :meth:`list_auxiliary_states`.
         """
         for i, stype in enumerate(in_stype):
             assert stype == _STORAGE_TYPE_ID_TO_STR[_STORAGE_TYPE_DEFAULT], \
@@ -560,7 +560,7 @@ class CustomOpProp(object):
                [_STORAGE_TYPE_ID_TO_STR[_STORAGE_TYPE_DEFAULT]]*len(self.list_auxiliary_states())
 
     def infer_storage_type_backward(self, ograd_stype, in_stype, out_stype, igrad_stype, aux_stype):
-        """infer_storage_type_backward interface. Used to infer storage
+        """Interface for ``infer_storage_type_backward``. Used to infer storage
         type of inputs and outputs in the backward pass.
 
         Will raise an error if undefined storage type is returned.
@@ -614,7 +614,7 @@ class CustomOpProp(object):
         return stype_lists[0], stype_lists[1], stype_lists[2], stype_lists[3], stype_lists[4]
 
     def list_outputs(self):
-        """list_outputs interface. Can override when creating new operators.
+        """Interface for ``list_outputs``. Can override when creating new operators.
 
         Returns
         -------
@@ -624,7 +624,7 @@ class CustomOpProp(object):
         return ['output']
 
     def list_arguments(self):
-        """list_arguments interface. Can override when creating new operators.
+        """Interface for ``list_arguments`` interface. Can override when creating new operators.
 
         Returns
         -------
@@ -634,7 +634,7 @@ class CustomOpProp(object):
         return ['data']
 
     def list_auxiliary_states(self):
-        """list_auxiliary_states interface. Can override when creating new operators.
+        """Interface for ``list_auxiliary_states``. Can override when creating new operators.
 
         Returns
         -------
@@ -1132,7 +1132,8 @@ def get_operator_arguments(op_name):
 
     Returns
     -------
-    operator_arguments : OperatorArguments, namedtuple with number of arguments, names and types
+    operator_arguments : OperatorArguments
+        namedtuple with number of arguments, names and types
     """
     op_handle = OpHandle()
     check_call(_LIB.NNGetOpHandle(c_str(op_name), ctypes.byref(op_handle)))

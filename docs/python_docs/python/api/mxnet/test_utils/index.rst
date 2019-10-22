@@ -19,5 +19,5 @@ mxnet.test_utils
 ================
 
 .. automodule:: mxnet.test_utils
-    :members:
     :autosummary:
+    :members:

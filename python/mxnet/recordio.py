@@ -37,6 +37,13 @@ except ImportError:
 class MXRecordIO(object):
     """Reads/writes `RecordIO` data format, supporting sequential read and write.
 
+    Parameters
+    ----------
+    uri : string
+        Path to the record file.
+    flag : string
+        'w' for write or 'r' for read.
+
     Examples
     ---------
     >>> record = mx.recordio.MXRecordIO('tmp.rec', 'w')
@@ -54,13 +61,6 @@ class MXRecordIO(object):
     record_3
     record_4
     >>> record.close()
-
-    Parameters
-    ----------
-    uri : string
-        Path to the record file.
-    flag : string
-        'w' for write or 'r' for read.
     """
     def __init__(self, uri, flag):
         self.uri = c_str(uri)
@@ -180,6 +180,11 @@ class MXRecordIO(object):
     def read(self):
         """Returns record as a string.
 
+        Returns
+        ----------
+        buf : string
+            Buffer read.
+
         Examples
         ---------
         >>> record = mx.recordio.MXRecordIO('tmp.rec', 'r')
@@ -192,11 +197,6 @@ class MXRecordIO(object):
         record_3
         record_4
         >>> record.close()
-
-        Returns
-        ----------
-        buf : string
-            Buffer read.
         """
         assert not self.writable
         # trying to implicitly read from multiple processes is forbidden,
@@ -216,15 +216,6 @@ class MXRecordIO(object):
 class MXIndexedRecordIO(MXRecordIO):
     """Reads/writes `RecordIO` data format, supporting random access.
 
-    Examples
-    ---------
-    >>> for i in range(5):
-    ...     record.write_idx(i, 'record_%d'%i)
-    >>> record.close()
-    >>> record = mx.recordio.MXIndexedRecordIO('tmp.idx', 'tmp.rec', 'r')
-    >>> record.read_idx(3)
-    record_3
-
     Parameters
     ----------
     idx_path : str
@@ -235,6 +226,15 @@ class MXIndexedRecordIO(MXRecordIO):
         'w' for write or 'r' for read.
     key_type : type
         Data type for keys.
+
+    Examples
+    ---------
+    >>> for i in range(5):
+    ...     record.write_idx(i, 'record_%d'%i)
+    >>> record.close()
+    >>> record = mx.recordio.MXIndexedRecordIO('tmp.idx', 'tmp.rec', 'r')
+    >>> record.read_idx(3)
+    record_3
     """
     def __init__(self, idx_path, uri, flag, key_type=int):
         self.idx_path = idx_path
@@ -320,18 +320,18 @@ class MXIndexedRecordIO(MXRecordIO):
     def write_idx(self, idx, buf):
         """Inserts input record at given index.
 
-        Examples
-        ---------
-        >>> for i in range(5):
-        ...     record.write_idx(i, 'record_%d'%i)
-        >>> record.close()
-
         Parameters
         ----------
         idx : int
             Index of a file.
         buf :
             Record to write.
+
+        Examples
+        ---------
+        >>> for i in range(5):
+        ...     record.write_idx(i, 'record_%d'%i)
+        >>> record.close()
         """
         key = self.key_type(idx)
         pos = self.tell()
@@ -343,7 +343,7 @@ class MXIndexedRecordIO(MXRecordIO):
 
 IRHeader = namedtuple('HEADER', ['flag', 'label', 'id', 'id2'])
 """An alias for HEADER. Used to store metadata (e.g. labels) accompanying a record.
-See mxnet.recordio.pack and mxnet.recordio.pack_img for example uses.
+See :func:`pack` and :func:`pack_img` for example uses.
 
 Parameters
 ----------
@@ -366,7 +366,7 @@ def pack(header, s):
     ----------
     header : IRHeader
         Header of the image record.
-        ``header.label`` can be a number or an array. See more detail in ``IRHeader``.
+        ``header.label`` can be a number or an array. See more detail in :class:`IRHeader`.
     s : str
         Raw image string to be packed.
 
@@ -400,7 +400,7 @@ def unpack(s):
     Parameters
     ----------
     s : str
-        String buffer from ``MXRecordIO.read``.
+        String buffer from :meth:`MXRecordIO.read`.
 
     Returns
     -------
@@ -430,7 +430,7 @@ def unpack_img(s, iscolor=-1):
     Parameters
     ----------
     s : str
-        String buffer from ``MXRecordIO.read``.
+        String buffer from :meth:`MXRecordIO.read`.
     iscolor : int
         Image format option for ``cv2.imdecode``.
 
@@ -474,7 +474,7 @@ def pack_img(header, img, quality=95, img_fmt='.jpg'):
     ----------
     header : IRHeader
         Header of the image record.
-        ``header.label`` can be a number or an array. See more detail in ``IRHeader``.
+        ``header.label`` can be a number or an array. See more detail in :class:`IRHeader`.
     img : numpy.ndarray
         Image to be packed.
     quality : int

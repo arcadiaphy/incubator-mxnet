@@ -39,7 +39,8 @@ def get_registry(base_class):
 
     Returns
     -------
-    a registrator
+    registry
+        a registrator
     """
     if base_class not in _REGISTRY:
         _REGISTRY[base_class] = {}
@@ -54,11 +55,12 @@ def get_register_func(base_class, nickname):
     base_class : type
         base class for classes that will be reigstered
     nickname : str
-        nickname of base_class for logging
+        nickname of :attr:`base_class` for logging
 
     Returns
     -------
-    a registrator function
+    func
+        a registrator function
     """
     if base_class not in _REGISTRY:
         _REGISTRY[base_class] = {}
@@ -93,11 +95,12 @@ def get_alias_func(base_class, nickname):
     base_class : type
         base class for classes that will be reigstered
     nickname : str
-        nickname of base_class for logging
+        nickname of :attr:`base_class` for logging
 
     Returns
     -------
-    a registrator function
+    func
+        a registrator function
     """
     register = get_register_func(base_class, nickname)
 
@@ -120,11 +123,12 @@ def get_create_func(base_class, nickname):
     base_class : type
         base class for classes that will be reigstered
     nickname : str
-        nickname of base_class for logging
+        nickname of :attr:`base_class` for logging
 
     Returns
     -------
-    a creator function
+    func
+        a creator function
     """
     if base_class not in _REGISTRY:
         _REGISTRY[base_class] = {}

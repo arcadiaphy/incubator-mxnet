@@ -70,7 +70,7 @@ class DetBorrowAug(DetAugmenter):
 
     Parameters
     ----------
-    augmenter : mx.image.Augmenter
+    augmenter : Augmenter
         The borrowed standard augmenter which has no effect on label
     """
     def __init__(self, augmenter):
@@ -516,24 +516,27 @@ def CreateDetAugmenter(data_shape, resize=0, rand_crop=0, rand_pad=0, rand_gray=
         Hue jittering range (percent)
     pca_noise : float
         Pca noise level (percent)
-    inter_method : int, default=2(Area-based)
-        Interpolation method for all resizing operations
-
+    inter_method : int, default=2 (Area-based)
+        Interpolation method.
         Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        3: Bicubic interpolation over 4x4 pixel neighborhood.
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
-        When shrinking an image, it will generally look best with AREA-based
-        interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
+
+        - 0: Nearest Neighbors Interpolation.
+        - 1: Bilinear interpolation.
+        - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+        - 3: Area-based (resampling using pixel area relation). It may be a
+          preferred method for image decimation, as it gives moire-free
+          results. But when the image is zoomed, it is similar to the Nearest
+          Neighbors method.
+        - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+        - 9: Cubic for enlarge, area for shrink, bilinear for others
+        - 10: Random select from interpolation method metioned above.
+
+        .. note::
+            When shrinking an image, it will generally look best with AREA-based
+            interpolation, whereas, when enlarging an image, it will generally look best
+            with Bicubic (slow) or Bilinear (faster but still looks OK).
+            More details can be found in `the documentation of OpenCV
+            <http://docs.opencv.org/master/da/d54/group__imgproc__transform.html>`_.
     min_object_covered : float
         The cropped area of the image must contain at least this fraction of
         any bounding box supplied. The value of this parameter should be non-negative.
@@ -660,12 +663,12 @@ class ImageDetIter(ImageIter):
         Data name for provided symbols.
     label_name : str
         Name for detection labels
-    last_batch_handle : str, optional
-        How to handle the last batch.
-        This parameter can be 'pad'(default), 'discard' or 'roll_over'.
-        If 'pad', the last batch will be padded with data starting from the begining
-        If 'discard', the last batch will be discarded
-        If 'roll_over', the remaining elements will be rolled over to the next iteration
+    last_batch_handle : str, optional, default 'pad'
+        How to handle the last batch. This parameter can be:
+
+        - **pad** The last batch will be padded with data starting from the begining;
+        - **discard** The last batch will be discarded;
+        - **roll_over** The remaining elements will be rolled over to the next iteration.
     kwargs : ...
         More arguments for creating augmenter. See mx.image.CreateDetAugmenter.
     """

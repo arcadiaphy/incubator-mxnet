@@ -74,7 +74,7 @@ def profiler_set_config(mode='symbolic', filename='profile.json'):
     ----------
     mode : string, optional
         Indicates whether to enable the profiler, can
-        be 'symbolic', or 'all'. Defaults to `symbolic`.
+        be 'symbolic', or 'all'. Defaults to 'symbolic'.
     filename : string, optional
         The name of output trace file. Defaults to 'profile.json'.
     """
@@ -91,9 +91,9 @@ def set_state(state='stop', profile_process='worker'):
 
     Parameters
     ----------
-    state : string, optional
+    state : string, optional, default 'stop'
         Indicates whether to run the profiler, can
-        be 'stop' or 'run'. Default is `stop`.
+        be 'stop' or 'run'.
     profile_process : string
         whether to profile kvstore `server` or `worker`.
         server can only be profiled when kvstore is of type dist.
@@ -111,9 +111,9 @@ def profiler_set_state(state='stop'):
 
     Parameters
     ----------
-    state : string, optional
+    state : string, optional, default 'stop'
         Indicates whether to run the profiler, can
-        be 'stop' or 'run'. Default is `stop`.
+        be 'stop' or 'run'.
     """
     warnings.warn('profiler.profiler_set_state() is deprecated. '
                   'Please use profiler.set_state() instead')
@@ -125,9 +125,8 @@ def dump(finished=True, profile_process='worker'):
 
     Parameters
     ----------
-    finished : boolean
+    finished : boolean, optional, default True
         Indicates whether to stop statistic output (dumping) after this dump.
-        Default is True
     profile_process : string
         whether to profile kvstore `server` or `worker`.
         server can only be profiled when kvstore is of type dist.
@@ -224,10 +223,11 @@ def resume(profile_process='worker'):
 
 
 class Domain(object):
-    """Profiling domain, used to group sub-objects like tasks, counters, etc into categories
-    Serves as part of 'categories' for chrome://tracing
+    """Profiling domain, used to group sub-objects like tasks, counters, etc into categories.
 
-    Note: Domain handles are never destroyed.
+    Serves as part of 'categories' for ``chrome://tracing``.
+
+    .. note:: Domain handles are never destroyed.
 
     Parameters
     ----------
@@ -493,9 +493,8 @@ class Marker(object):
 
         Parameters
         ----------
-        scope : string, optional
+        scope : string, optional, default 'process'
             Indicates what scope the marker should refer to.
-            Can be 'global', 'process', thread', task', and 'marker'
-            Default is `process`.
+            Can be 'global', 'process', thread', task', and 'marker'.
         """
         check_call(_LIB.MXProfileSetMarker(self.domain.handle, c_str(self.name), c_str(scope)))

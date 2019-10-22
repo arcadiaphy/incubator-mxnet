@@ -31,28 +31,26 @@ def seed(seed_state, ctx="all"):
     """Seeds the random number generators in MXNet.
 
     This affects the behavior of modules in MXNet that uses random number generators,
-    like the dropout operator and `NDArray`'s random sampling operators.
+    like the dropout operator and NDArray's random sampling operators.
+
+    .. note::
+        Random number generators in MXNet are device specific.
+        ``mx.random.seed(seed_state)`` sets the state of each generator using :attr:`seed_state` and the
+        device id. Therefore, random numbers generated from different devices can be different
+        even if they are seeded using the same seed.
+
+        To produce identical random number sequences independent of the device id,
+        set optional :attr:`ctx` argument. This produces the same sequence of random numbers independent
+        of the device id, but the sequence can be different on different kind of devices as MXNet's
+        random number generators for CPU and GPU use different algorithms.
 
     Parameters
     ----------
     seed_state : int
         The random number seed.
-
     ctx : Context
         The device context of the generator. The default is "all" which means seeding random
         number generators of all devices.
-
-    Notes
-    -----
-    Random number generators in MXNet are device specific.
-    `mx.random.seed(seed_state)` sets the state of each generator using `seed_state` and the
-    device id. Therefore, random numbers generated from different devices can be different
-    even if they are seeded using the same seed.
-
-    To produce identical random number sequences independent of the device id,
-    set optional `ctx` argument. This produces the same sequence of random numbers independent
-    of the device id, but the sequence can be different on different kind of devices as MXNet's
-    random number generators for CPU and GPU use different algorithms.
 
     Example
     -------

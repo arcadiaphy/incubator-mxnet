@@ -48,8 +48,8 @@ from ..ndarray.numpy import _internal as _npi
 def imread(filename, *args, **kwargs):
     """Read and decode an image to an NDArray.
 
-    .. note:: `imread` uses OpenCV (not the CV2 Python library).
-       MXNet must have been built with USE_OPENCV=1 for `imdecode` to work.
+    .. note:: ``imread`` uses OpenCV (not the CV2 Python library).
+       MXNet must have been built with USE_OPENCV=1 for ``imdecode`` to work.
 
     Parameters
     ----------
@@ -66,19 +66,19 @@ def imread(filename, *args, **kwargs):
     Returns
     -------
     NDArray
-        An `NDArray` containing the image.
+        An NDArray containing the image.
 
     Example
     -------
     >>> mx.img.imread("flower.jpg")
     <NDArray 224x224x3 @cpu(0)>
 
-    Set `flag` parameter to 0 to get grayscale output
+    Set :attr:`flag` parameter to 0 to get grayscale output
 
     >>> mx.img.imread("flower.jpg", flag=0)
     <NDArray 224x224x1 @cpu(0)>
 
-    Set `to_rgb` parameter to 0 to get output in OpenCV format (BGR)
+    Set :attr:`to_rgb` parameter to 0 to get output in OpenCV format (BGR)
 
     >>> mx.img.imread("flower.jpg", to_rgb=0)
     <NDArray 224x224x3 @cpu(0)>
@@ -93,8 +93,8 @@ def imread(filename, *args, **kwargs):
 def imresize(src, w, h, *args, **kwargs):
     r"""Resize image with OpenCV.
 
-    .. note:: `imresize` uses OpenCV (not the CV2 Python library). MXNet must have been built
-       with USE_OPENCV=1 for `imresize` to work.
+    .. note:: ``imresize`` uses OpenCV (not the CV2 Python library). MXNet must have been built
+       with USE_OPENCV=1 for ``imresize`` to work.
 
     Parameters
     ----------
@@ -105,24 +105,25 @@ def imresize(src, w, h, *args, **kwargs):
     h : int, required
         Height of resized image.
     interp : int, optional, default=1
-        Interpolation method (default=cv2.INTER_LINEAR).
-        Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Bicubic interpolation over 4x4 pixel neighborhood.
-        3: Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
-        When shrinking an image, it will generally look best with AREA-based
-        interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
-        More details can be found in the documentation of OpenCV, please refer to
-        http://docs.opencv.org/master/da/d54/group__imgproc__transform.html.
+        Interpolation method. Possible values:
+
+        - 0: Nearest Neighbors Interpolation.
+        - 1: Bilinear interpolation.
+        - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+        - 3: Area-based (resampling using pixel area relation). It may be a
+          preferred method for image decimation, as it gives moire-free
+          results. But when the image is zoomed, it is similar to the Nearest
+          Neighbors method.
+        - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+        - 9: Cubic for enlarge, area for shrink, bilinear for others
+        - 10: Random select from interpolation method metioned above.
+
+        .. note::
+            When shrinking an image, it will generally look best with AREA-based
+            interpolation, whereas, when enlarging an image, it will generally look best
+            with Bicubic (slow) or Bilinear (faster but still looks OK).
+            More details can be found in `the documentation of OpenCV
+            <http://docs.opencv.org/master/da/d54/group__imgproc__transform.html>`_.
 
     out : NDArray, optional
         The output NDArray to hold the result.
@@ -151,24 +152,24 @@ def imresize(src, w, h, *args, **kwargs):
 def imdecode(buf, *args, **kwargs):
     """Decode an image to an NDArray.
 
-    .. note:: `imdecode` uses OpenCV (not the CV2 Python library).
-       MXNet must have been built with USE_OPENCV=1 for `imdecode` to work.
+    .. note:: ``imdecode`` uses OpenCV (not the CV2 Python library).
+       MXNet must have been built with USE_OPENCV=1 for ``imdecode`` to work.
 
     Parameters
     ----------
-    buf : str/bytes/bytearray or numpy.ndarray
+    buf : str, bytes, bytearray or numpy.ndarray
         Binary image data as string or numpy ndarray.
     flag : int, optional, default=1
         1 for three channel color output. 0 for grayscale output.
     to_rgb : int, optional, default=1
         1 for RGB formatted output (MXNet default). 0 for BGR formatted output (OpenCV default).
     out : NDArray, optional
-        Output buffer. Use `None` for automatic allocation.
+        Output buffer. Use ``None`` for automatic allocation.
 
     Returns
     -------
     NDArray
-        An `NDArray` containing the image.
+        An NDArray containing the image.
 
     Example
     -------
@@ -179,7 +180,7 @@ def imdecode(buf, *args, **kwargs):
     >>> image
     <NDArray 224x224x3 @cpu(0)>
 
-    Set `flag` parameter to 0 to get grayscale output
+    Set :attr:`flag` parameter to 0 to get grayscale output
 
     >>> with open("flower.jpg", 'rb') as fp:
     ...     str_image = fp.read()
@@ -188,7 +189,7 @@ def imdecode(buf, *args, **kwargs):
     >>> image
     <NDArray 224x224x1 @cpu(0)>
 
-    Set `to_rgb` parameter to 0 to get output in OpenCV format (BGR)
+    Set :attr:`to_rgb` parameter to 0 to get output in OpenCV format (BGR)
 
     >>> with open("flower.jpg", 'rb') as fp:
     ...     str_image = fp.read()
@@ -258,18 +259,19 @@ def copyMakeBorder(src, top, bot, left, right, *args, **kwargs):
         Left margin.
     right : int, required
         Right margin.
-    type : int, optional, default='0'
-        Filling type (default=cv2.BORDER_CONSTANT).
-        0 - cv2.BORDER_CONSTANT - Adds a constant colored border.
-        1 - cv2.BORDER_REFLECT - Border will be mirror reflection of the
-        border elements, like this : fedcba|abcdefgh|hgfedcb
-        2 - cv2.BORDER_REFLECT_101 or cv.BORDER_DEFAULT - Same as above,
-        but with a slight change, like this : gfedcb|abcdefgh|gfedcba
-        3 - cv2.BORDER_REPLICATE - Last element is replicated throughout,
-        like this: aaaaaa|abcdefgh|hhhhhhh
-        4 - cv2.BORDER_WRAP - it will look like this : cdefgh|abcdefgh|abcdefg
-    value : double, optional, default=0
-        (Deprecated! Use ``values`` instead.) Fill with single value.
+    type : int, optional, default 0
+        Filling type:
+
+        - 0 - cv2.BORDER_CONSTANT - Adds a constant colored border.
+        - 1 - cv2.BORDER_REFLECT - Border will be mirror reflection of the
+          border elements, like this : fedcba|abcdefgh|hgfedcb
+        - 2 - cv2.BORDER_REFLECT_101 or cv.BORDER_DEFAULT - Same as above,
+          but with a slight change, like this : gfedcb|abcdefgh|gfedcba
+        - 3 - cv2.BORDER_REPLICATE - Last element is replicated throughout,
+          like this: aaaaaa|abcdefgh|hhhhhhh
+        - 4 - cv2.BORDER_WRAP - it will look like this : cdefgh|abcdefgh|abcdefg
+    value : double, optional, default 0
+        (Deprecated! Use :attr:`values` instead.) Fill with single value.
     values : tuple of <double>, optional, default=[]
         Fill with value(RGB[A] or gray), up to 4 channels.
 
@@ -303,26 +305,26 @@ def _get_interp_method(interp, sizes=()):
 
     Parameters
     ----------
-    interp : int
-        interpolation method for all resizing operations
+    interp : int, optional, default=1
+        Interpolation method. Possible values:
 
-        Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Bicubic interpolation over 4x4 pixel neighborhood.
-        3: Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
-        When shrinking an image, it will generally look best with AREA-based
-        interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
-        More details can be found in the documentation of OpenCV, please refer to
-        http://docs.opencv.org/master/da/d54/group__imgproc__transform.html.
+        - 0: Nearest Neighbors Interpolation.
+        - 1: Bilinear interpolation.
+        - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+        - 3: Area-based (resampling using pixel area relation). It may be a
+          preferred method for image decimation, as it gives moire-free
+          results. But when the image is zoomed, it is similar to the Nearest
+          Neighbors method.
+        - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+        - 9: Cubic for enlarge, area for shrink, bilinear for others
+        - 10: Random select from interpolation method metioned above.
+
+        .. note::
+            When shrinking an image, it will generally look best with AREA-based
+            interpolation, whereas, when enlarging an image, it will generally look best
+            with Bicubic (slow) or Bilinear (faster but still looks OK).
+            More details can be found in `the documentation of OpenCV
+            <http://docs.opencv.org/master/da/d54/group__imgproc__transform.html>`_.
     sizes : tuple of int
         (old_height, old_width, new_height, new_width), if None provided, auto(9)
         will return Area(2) anyway.
@@ -354,8 +356,8 @@ def _get_interp_method(interp, sizes=()):
 def resize_short(src, size, interp=2):
     """Resizes shorter edge to size.
 
-    .. note:: `resize_short` uses OpenCV (not the CV2 Python library).
-       MXNet must have been built with OpenCV for `resize_short` to work.
+    .. note:: ``resize_short`` uses OpenCV (not the CV2 Python library).
+       MXNet must have been built with OpenCV for ``resize_short`` to work.
 
     Resizes the original image by setting the shorter edge to size
     and setting the longer edge accordingly.
@@ -367,30 +369,31 @@ def resize_short(src, size, interp=2):
         The original image.
     size : int
         The length to be set for the shorter edge.
-    interp : int, optional, default=2
-        Interpolation method used for resizing the image.
-        Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Bicubic interpolation over 4x4 pixel neighborhood.
-        3: Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
-        When shrinking an image, it will generally look best with AREA-based
-        interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
-        More details can be found in the documentation of OpenCV, please refer to
-        http://docs.opencv.org/master/da/d54/group__imgproc__transform.html.
+    interp : int, optional, default=1
+        Interpolation method. Possible values:
+
+        - 0: Nearest Neighbors Interpolation.
+        - 1: Bilinear interpolation.
+        - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+        - 3: Area-based (resampling using pixel area relation). It may be a
+          preferred method for image decimation, as it gives moire-free
+          results. But when the image is zoomed, it is similar to the Nearest
+          Neighbors method.
+        - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+        - 9: Cubic for enlarge, area for shrink, bilinear for others
+        - 10: Random select from interpolation method metioned above.
+
+        .. note::
+            When shrinking an image, it will generally look best with AREA-based
+            interpolation, whereas, when enlarging an image, it will generally look best
+            with Bicubic (slow) or Bilinear (faster but still looks OK).
+            More details can be found in `the documentation of OpenCV
+            <http://docs.opencv.org/master/da/d54/group__imgproc__transform.html>`_.
 
     Returns
     -------
     NDArray
-        An 'NDArray' containing the resized image.
+        An NDArray containing the resized image.
 
     Example
     -------
@@ -431,12 +434,12 @@ def fixed_crop(src, x0, y0, w, h, size=None, interp=2):
     size : tuple of (w, h)
         Optional, resize to new size after cropping
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
 
     Returns
     -------
     NDArray
-        An `NDArray` containing the cropped image.
+        An NDArray containing the cropped image.
     """
     out = src[y0:y0+h, x0:x0+w]
     if size is not None and (w, h) != size:
@@ -451,15 +454,18 @@ def random_crop(src, size, interp=2):
 
     Parameters
     ----------
-    src: Source image `NDArray`
-    size: Size of the crop formatted as (width, height). If the `size` is larger
-           than the image, then the source image is upsampled to `size` and returned.
+    src: NDArray
+        Source image NDArray
+    size: int
+        Size of the crop formatted as (width, height). If the `size` is larger
+        than the image, then the source image is upsampled to `size` and returned.
     interp: int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
+
     Returns
     -------
     NDArray
-        An `NDArray` containing the cropped image.
+        An NDArray containing the cropped image.
     Tuple
         A tuple (x, y, width, height) where (x, y) is top-left position of the crop in the
         original image and (width, height) are the dimensions of the cropped image.
@@ -498,7 +504,7 @@ def center_crop(src, size, interp=2):
     size : list or tuple of int
         The desired output image size.
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
 
     Returns
     -------
@@ -548,7 +554,7 @@ def color_normalize(src, mean, std=None):
     Returns
     -------
     NDArray
-        An `NDArray` containing the normalized image.
+        An NDArray containing the normalized image.
     """
     if mean is not None:
         src -= mean
@@ -572,15 +578,15 @@ def random_size_crop(src, size, area, ratio, interp=2, **kwargs):
     ratio : tuple of (float, float)
         Aspect ratio range as (min_aspect_ratio, max_aspect_ratio)
     interp: int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
+
     Returns
     -------
     NDArray
-        An `NDArray` containing the cropped image.
+        An NDArray containing the cropped image.
     Tuple
         A tuple (x, y, width, height) where (x, y) is top-left position of the crop in the
         original image and (width, height) are the dimensions of the cropped image.
-
     """
     h, w, _ = src.shape
     src_area = h * w
@@ -669,7 +675,7 @@ class ResizeAug(Augmenter):
     size : int
         The length to be set for the shorter edge.
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
     """
     def __init__(self, size, interp=2):
         super(ResizeAug, self).__init__(size=size, interp=interp)
@@ -689,7 +695,7 @@ class ForceResizeAug(Augmenter):
     size : tuple of (int, int)
         The desired size as in (width, height)
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
     """
     def __init__(self, size, interp=2):
         super(ForceResizeAug, self).__init__(size=size, interp=interp)
@@ -710,7 +716,7 @@ class RandomCropAug(Augmenter):
     size : int
         The length to be set for the shorter edge.
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
     """
     def __init__(self, size, interp=2):
         super(RandomCropAug, self).__init__(size=size, interp=interp)
@@ -735,7 +741,7 @@ class RandomSizedCropAug(Augmenter):
     ratio : tuple of (float, float)
         Aspect ratio range as (min_aspect_ratio, max_aspect_ratio)
     interp: int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
     """
     def __init__(self, size, area, ratio, interp=2, **kwargs):
         super(RandomSizedCropAug, self).__init__(size=size, area=area,
@@ -764,7 +770,7 @@ class CenterCropAug(Augmenter):
     size : list or tuple of int
         The desired output image size.
     interp : int, optional, default=2
-        Interpolation method. See resize_short for details.
+        Interpolation method. See :func:`resize_short` for details.
     """
     def __init__(self, size, interp=2):
         super(CenterCropAug, self).__init__(size=size, interp=interp)
@@ -1056,24 +1062,27 @@ def CreateAugmenter(data_shape, resize=0, rand_crop=False, rand_resize=False, ra
         Hue jittering range (percent)
     pca_noise : float
         Pca noise level (percent)
-    inter_method : int, default=2(Area-based)
-        Interpolation method for all resizing operations
-
+    inter_method : int, default=2 (Area-based)
+        Interpolation method.
         Possible values:
-        0: Nearest Neighbors Interpolation.
-        1: Bilinear interpolation.
-        2: Bicubic interpolation over 4x4 pixel neighborhood.
-        3: Area-based (resampling using pixel area relation). It may be a
-        preferred method for image decimation, as it gives moire-free
-        results. But when the image is zoomed, it is similar to the Nearest
-        Neighbors method. (used by default).
-        4: Lanczos interpolation over 8x8 pixel neighborhood.
-        9: Cubic for enlarge, area for shrink, bilinear for others
-        10: Random select from interpolation method metioned above.
-        Note:
-        When shrinking an image, it will generally look best with AREA-based
-        interpolation, whereas, when enlarging an image, it will generally look best
-        with Bicubic (slow) or Bilinear (faster but still looks OK).
+
+        - 0: Nearest Neighbors Interpolation.
+        - 1: Bilinear interpolation.
+        - 2: Bicubic interpolation over 4x4 pixel neighborhood.
+        - 3: Area-based (resampling using pixel area relation). It may be a
+          preferred method for image decimation, as it gives moire-free
+          results. But when the image is zoomed, it is similar to the Nearest
+          Neighbors method.
+        - 4: Lanczos interpolation over 8x8 pixel neighborhood.
+        - 9: Cubic for enlarge, area for shrink, bilinear for others
+        - 10: Random select from interpolation method metioned above.
+
+        .. note::
+            When shrinking an image, it will generally look best with AREA-based
+            interpolation, whereas, when enlarging an image, it will generally look best
+            with Bicubic (slow) or Bilinear (faster but still looks OK).
+            More details can be found in `the documentation of OpenCV
+            <http://docs.opencv.org/master/da/d54/group__imgproc__transform.html>`_.
 
     Examples
     --------
@@ -1140,10 +1149,10 @@ class ImageIter(io.DataIter):
     """Image data iterator with a large number of augmentation choices.
     This iterator supports reading from both .rec files and raw image files.
 
-    To load input images from .rec files, use `path_imgrec` parameter and to load from raw image
-    files, use `path_imglist` and `path_root` parameters.
+    To load input images from .rec files, use :attr:`path_imgrec` parameter and to load from raw image
+    files, use :attr:`path_imglist` and :attr:`path_root` parameters.
 
-    To use data partition (for distributed training) or shuffling, specify `path_imgidx` parameter.
+    To use data partition (for distributed training) or shuffling, specify :attr:`path_imgidx` parameter.
 
     Parameters
     ----------
@@ -1181,14 +1190,14 @@ class ImageIter(io.DataIter):
         Label name for provided symbols.
     dtype : str
         Label data type. Default: float32. Other options: int32, int64, float64
-    last_batch_handle : str, optional
-        How to handle the last batch.
-        This parameter can be 'pad'(default), 'discard' or 'roll_over'.
-        If 'pad', the last batch will be padded with data starting from the begining
-        If 'discard', the last batch will be discarded
-        If 'roll_over', the remaining elements will be rolled over to the next iteration
-    kwargs : ...
-        More arguments for creating augmenter. See mx.image.CreateAugmenter.
+    last_batch_handle : str, optional, default 'pad'
+        How to handle the last batch. This parameter can be:
+
+        - **pad** The last batch will be padded with data starting from the begining;
+        - **discard** The last batch will be discarded;
+        - **roll_over** The remaining elements will be rolled over to the next iteration.
+    kwargs : dict
+        More arguments for creating augmenter. See :class:`CreateAugmenter`.
     """
 
     def __init__(self, batch_size, data_shape, label_width=1,
@@ -1445,7 +1454,8 @@ class ImageIter(io.DataIter):
         return img
 
     def read_image(self, fname):
-        """Reads an input image `fname` and returns the decoded raw bytes.
+        """Reads an input image :attr:`fname` and returns the decoded raw bytes.
+
         Examples
         --------
         >>> dataIter.read_image('Face.jpg') # returns decoded raw bytes.

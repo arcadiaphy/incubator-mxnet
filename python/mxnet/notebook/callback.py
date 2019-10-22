@@ -98,7 +98,7 @@ class PandasLogger(object):
     def train_df(self):
         """The dataframe with training data.
         This has metrics for training minibatches, logged every
-        "frequent" batches.  (frequent is a constructor param)
+        :attr:`frequent` batches.  (frequent is a constructor param)
         """
         return self._dataframes['train']
 
@@ -132,7 +132,7 @@ class PandasLogger(object):
 
         Parameters
         ----------
-        metrics : metric.EvalMetric
+        metrics : EvalMetric
             New metrics to be added.
         df_name : str
             Name of the dataframe to be modified.
@@ -154,6 +154,7 @@ class PandasLogger(object):
 
     def _process_batch(self, param, dataframe):
         """Update parameters for selected dataframe after a completed batch
+
         Parameters
         ----------
         dataframe : pandas.DataFrame
@@ -190,9 +191,11 @@ class PandasLogger(object):
         self.last_epoch_time = now
 
     def callback_args(self):
-        """returns **kwargs parameters for model.fit()
-        to enable all callbacks.  e.g.
-        model.fit(X=train, eval_data=test, **pdlogger.callback_args())
+        """Returns callback parameters for ``model.fit()`` to enable all callbacks.
+
+        Examples
+        --------
+        >>>  model.fit(X=train, eval_data=test, **pdlogger.callback_args())
         """
         return {
             'batch_end_callback': self.train_cb,
@@ -234,9 +237,11 @@ class LiveBokehChart(object):
 
     def interval_elapsed(self):
         """Check whether it is time to update plot.
+
         Returns
         -------
-        Boolean value of whethe to update now
+        bool
+            value of whether to update now
         """
         return time.time() - self.last_update > self.display_freq
 
@@ -265,9 +270,11 @@ class LiveBokehChart(object):
         self._do_update()
 
     def callback_args(self):
-        """returns **kwargs parameters for model.fit()
-        to enable all callbacks.  e.g.
-        model.fit(X=train, eval_data=test, **pdlogger.callback_args())
+        """Returns callback parameters for ``model.fit()`` to enable all callbacks.
+
+        Examples
+        --------
+        >>>  model.fit(X=train, eval_data=test, **pdlogger.callback_args())
         """
         return {
             'batch_end_callback': self.batch_cb,
@@ -359,6 +366,7 @@ class LiveLearningCurve(LiveBokehChart):
 
     def _process_batch(self, param, df_name):
         """Update selected dataframe after a completed batch
+
         Parameters
         ----------
         df_name : str
@@ -390,10 +398,10 @@ class LiveLearningCurve(LiveBokehChart):
 
 
 def args_wrapper(*args):
-    """Generates callback arguments for model.fit()
-    for a set of callback objects.
-    Callback objects like PandasLogger(), LiveLearningCurve()
-    get passed in.  This assembles all their callback arguments.
+    """Generates callback arguments for ``model.fit()`` for a set of callback objects.
+
+    Callback objects like :class:`PandasLogger`, :class:`LiveLearningCurve`
+    get passed in. This assembles all their callback arguments.
     """
     out = defaultdict(list)
     for callback in args:

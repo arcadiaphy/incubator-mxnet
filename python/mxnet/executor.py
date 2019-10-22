@@ -120,7 +120,7 @@ class Executor(object):
             Whether this forward is for evaluation purpose. If True,
             a backward call is expected to follow.
 
-        **kwargs
+        kwargs: dict
             Additional specification of input arguments.
 
         Examples
@@ -163,7 +163,7 @@ class Executor(object):
             on outputs that are not a loss function.
         is_train : bool, default True
             Whether this backward is for training or inference. Note that in rare
-            cases you want to call backward with is_train=False to get gradient
+            cases you want to call backward with ``is_train=False`` to get gradient
             during inference.
 
 
@@ -177,7 +177,7 @@ class Executor(object):
         >>> net = mx.sym.FullyConnected(net, name='fc', num_hidden=6)
         >>> net = mx.sym.Activation(net, name='relu', act_type="relu")
         >>> net = mx.sym.SoftmaxOutput(net, name='softmax')
-
+        >>>
         >>> args =  {'data': mx.nd.ones((1, 4)), 'fc_weight': mx.nd.ones((6, 4)),
         >>>          'fc_bias': mx.nd.array((1, 4, 4, 4, 5, 6)), 'softmax_label': mx.nd.ones((1))}
         >>> args_grad = {'fc_weight': mx.nd.zeros((6, 4)), 'fc_bias': mx.nd.zeros((6))}
@@ -270,7 +270,8 @@ class Executor(object):
 
         Raises
         ------
-        ValueError : if there are duplicated names in the arguments.
+        ValueError
+            If there are duplicated names in the arguments.
         """
         if self._arg_dict is None:
             self._arg_dict = Executor._get_dict(
@@ -302,7 +303,8 @@ class Executor(object):
 
         Raises
         ------
-        ValueError : if there are duplicated names in the auxiliary states.
+        ValueError
+            If there are duplicated names in the auxiliary states.
         """
         if self._aux_dict is None:
             self._aux_dict = Executor._get_dict(
@@ -320,7 +322,8 @@ class Executor(object):
 
         Raises
         ------
-        ValueError : if there are duplicated names in the outputs.
+        ValueError
+            If there are duplicated names in the outputs.
         """
         if self._output_dict is None:
             self._output_dict = Executor._get_dict(
@@ -487,23 +490,23 @@ class Executor(object):
         >>> texec = c.bind(mx.cpu(), {'a': mx.nd.array([1,2]), 'b':mx.nd.array([2,3])})
         >>> print(texec.debug_str())
         Symbol Outputs:
-	            output[0]=_plus0(0)
+                    output[0]=_plus0(0)
         Variable:a
         --------------------
         Op:_mul_scalar, Name=_mulscalar0
         Inputs:
-	        arg[0]=a(0) version=0
+                arg[0]=a(0) version=0
         Attrs:
-	        scalar=2
+                scalar=2
         --------------------
         Op:sin, Name=sin0
         Inputs:
-	        arg[0]=a(0) version=0
+                arg[0]=a(0) version=0
         --------------------
         Op:elemwise_add, Name=_plus0
         Inputs:
-	        arg[0]=_mulscalar0(0)
-	        arg[1]=sin0(0)
+                arg[0]=_mulscalar0(0)
+                arg[1]=sin0(0)
         Total 0 MB allocated
         Total 11 TempSpace resource requested
         """

@@ -120,7 +120,9 @@ class CudaModule(object):
             Function signature for the kernel. For example, if a kernel is
             declared as::
 
-                extern "C" __global__ void axpy(const float *x, double *y, int alpha)
+                extern "C" __global__ void axpy(const float *x,
+                                                double *y,
+                                                int alpha)
 
             Then its signature should be::
 
@@ -130,8 +132,8 @@ class CudaModule(object):
 
                 const float *, double *, int
 
-            Note that `*` in signature marks an argument as array and
-            `const` marks an argument as constant (input) array.
+            Note that ``*`` in signature marks an argument as array and
+            ``const`` marks an argument as constant (input) array.
 
         Returns
         -------
@@ -171,7 +173,7 @@ class CudaModule(object):
         return CudaKernel(hdl, name, is_ndarray, dtypes)
 
 class CudaKernel(object):
-    """Constructs CUDA kernel. Should be created by `CudaModule.get_kernel`,
+    """Constructs CUDA kernel. Should be created by :meth:`CudaModule.get_kernel`,
     not intended to be used by users."""
     def __init__(self, handle, name, is_ndarray, dtypes):
         self.handle = handle

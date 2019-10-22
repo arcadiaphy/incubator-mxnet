@@ -39,11 +39,11 @@ class Monitor(object):
         Number of batches between printing.
     stat_func : function
         A function that computes statistics of tensors.
-        Takes an `NDArray` and returns an `NDArray`. Defaults to mean
-        absolute value abs(x)/size(x).
+        Takes an NDArray and returns an NDArray. Defaults to mean
+        absolute value ``abs(x)/size(x)``.
     pattern : str
         A regular expression specifying which tensors to monitor.
-        Only tensors with names that match `name_pattern` will be included.
+        Only tensors with names that match this pattern will be included.
         For example, '.*weight|.*output' will print all weights and outputs and
         '.*backward.*' will print all gradients.
     monitor_all : bool, default False
@@ -79,8 +79,8 @@ class Monitor(object):
 
         Parameters
         ----------
-        exe : mx.executor.Executor
-            The Executor (returned by symbol.bind) to install to.
+        exe : Executor
+            The Executor (returned by :meth:`symbol.bind <mxnet.symbol.Symbol.bind>`) to install to.
         """
         exe.set_monitor_callback(self.stat_helper, self.monitor_all)
         self.exes.append(exe)
@@ -105,7 +105,8 @@ class Monitor(object):
 
         Returns
         -------
-        res : list of """
+        res : list
+        """
         if not self.activated:
             return []
         for exe in self.exes:
