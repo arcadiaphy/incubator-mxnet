@@ -38,7 +38,8 @@ class SequentialModule(BaseModule):
     META_TAKE_LABELS = 'take_labels'
     META_AUTO_WIRING = 'auto_wiring'
 
-    def __init__(self, logger=logging):
+    def __init__(self, logger=None):
+        logger = logging if logger is None else logger
         super(SequentialModule, self).__init__(logger=logger)
         self._modules = []
         self._metas = []
@@ -56,22 +57,23 @@ class SequentialModule(BaseModule):
         ----------
         module : BaseModule
             The new module to add.
-        kwargs : ``**keywords``
+        kwargs : dict
             All the keyword arguments are saved as meta information
             for the added module. The currently known meta includes
 
-            - `take_labels`: indicating whether the module expect to
-                take labels when doing computation. Note any module in
-                the chain can take labels (not necessarily only the top
-                most one), and they all take the same labels passed
-                from the original data batch for the `SequentialModule`.
+            - **take_labels**: indicating whether the module expect to
+              take labels when doing computation. Note any module in
+              the chain can take labels (not necessarily only the top
+              most one), and they all take the same labels passed
+              from the original data batch for the :class:`SequentialModule`.
 
 
         Returns
         -------
         self
-            This function returns `self` to allow us to easily chain a
-            series of `add` calls.
+            This function returns ``self`` to allow us to easily chain a
+            series of :meth:`add` calls.
+
         Examples
         --------
         >>> # An example of addinging two modules to a chain.
@@ -117,8 +119,8 @@ class SequentialModule(BaseModule):
         Returns
         -------
         list
-            A list of `(name, shape)` pairs. The data shapes of the first module
-            is the data shape of a `SequentialModule`.
+            A list of ``(name, shape)`` pairs. The data shapes of the first module
+            is the data shape of a :class:`SequentialModule`.
         """
         assert self.binded
         return self._modules[0].data_shapes
@@ -130,7 +132,7 @@ class SequentialModule(BaseModule):
         Returns
         -------
         list
-            A list of `(name, shape)` pairs. The return value could be `None` if
+            A list of ``(name, shape)`` pairs. The return value could be ``None`` if
             the module does not need labels, or if the module is not bound for
             training (in this case, label information is not available).
         """
@@ -144,8 +146,8 @@ class SequentialModule(BaseModule):
         Returns
         -------
         list
-            A list of `(name, shape)` pairs. The output shapes of the last
-            module is the output shape of a `SequentialModule`.
+            A list of ``(name, shape)`` pairs. The output shapes of the last
+            module is the output shape of a :class:`SequentialModule`.
         """
         assert self.binded
         return self._modules[-1].output_shapes
@@ -180,18 +182,18 @@ class SequentialModule(BaseModule):
         initializer : Initializer
         arg_params : dict
             Default ``None``. Existing parameters. This has higher priority
-            than `initializer`.
+            than :attr:`initialzer`.
         aux_params : dict
             Default ``None``. Existing auxiliary states. This has higher priority
-            than `initializer`.
+            than :attr:`initialzer`.
         allow_missing : bool
-            Allow missing values in `arg_params` and `aux_params` (if not ``None``).
-            In this case, missing values will be filled with `initializer`.
+            Allow missing values in :attr:`arg_params` and :attr:`aux_params` (if not ``None``).
+            In this case, missing values will be filled with :attr:`initialzer`.
         force_init : bool
             Default ``False``.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
         """
         if self.params_initialized and not force_init:
@@ -231,9 +233,9 @@ class SequentialModule(BaseModule):
         Parameters
         ----------
         data_shapes : list of (str, tuple)
-            Typically is `data_iter.provide_data`.
+            Typically is ``data_iter.provide_data``.
         label_shapes : list of (str, tuple)
-            Typically is `data_iter.provide_label`.
+            Typically is ``data_iter.provide_label``.
         for_training : bool
             Default is ``True``. Whether the executors should be bind for training.
         inputs_need_grad : bool
@@ -244,7 +246,7 @@ class SequentialModule(BaseModule):
             Default is ``False``. This function does nothing if the executors are already
             bound. But with this ``True``, the executors will be forced to rebind.
         shared_module : Module
-            Default is ``None``. Currently shared module is not supported for `SequentialModule`.
+            Default is ``None``. Currently shared module is not supported for :class:`SequentialModule`.
         grad_req : str, list of str, dict of str to str
             Requirement for gradient accumulation. Can be 'write', 'add', or 'null'
             (default to 'write').
@@ -303,9 +305,9 @@ class SequentialModule(BaseModule):
         Parameters
         ----------
         kvstore : str or KVStore
-            Default `'local'`.
+            Default 'local'.
         optimizer : str or Optimizer
-            Default `'sgd'`
+            Default 'sgd'.
         optimizer_params : dict
             Default ``(('learning_rate', 0.01),)``. The default value is not a dictionary,
             just to avoid pylint warning of dangerous default values.
@@ -331,7 +333,7 @@ class SequentialModule(BaseModule):
         ----------
         data_batch : DataBatch
         is_train : bool
-            Default is ``None``, in which case `is_train` is take as ``self.for_training``.
+            Default is ``None``, in which case :attr:`is_train` is take as ``self.for_training``.
         """
         assert self.binded and self.params_initialized
 
@@ -389,7 +391,7 @@ class SequentialModule(BaseModule):
         Returns
         -------
         list of NDArray or list of list of NDArray
-            If `merge_multi_context` is ``True``, it is like ``[out1,
+            If :attr:`merge_multi_context` is ``True``, it is like ``[out1,
             out2]``. Otherwise, it is like ``[[out1_dev1, out1_dev2], [out2_dev1,
             out2_dev2]]``. All the output elements are numpy arrays.
         """
@@ -410,9 +412,9 @@ class SequentialModule(BaseModule):
         Returns
         -------
         list of NDArrays or list of list of NDArrays
-            If `merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
+            If :attr:`merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
             is like ``[[grad1_dev1, grad1_dev2], [grad2_dev1, grad2_dev2]]``. All the output
-            elements are `NDArray`.
+            elements are NDArray.
         """
         assert self.binded and self.params_initialized and self.inputs_need_grad
         return self._modules[0].get_input_grads(merge_multi_context=merge_multi_context)

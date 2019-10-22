@@ -39,7 +39,8 @@ class PythonModule(BaseModule):
     output_names : list of str
         Names of the outputs.
     """
-    def __init__(self, data_names, label_names, output_names, logger=logging):
+    def __init__(self, data_names, label_names, output_names, logger=None):
+        logger = logging if logger is None else logger
         super(PythonModule, self).__init__(logger=logger)
 
         if isinstance(data_names, tuple):
@@ -100,7 +101,8 @@ class PythonModule(BaseModule):
 
         Returns
         -------
-        ``({}, {})``, a pair of empty dict.
+        dict
+            ``({}, {})``, a pair of empty dict.
         """
         return (dict(), dict())
 
@@ -256,12 +258,13 @@ class PythonLossModule(PythonModule):
         Should be a list of only one name.
     grad_func : function
         Optional. If not ``None``, should be a function that takes `scores`
-        and `labels`, both of type `NDArray`, and return the gradients with
+        and `labels`, both of type NDArray, and return the gradients with
         respect to the scores according to this loss function. The return
-        value could be a numpy array or an `NDArray`.
+        value could be a numpy array or an NDArray.
     """
     def __init__(self, name='pyloss', data_names=('data',), label_names=('softmax_label',),
-                 logger=logging, grad_func=None):
+                 logger=None, grad_func=None):
+        logger = logging if logger is None else logger
         super(PythonLossModule, self).__init__(data_names, label_names,
                                                [name + '_output'], logger=logger)
         self._name = name
@@ -331,7 +334,7 @@ class PythonLossModule(PythonModule):
     def _backward_impl(self):
         """Actual implementation of the backward computation. The computation
         should take ``self._scores`` and ``self._labels`` and then compute the
-        gradients with respect to the scores, store it as an `NDArray` in
+        gradients with respect to the scores, store it as an NDArray in
         ``self._scores_grad``.
 
         Instead of defining a subclass and overriding this function,

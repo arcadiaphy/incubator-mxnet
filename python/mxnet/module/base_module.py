@@ -89,20 +89,20 @@ class BaseModule(object):
 
     A module has several states:
 
-    - Initial state: Memory is not allocated yet, so the module is not ready for computation yet.
-    - Binded: Shapes for inputs, outputs, and parameters are all known, memory has been allocated,
+    - **Initial state**: Memory is not allocated yet, so the module is not ready for computation yet.
+    - **Binded**: Shapes for inputs, outputs, and parameters are all known, memory has been allocated,
       and the module is ready for computation.
-    - Parameters are initialized: For modules with parameters, doing computation before
+    - **Parameters are initialized**: For modules with parameters, doing computation before
       initializing the parameters might result in undefined outputs.
-    - Optimizer is installed: An optimizer can be installed to a module. After this, the parameters
+    - **Optimizer is installed**: An optimizer can be installed to a module. After this, the parameters
       of the module can be updated according to the optimizer after gradients are computed
       (forward-backward).
 
     In order for a module to interact with others, it must be able to report the
     following information in its initial state (before binding):
 
-    - `data_names`: list of type string indicating the names of the required input data.
-    - `output_names`: list of type string indicating the names of the required outputs.
+    - **data_names**: list of type string indicating the names of the required input data.
+    - **output_names**: list of type string indicating the names of the required outputs.
 
     After binding, a module should be able to report the following richer information:
 
@@ -118,22 +118,22 @@ class BaseModule(object):
           input data are needed. Might be useful when implementing composition of modules.
 
     - input/output information
-        - `data_shapes`: a list of `(name, shape)`. In theory, since the memory is allocated,
+        - `data_shapes`: a list of ``(name, shape)``. In theory, since the memory is allocated,
           we could directly provide the data arrays. But in the case of data parallelism,
           the data arrays might not be of the same shape as viewed from the external world.
-        - `label_shapes`: a list of `(name, shape)`. This might be `[]` if the module does
+        - `label_shapes`: a list of ``(name, shape)``. This might be ``[]`` if the module does
           not need labels (e.g. it does not contains a loss function at the top), or a module
           is not bound for training.
-        - `output_shapes`: a list of `(name, shape)` for outputs of the module.
+        - `output_shapes`: a list of ``(name, shape)`` for outputs of the module.
 
     - parameters (for modules with parameters)
         - `get_params()`: return a tuple `(arg_params, aux_params)`. Each of those
-          is a dictionary of name to ``NDArray`` mapping. Those `NDArray` always lives on
+          is a dictionary of name -> NDArray mapping. Those NDArray always lives on
           CPU. The actual parameters used for computing might live on other devices (GPUs),
           this function will retrieve (a copy of) the latest parameters.
-        - ``set_params(arg_params, aux_params)``: assign parameters to the devices
+        - `set_params(arg_params, aux_params)`: assign parameters to the devices
           doing the computation.
-        - ``init_params(...)``: a more flexible interface to assign or initialize the parameters.
+        - `init_params(...)`: a more flexible interface to assign or initialize the parameters.
 
     - setup
         - `bind()`: prepare environment for computation.
@@ -160,9 +160,9 @@ class BaseModule(object):
     When those intermediate-level API are implemented properly, the following
     high-level API will be automatically available for a module:
 
-    - `fit`: train the module parameters on a data set.
-    - `predict`: run prediction on a data set and collect outputs.
-    - `score`: run prediction on a data set and evaluate performance.
+    - **fit**: train the module parameters on a data set.
+    - **predict**: run prediction on a data set and collect outputs.
+    - **score**: run prediction on a data set and evaluate performance.
 
     Examples
     --------
@@ -177,8 +177,8 @@ class BaseModule(object):
     >>> out  = mx.symbol.SoftmaxOutput(fc3, name = 'softmax')
     >>> mod = mx.mod.Module(out)
     """
-    def __init__(self, logger=logging):
-        self.logger = logger
+    def __init__(self, logger=None):
+        self.logger = logging if logger is None else logger
         self.binded = False
         self.for_training = False
         self.inputs_need_grad = False
@@ -201,9 +201,6 @@ class BaseModule(object):
         """Runs prediction on ``eval_data`` and evaluates the performance according to
         the given ``eval_metric``.
 
-        Checkout `Module Tutorial <https://mxnet.apache.org/api/python/tutorials/packages/module/index.html>`_
-        to see an end-to-end use-case.
-
         Parameters
         ----------
         eval_data : DataIter
@@ -216,7 +213,7 @@ class BaseModule(object):
         batch_end_callback : function
             Could also be a list of functions.
         reset : bool
-            Defaults to ``True``. Indicates whether we should reset `eval_data` before starting
+            Defaults to ``True``. Indicates whether we should reset ``eval_data`` before starting
             evaluating.
         epoch : int
             Defaults to 0. For compatibility, this will be passed to callbacks (if any).
@@ -319,18 +316,19 @@ class BaseModule(object):
                 always_output_list=False, sparse_row_id_fn=None):
         """Runs prediction and collects the outputs.
 
-        When `merge_batches` is ``True`` (by default), the return value will be a list
+        When :attr:`merge_batches` is ``True`` (by default), the return value will be a list
         ``[out1, out2, out3]``, where each element is formed by concatenating the outputs for
-        all the mini-batches. When `always_output_list` is ``False`` (as by default),
+        all the mini-batches. When :attr:`always_output_list` is ``False`` (as by default),
         then in the case of a single output, `out1` is returned instead of ``[out1]``.
 
-        When `merge_batches` is ``False``, the return value will be a nested list like
+        When :attr:`merge_batches` is ``False``, the return value will be a nested list like
         ``[[out1_batch1, out2_batch1], [out1_batch2], ...]``. This mode is useful because
         in some cases (e.g. bucketing), the module does not necessarily produce the same
         number of outputs.
 
-        The objects in the results have type `NDArray`. If you need to work with a numpy array,
-        just call ``.asnumpy()`` on each `NDArray`.
+        The objects in the results have type NDArray. If you need to
+        work with a numpy array, just call :meth:`~mxnet.ndarray.NDArray.asnumpy()`
+        on each NDArray.
 
         Parameters
         ----------
@@ -416,9 +414,6 @@ class BaseModule(object):
             validation_metric=None, monitor=None, sparse_row_id_fn=None):
         """Trains the module parameters.
 
-        Checkout `Module Tutorial <https://mxnet.apache.org/api/python/tutorials/packages/module/index.html>`_
-        to see an end-to-end use-case.
-
         Parameters
         ----------
         train_data : DataIter
@@ -456,14 +451,14 @@ class BaseModule(object):
             Defaults to ``None``, if not ``None``, should be existing parameters from a trained
             model or loaded from a checkpoint (previously saved model). In this case,
             the value here will be used to initialize the module parameters, unless they
-            are already initialized by the user via a call to `init_params` or `fit`.
-            `arg_params` has a higher priority than `initializer`.
+            are already initialized by the user via a call to :meth:`init_params` or :meth:`fit`.
+            :attr:`arg_params` has a higher priority than :attr:`initializer`.
         aux_params : dict
-            Defaults to ``None``. Similar to `arg_params`, except for auxiliary states.
+            Defaults to ``None``. Similar to :attr:`arg_params`, except for auxiliary states.
         allow_missing : bool
             Defaults to ``False``. Indicates whether to allow missing parameters when `arg_params`
             and `aux_params` are not ``None``. If this is ``True``, then the missing parameters
-            will be initialized via the `initializer`.
+            will be initialized via the :attr:`initializer`.
         force_rebind : bool
             Defaults to ``False``. Whether to force rebinding the executors if already bound.
         force_init : bool
@@ -624,7 +619,7 @@ class BaseModule(object):
 
         Returns
         -------
-        ``(arg_params, aux_params)``
+        (arg_params, aux_params)
             A pair of dictionaries each mapping parameter names to NDArray values.
 
         Examples
@@ -646,19 +641,19 @@ class BaseModule(object):
         initializer : Initializer
             Called to initialize parameters if needed.
         arg_params : dict
-            If not ``None``, should be a dictionary of existing `arg_params`. Initialization
+            If not ``None``, should be a dictionary of existing :attr:`arg_params`. Initialization
             will be copied from that.
         aux_params : dict
-            If not ``None``, should be a dictionary of existing `aux_params`. Initialization
+            If not ``None``, should be a dictionary of existing :attr:`aux_params`. Initialization
             will be copied from that.
         allow_missing : bool
             If ``True``, params could contain missing values, and the initializer will be
             called to fill those missing params.
         force_init : bool
-            If ``True``, `force_init` will force re-initialize even if already initialized.
+            If ``True``, params will be forced re-initialization even if already initialized.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
 
         Examples
@@ -675,9 +670,9 @@ class BaseModule(object):
         Parameters
         ----------
         arg_params : dict
-            Dictionary of name to value (`NDArray`) mapping.
+            Dictionary of name to value -> NDArray mapping.
         aux_params : dict
-            Dictionary of name to value (`NDArray`) mapping.
+            Dictionary of name to value -> NDArray mapping.
         allow_missing : bool
             If ``True``, params could contain missing values, and the initializer will be
             called to fill those missing params.
@@ -685,7 +680,7 @@ class BaseModule(object):
             If ``True``, will force re-initialize even if already initialized.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
 
         Examples
@@ -745,10 +740,10 @@ class BaseModule(object):
     def get_states(self, merge_multi_context=True):
         """Gets states from all devices
 
-        If `merge_multi_context` is ``True``, returns output of form ``[out1, out2]``.
+        If :attr:`merge_multi_context` is ``True``, returns output of form ``[out1, out2]``.
         Otherwise, it returns output of the form
         ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``.
-        All output elements are `NDArray`.
+        All output elements are NDArray.
 
         Parameters
         ----------
@@ -760,7 +755,7 @@ class BaseModule(object):
 
         Returns
         -------
-        A list of ``NDArray`` or a list of list of ``NDArray``.
+        A list of NDArray or a list of list of NDArray.
         """
         assert self.binded and self.params_initialized
         assert not merge_multi_context
@@ -792,14 +787,14 @@ class BaseModule(object):
         '''Prepares the module for processing a data batch.
 
         Usually involves switching bucket and reshaping.
-        For modules that contain `row_sparse` parameters in KVStore,
-        it prepares the `row_sparse` parameters based on the sparse_row_id_fn.
+        For modules that contain :attr:`row_sparse` parameters in KVStore,
+        it prepares the :attr:`row_sparse` parameters based on the sparse_row_id_fn.
 
         When KVStore is used to update parameters for multi-device or multi-machine training,
-        a copy of the parameters are stored in KVStore. Note that for `row_sparse` parameters,
-        the `update()` updates the copy of parameters in KVStore, but doesn't broadcast
-        the updated parameters to all devices / machines. The `prepare` function is used to
-        broadcast `row_sparse` parameters with the next batch of data.
+        a copy of the parameters are stored in KVStore. Note that for ``row_sparse`` parameters,
+        the ``pdate()`` updates the copy of parameters in KVStore, but doesn't broadcast
+        the updated parameters to all devices / machines. The :meth:`prepare` function is used to
+        broadcast ``row_sparse`` parameters with the next batch of data.
 
         Parameters
         ----------
@@ -807,7 +802,7 @@ class BaseModule(object):
             The current batch of data for forward computation.
 
         sparse_row_id_fn : A callback function
-            The function  takes `data_batch` as an input and returns a dict of
+            The function  takes :attr:`data_batch` as an input and returns a dict of
             str -> NDArray. The resulting dict is used for pulling row_sparse
             parameters from the kvstore, where the str key is the name of the param,
             and the value is the row id of the param to pull.
@@ -828,7 +823,7 @@ class BaseModule(object):
         data_batch : DataBatch
             Could be anything with similar API implemented.
         is_train : bool
-            Default is ``None``, which means `is_train` takes the value of ``self.for_training``.
+            Default is ``None``, which means :attr:`is_train` takes the value of ``self.for_training``.
 
         Examples
         --------
@@ -879,10 +874,10 @@ class BaseModule(object):
     def get_outputs(self, merge_multi_context=True):
         """Gets outputs of the previous forward computation.
 
-        If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise,
+        If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise,
         it returns out put of form ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``.
-        All the output elements have type `NDArray`. When `merge_multi_context` is ``False``,
-        those `NDArray` instances might live on different devices.
+        All the output elements have type NDArray. When :attr:`merge_multi_context` is ``False``,
+        those NDArray instances might live on different devices.
 
         Parameters
         ----------
@@ -894,7 +889,7 @@ class BaseModule(object):
 
         Returns
         -------
-        list of `NDArray` or list of list of `NDArray`.
+        list of NDArray or list of list of NDArray.
             Output
 
         Examples
@@ -909,9 +904,9 @@ class BaseModule(object):
     def get_input_grads(self, merge_multi_context=True):
         """Gets the gradients to the inputs, computed in the previous backward computation.
 
-        If `merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
         is like ``[[grad1_dev1, grad1_dev2], [grad2_dev1, grad2_dev2]]``. All the output
-        elements have type `NDArray`. When `merge_multi_context` is ``False``, those `NDArray`
+        elements have type NDArray. When :attr:`merge_multi_context` is ``False``, those NDArray
         instances might live on different devices.
 
         Parameters
@@ -943,10 +938,10 @@ class BaseModule(object):
         in the previous forward-backward batch.
 
         When KVStore is used to update parameters for multi-device or multi-machine training,
-        a copy of the parameters are stored in KVStore. Note that for `row_sparse` parameters,
+        a copy of the parameters are stored in KVStore. Note that for ``row_sparse`` parameters,
         this function does update the copy of parameters in KVStore, but doesn't broadcast the
-        updated parameters to all devices / machines. Please call `prepare` to broadcast
-        `row_sparse` parameters with the next batch of data.
+        updated parameters to all devices / machines. Please call :meth:`prepare` to broadcast
+        ``row_sparse`` parameters with the next batch of data.
 
         Examples
         --------
@@ -971,8 +966,8 @@ class BaseModule(object):
         ----------
         eval_metric : EvalMetric
             Evaluation metric to use.
-        labels : list of NDArray if `pre_sliced` parameter is set to `False`,
-            list of lists of NDArray otherwise. Typically `data_batch.label`.
+        labels : list of NDArray if `pre_sliced` parameter is set to ``False``,
+            list of lists of NDArray otherwise. Typically ``data_batch.label``.
         pre_sliced: bool
             Whether the labels are already sliced per device (default: False).
 
@@ -1036,9 +1031,9 @@ class BaseModule(object):
         Parameters
         ----------
         kvstore : str or KVStore
-            Defaults to `'local'`.
+            Defaults to 'local'.
         optimizer : str or Optimizer
-            Defaults to `'sgd'`.
+            Defaults to 'sgd'.
         optimizer_params : dict
             Defaults to ``(('learning_rate', 0.01),)``. The default value is not a dictionary,
             just to avoid pylint warning of dangerous default values.
@@ -1060,7 +1055,7 @@ class BaseModule(object):
     def symbol(self):
         """Gets the symbol associated with this module.
 
-        Except for `Module`, for other types of modules (e.g. `BucketingModule`), this
+        Except for :class:`Module`, for other types of modules (e.g. `BucketingModule`), this
         property might not be a constant throughout its life time. Some modules might
         not even be associated with any symbols.
         """

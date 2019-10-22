@@ -59,17 +59,19 @@ class BucketingModule(BaseModule):
         Instead they are initialized to 0 and can be set by set_states()
     group2ctxs : dict of str to context or list of context,
                  or list of dict of str to context
-        Default is `None`. Mapping the `ctx_group` attribute to the context assignment.
+        Default is ``None``. Mapping the `ctx_group` attribute to the context assignment.
     compression_params : dict
         Specifies type of gradient compression and additional arguments depending
         on the type of compression being used. For example, 2bit compression requires a threshold.
         Arguments would then be {'type':'2bit', 'threshold':0.5}
-        See mxnet.KVStore.set_gradient_compression method for more details on gradient compression.
+        See :meth:`mxnet.kvstore.KVStore.set_gradient_compression`
+        method for more details on gradient compression.
     """
-    def __init__(self, sym_gen, default_bucket_key=None, logger=logging,
+    def __init__(self, sym_gen, default_bucket_key=None, logger=None,
                  context=ctx.cpu(), work_load_list=None,
                  fixed_param_names=None, state_names=None, group2ctxs=None,
                  compression_params=None):
+        logger = logging if logger is None else logger
         super(BucketingModule, self).__init__(logger=logger)
 
         assert default_bucket_key is not None
@@ -136,7 +138,7 @@ class BucketingModule(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        A list of (name, shape) pairs.
         """
         assert self.binded
         return self._curr_module.data_shapes
@@ -147,7 +149,7 @@ class BucketingModule(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        A list of (name, shape) pairs.
             The return value could be ``None`` if the module does not need labels,
             or if the module is not bound for training (in this case, label information
             is not available).
@@ -161,7 +163,7 @@ class BucketingModule(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        A list of (name, shape) pairs.
         """
         assert self.binded
         return self._curr_module.output_shapes
@@ -171,7 +173,7 @@ class BucketingModule(BaseModule):
 
         Returns
         -------
-        `(arg_params, aux_params)`
+        (arg_params, aux_params)
             A pair of dictionaries each mapping parameter names to NDArray values.
         """
         assert self.params_initialized
@@ -187,9 +189,9 @@ class BucketingModule(BaseModule):
         Parameters
         ----------
         arg_params : dict
-            Dictionary of name to value (`NDArray`) mapping.
+            Dictionary of name to value -> NDArray mapping.
         aux_params : dict
-            Dictionary of name to value (`NDArray`) mapping.
+            Dictionary of name to value -> NDArray mapping.
         allow_missing : bool
             If true, params could contain missing values, and the initializer will be
             called to fill those missing params.
@@ -197,7 +199,7 @@ class BucketingModule(BaseModule):
             If true, will force re-initialize even if already initialized.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
 
         Examples
@@ -232,18 +234,18 @@ class BucketingModule(BaseModule):
         initializer : Initializer
         arg_params : dict
             Defaults to ``None``. Existing parameters. This has higher priority
-            than `initializer`.
+            than :attr:`initialzer`.
         aux_params : dict
             Defaults to ``None``. Existing auxiliary states. This has higher priority
-            than `initializer`.
+            than :attr:`initialzer`.
         allow_missing : bool
             Allow missing values in `arg_params` and `aux_params` (if not ``None``).
-            In this case, missing values will be filled with `initializer`.
+            In this case, missing values will be filled with :attr:`initialzer`.
         force_init : bool
             Defaults to ``False``.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
         """
         if self.params_initialized and not force_init:
@@ -261,17 +263,17 @@ class BucketingModule(BaseModule):
         Parameters
         ----------
         merge_multi_context : bool
-            Default is `True`. In the case when data-parallelism is used, the states
-            will be collected from multiple devices. A `True` value indicate that we
+            Default is ``True``. In the case when data-parallelism is used, the states
+            will be collected from multiple devices. A ``True`` value indicate that we
             should merge the collected results so that they look like from a single
             executor.
 
         Returns
         -------
         list of NDArrays or list of list of NDArrays
-            If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+            If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
             is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
-            elements are `NDArray`.
+            elements are NDArray.
         """
         assert self.binded and self.params_initialized
         return self._curr_module.get_states(merge_multi_context=merge_multi_context)
@@ -411,7 +413,7 @@ class BucketingModule(BaseModule):
         optimizer : str or Optimizer
             Defaults to `'sgd'`
         optimizer_params : dict
-            Defaults to `(('learning_rate', 0.01),)`. The default value is not a dictionary,
+            Defaults to ``(('learning_rate', 0.01),)``. The default value is not a dictionary,
             just to avoid pylint warning of dangerous default values.
         force_init : bool
             Defaults to ``False``, indicating whether we should force re-initializing the
@@ -434,8 +436,8 @@ class BucketingModule(BaseModule):
         '''Prepares the module for processing a data batch.
 
         Usually involves switching bucket and reshaping.
-        For modules that contain `row_sparse` parameters in KVStore,
-        it prepares the `row_sparse` parameters based on the sparse_row_id_fn.
+        For modules that contain ``row_sparse`` parameters in KVStore,
+        it prepares the ``row_sparse`` parameters based on the sparse_row_id_fn.
 
         Parameters
         ----------
@@ -443,7 +445,7 @@ class BucketingModule(BaseModule):
             The current batch of data for forward computation.
 
         sparse_row_id_fn : A callback function
-            The function  takes `data_batch` as an input and returns a dict of
+            The function  takes :attr:`data_batch` as an input and returns a dict of
             str -> NDArray. The resulting dict is used for pulling row_sparse
             parameters from the kvstore, where the str key is the name of the param,
             and the value is the row id of the param to pull.
@@ -483,10 +485,10 @@ class BucketingModule(BaseModule):
         in the previous forward-backward cycle.
 
         When KVStore is used to update parameters for multi-device or multi-machine training,
-        a copy of the parameters are stored in KVStore. Note that for `row_sparse` parameters,
+        a copy of the parameters are stored in KVStore. Note that for ``row_sparse`` parameters,
         this function does update the copy of parameters in KVStore, but doesn't broadcast the
         updated parameters to all devices / machines. Please call `prepare` to broadcast
-        `row_sparse` parameters with the next batch of data.
+        ``row_sparse`` parameters with the next batch of data.
 
         """
         assert self.binded and self.params_initialized and self.optimizer_initialized
@@ -507,7 +509,7 @@ class BucketingModule(BaseModule):
         Returns
         -------
         list of numpy arrays or list of list of numpy arrays
-            If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+            If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
             is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
             elements are numpy arrays.
         """
@@ -528,9 +530,9 @@ class BucketingModule(BaseModule):
         Returns
         -------
         list of NDArrays or list of list of NDArrays
-            If `merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
+            If :attr:`merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
             is like ``[[grad1_dev1, grad1_dev2], [grad2_dev1, grad2_dev2]]``. All the output
-            elements are `NDArray`.
+            elements are NDArray.
         """
         assert self.binded and self.params_initialized and self.inputs_need_grad
         return self._curr_module.get_input_grads(merge_multi_context=merge_multi_context)
@@ -562,7 +564,7 @@ class BucketingModule(BaseModule):
 
     def save_checkpoint(self, prefix, epoch, remove_amp_cast=False):
         """Saves current progress to checkpoint for all buckets in BucketingModule
-        Use `mx.callback.module_checkpoint` as `epoch_end_callback` to save during training.
+        Use :func:`mxnet.callback.module_checkpoint` as ``epoch_end_callback`` to save during training.
 
         Parameters
         ----------
@@ -598,7 +600,7 @@ class BucketingModule(BaseModule):
             ``(symbol, data_names, label_names)``.
             provide sym_gen which was used when saving bucketing module.
         logger : Logger
-            Default is `logging`.
+            Logger for module.
         context : Context or list of Context
             Default is ``cpu()``.
         work_load_list : list of number
@@ -610,12 +612,13 @@ class BucketingModule(BaseModule):
             Instead they are initialized to 0 and can be set by set_states()
         group2ctxs : dict of str to context or list of context,
                      or list of dict of str to context
-            Default is `None`. Mapping the `ctx_group` attribute to the context assignment.
+            Default is ``None``. Mapping the `ctx_group` attribute to the context assignment.
         compression_params : dict
             Specifies type of gradient compression and additional arguments depending
             on the type of compression being used. For example, 2bit compression requires a threshold.
             Arguments would then be {'type':'2bit', 'threshold':0.5}
-            See mxnet.KVStore.set_gradient_compression method for more details on gradient compression.
+            See :meth:`mxnet.kvstore.KVStore.set_gradient_compression`
+            method for more details on gradient compression.
         """
         assert sym_gen is not None, \
             "sym_gen is required for loading BucketingModule"
@@ -660,7 +663,7 @@ class BucketingModule(BaseModule):
             Required for loading the BucketingModule.
             Dict of name to auxiliary state ndarrays.
         logger : Logger
-            Default is `logging`.
+            Logger for module.
         context : Context or list of Context
             Default is ``cpu()``.
         work_load_list : list of number
@@ -672,12 +675,13 @@ class BucketingModule(BaseModule):
             Instead they are initialized to 0 and can be set by set_states()
         group2ctxs : dict of str to context or list of context,
                      or list of dict of str to context
-            Default is `None`. Mapping the `ctx_group` attribute to the context assignment.
+            Default is ``None``. Mapping the `ctx_group` attribute to the context assignment.
         compression_params : dict
             Specifies type of gradient compression and additional arguments depending
             on the type of compression being used. For example, 2bit compression requires a threshold.
             Arguments would then be {'type':'2bit', 'threshold':0.5}
-            See mxnet.KVStore.set_gradient_compression method for more details on gradient compression.
+            See :meth:`mxnet.kvstore.KVStore.set_gradient_compression`
+            method for more details on gradient compression.
         """
 
         assert sym_dict is not None, \

@@ -38,19 +38,19 @@ from ..ndarray import zeros
 from .base_module import BaseModule, _check_input_names, _parse_data_desc
 
 class Module(BaseModule):
-    """Module is a basic module that wrap a `Symbol`. It is functionally the same
-    as the `FeedForward` model, except under the module API.
+    """Module is a basic module that wrap a :class:`~mxnet.symbol.Symbol`. It is functionally the same
+    as the :class:`~mxnet.model.FeedForward` model, except under the module API.
 
     Parameters
     ----------
     symbol : Symbol
     data_names : list of str
-        Defaults to `('data')` for a typical model used in image classification.
+        Defaults to ``('data')`` for a typical model used in image classification.
     label_names : list of str
-        Defaults to `('softmax_label')` for a typical model used in image
+        Defaults to ``('softmax_label')`` for a typical model used in image
         classification.
     logger : Logger
-        Defaults to `logging`.
+        Logger for module.
     context : Context or list of Context
         Defaults to ``mx.cpu()``.
     work_load_list : list of number
@@ -59,10 +59,10 @@ class Module(BaseModule):
         Default ``None``, indicating no network parameters are fixed.
     state_names : list of str
         states are similar to data and label, but not provided by data iterator.
-        Instead they are initialized to 0 and can be set by `set_states()`.
+        Instead they are initialized to 0 and can be set by :meth:`set_states()`.
     group2ctxs : dict of str to context or list of context,
                  or list of dict of str to context
-        Default is `None`. Mapping the `ctx_group` attribute to the context assignment.
+        Default is ``None``. Mapping the `ctx_group` attribute to the context assignment.
     compression_params : dict
         Specifies type of gradient compression and additional arguments depending
         on the type of compression being used. For example, 2bit compression requires a threshold.
@@ -70,9 +70,10 @@ class Module(BaseModule):
         See mxnet.KVStore.set_gradient_compression method for more details on gradient compression.
     """
     def __init__(self, symbol, data_names=('data',), label_names=('softmax_label',),
-                 logger=logging, context=ctx.cpu(), work_load_list=None,
+                 logger=None, context=ctx.cpu(), work_load_list=None,
                  fixed_param_names=None, state_names=None, group2ctxs=None,
                  compression_params=None):
+        logger = logging if logger is None else logger
         super(Module, self).__init__(logger=logger)
 
         if isinstance(context, ctx.Context):
@@ -140,12 +141,12 @@ class Module(BaseModule):
             whether to load optimizer states. Checkpoint needs
             to have been made with save_optimizer_states=True.
         data_names : list of str
-            Default is `('data')` for a typical model used in image classification.
+            Default is ``('data')`` for a typical model used in image classification.
         label_names : list of str
-            Default is `('softmax_label')` for a typical model used in image
+            Default is ``('softmax_label')`` for a typical model used in image
             classification.
         logger : Logger
-            Default is `logging`.
+            Logger for module.
         context : Context or list of Context
             Default is ``cpu()``.
         work_load_list : list of number
@@ -164,7 +165,7 @@ class Module(BaseModule):
 
     def save_checkpoint(self, prefix, epoch, save_optimizer_states=False, remove_amp_cast=True):
         """Saves current progress to checkpoint.
-        Use `mx.callback.module_checkpoint` as `epoch_end_callback` to save during training.
+        Use :func:`mxnet.callback.module_checkpoint` as ``epoch_end_callback`` to save during training.
 
         Parameters
         ----------
@@ -178,11 +179,11 @@ class Module(BaseModule):
         self._symbol.save('%s-symbol.json'%prefix, remove_amp_cast=remove_amp_cast)
         param_name = '%s-%04d.params' % (prefix, epoch)
         self.save_params(param_name)
-        logging.info('Saved checkpoint to \"%s\"', param_name)
+        self.logger.info('Saved checkpoint to \"%s\"', param_name)
         if save_optimizer_states:
             state_name = '%s-%04d.states' % (prefix, epoch)
             self.save_optimizer_states(state_name)
-            logging.info('Saved optimizer state to \"%s\"', state_name)
+            self.logger.info('Saved optimizer state to \"%s\"', state_name)
 
     def _reset_bind(self):
         """Internal function to reset binded state."""
@@ -212,7 +213,7 @@ class Module(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        A list of (name, shape) pairs.
         """
         assert self.binded
         return self._data_shapes
@@ -223,7 +224,7 @@ class Module(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        A list of (name, shape) pairs.
             The return value could be ``None`` if
             the module does not need labels, or if the module is not bound for
             training (in this case, label information is not available).
@@ -237,7 +238,8 @@ class Module(BaseModule):
 
         Returns
         -------
-        A list of `(name, shape)` pairs.
+        list
+            A list of ``(name, shape)`` pairs.
         """
         assert self.binded
         return self._exec_group.get_output_shapes()
@@ -247,7 +249,7 @@ class Module(BaseModule):
 
         Returns
         -------
-        `(arg_params, aux_params)`
+        (arg_params, aux_params)
             A pair of dictionaries each mapping parameter names to NDArray values.
         """
         assert self.params_initialized
@@ -277,7 +279,7 @@ class Module(BaseModule):
             If ``True``, will force re-initialize even if already initialized.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
         """
         if self.params_initialized and not force_init:
@@ -326,9 +328,9 @@ class Module(BaseModule):
         Parameters
         ----------
         arg_params : dict
-            Dictionary of name to `NDArray`.
+            Dictionary of name -> NDArray.
         aux_params : dict
-            Dictionary of name to `NDArray`.
+            Dictionary of name -> NDArray.
         allow_missing : bool
             If ``True``, params could contain missing values, and the initializer will be
             called to fill those missing params.
@@ -336,7 +338,7 @@ class Module(BaseModule):
             If ``True``, will force re-initialize even if already initialized.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
-            If this is True, no error will be thrown when arg_params or aux_params
+            If this is True, no error will be thrown when :attr:`arg_params` or :attr:`aux_params`
             contain extra parameters that is not needed by the executor.
         Examples
         --------
@@ -478,11 +480,11 @@ class Module(BaseModule):
         Parameters
         ----------
         kvstore : str or KVStore
-            Default `'local'`.
+            Default 'local'.
         optimizer : str or Optimizer
-            Default `'sgd'`
+            Default 'sgd'.
         optimizer_params : dict
-            Default `(('learning_rate', 0.01),)`. The default value is not a dictionary,
+            Default ``(('learning_rate', 0.01),)``. The default value is not a dictionary,
             just to avoid pylint warning of dangerous default values.
         force_init : bool
             Default ``False``, indicating whether we should force re-initializing the
@@ -588,7 +590,7 @@ class Module(BaseModule):
         data_batch : DataBatch
             Could be anything with similar API implemented.
         is_train : bool
-            Default is ``None``, which means ``is_train`` takes the value of ``self.for_training``.
+            Default is ``None``, which means :attr:`is_train` takes the value of ``self.for_training``.
         """
         assert self.binded and self.params_initialized
 
@@ -675,9 +677,9 @@ class Module(BaseModule):
     def get_outputs(self, merge_multi_context=True):
         """Gets outputs of the previous forward computation.
 
-        If ``merge_multi_context`` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
         is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
-        elements are `NDArray`. When `merge_multi_context` is `False`, those `NDArray`
+        elements are NDArray. When :attr:`merge_multi_context` is `False`, those NDArray
         might live on different devices.
 
         Parameters
@@ -699,9 +701,9 @@ class Module(BaseModule):
     def get_input_grads(self, merge_multi_context=True):
         """Gets the gradients with respect to the inputs of the module.
 
-        If ``merge_multi_context`` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
         is like ``[[grad1_dev1, grad1_dev2], [grad2_dev1, grad2_dev2]]``. All the output
-        elements are `NDArray`.
+        elements are NDArray.
 
         Parameters
         ----------
@@ -722,9 +724,9 @@ class Module(BaseModule):
     def get_states(self, merge_multi_context=True):
         """Gets states from all devices.
 
-        If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
         is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
-        elements are `NDArray`.
+        elements are NDArray.
 
         Parameters
         ----------
@@ -767,8 +769,8 @@ class Module(BaseModule):
         ----------
         eval_metric : EvalMetric
             Evaluation metric to use.
-        labels : list of NDArray if `pre_sliced` parameter is set to `False`,
-            list of lists of NDArray otherwise. Typically `data_batch.label`.
+        labels : list of NDArray if `pre_sliced` parameter is set to ``False``,
+            list of lists of NDArray otherwise. Typically ``data_batch.label``.
         pre_sliced: bool
             Whether the labels are already sliced per device (default: False).
         """
@@ -830,12 +832,12 @@ class Module(BaseModule):
         '''Prepares the module for processing a data batch.
 
         Usually involves switching bucket and reshaping.
-        For modules that contain `row_sparse` parameters in KVStore,
-        it prepares the `row_sparse` parameters based on the sparse_row_id_fn.
+        For modules that contain ``row_sparse`` parameters in KVStore,
+        it prepares the ``row_sparse`` parameters based on the sparse_row_id_fn.
 
         When KVStore is used to update parameters for multi-device or multi-machine training,
-        a copy of the parameters are stored in KVStore. Note that for `row_sparse` parameters,
-        the `update()` updates the copy of parameters in KVStore, but doesn't broadcast
+        a copy of the parameters are stored in KVStore. Note that for ``row_sparse`` parameters,
+        the :meth:`update()` updates the copy of parameters in KVStore, but doesn't broadcast
         the updated parameters to all devices / machines. The `prepare` function is used to
         broadcast `row_sparse` parameters with the next batch of data.
 
@@ -845,7 +847,7 @@ class Module(BaseModule):
             The current batch of data for forward computation.
 
         sparse_row_id_fn : A callback function
-            The function  takes `data_batch` as an input and returns a dict of
+            The function  takes :attr:`data_batch` as an input and returns a dict of
             str -> NDArray. The resulting dict is used for pulling row_sparse
             parameters from the kvstore, where the str key is the name of the param,
             and the value is the row id of the param to pull.

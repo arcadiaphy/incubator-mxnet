@@ -176,7 +176,7 @@ class DataParallelExecutorGroup(object):
         symbol with the same set of parameters (e.g. unrolled RNNs with different lengths).
         In this case the memory regions of the parameters will be shared.
     logger : Logger
-        Default is `logging`.
+        Logger for module.
     fixed_param_names: list of str
         Parameters to be fixed during training. For these parameters, not gradients
         will be calculated and thus no space will be allocated for the gradient.
@@ -189,8 +189,9 @@ class DataParallelExecutorGroup(object):
         Default is `None`. Mapping the `ctx_group` attribute to the context assignment.
     """
     def __init__(self, symbol, contexts, workload, data_shapes, label_shapes, param_names,
-                 for_training, inputs_need_grad, shared_group=None, logger=logging,
+                 for_training, inputs_need_grad, shared_group=None, logger=None,
                  fixed_param_names=None, grad_req='write', state_names=None, group2ctxs=None):
+        logger = logging if logger is None else logger
         self.param_names = param_names
         self.arg_names = symbol.list_arguments()
         self.aux_names = symbol.list_auxiliary_states()
@@ -402,9 +403,9 @@ class DataParallelExecutorGroup(object):
         Parameters
         ----------
         arg_params : dict
-            A dictionary of name to `NDArray` parameter mapping.
+            A dictionary of name -> NDArray parameter mapping.
         aux_params : dict
-            A dictionary of name to `NDArray` auxiliary variable mapping.
+            A dictionary of name -> NDArray auxiliary variable mapping.
         allow_extra : boolean, optional
             Whether allow extra parameters that are not needed by symbol.
             If this is True, no error will be thrown when arg_params or aux_params
@@ -435,7 +436,7 @@ class DataParallelExecutorGroup(object):
             weight.astype(aux_params[name].dtype).copyto(aux_params[name])
 
     def forward(self, data_batch, is_train=None):
-        """Split `data_batch` according to workload and run forward on each devices.
+        """Split :attr:`data_batch` according to workload and run forward on each devices.
 
         Parameters
         ----------
@@ -443,7 +444,7 @@ class DataParallelExecutorGroup(object):
             Or could be any object implementing similar interface.
         is_train : bool
             The hint for the backend, indicating whether we are during training phase.
-            Default is `None`, then the value `self.for_training` will be used.
+            Default is `None`, then the value ``self.for_training`` will be used.
         Returns
         -------
 
@@ -494,9 +495,9 @@ class DataParallelExecutorGroup(object):
 
         Returns
         -------
-        If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
         is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
-        elements are `NDArray`.
+        elements are NDArray.
         """
         if end is None:
             end = self.num_outputs
@@ -519,9 +520,9 @@ class DataParallelExecutorGroup(object):
 
         Returns
         -------
-        If `merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[out1, out2]``. Otherwise, it
         is like ``[[out1_dev1, out1_dev2], [out2_dev1, out2_dev2]]``. All the output
-        elements are `NDArray`.
+        elements are NDArray.
         """
         assert not merge_multi_context, \
             "merge_multi_context=True is not supported for get_states yet."
@@ -561,9 +562,9 @@ class DataParallelExecutorGroup(object):
 
         Returns
         -------
-        If `merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
+        If :attr:`merge_multi_context` is ``True``, it is like ``[grad1, grad2]``. Otherwise, it
         is like ``[[grad1_dev1, grad1_dev2], [grad2_dev1, grad2_dev2]]``. All the output
-        elements are `NDArray`.
+        elements are NDArray.
         """
         assert self.inputs_need_grad
         if merge_multi_context:
@@ -600,7 +601,7 @@ class DataParallelExecutorGroup(object):
             exec_.backward(out_grads=out_grads_slice)
 
     def update_metric(self, eval_metric, labels, pre_sliced):
-        """Accumulate the performance according to `eval_metric` on all devices
+        """Accumulate the performance according to :attr:`eval_metric` on all devices
         by comparing outputs from [begin, end) to labels. By default use all
         outputs.
 
