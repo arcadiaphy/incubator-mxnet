@@ -43,7 +43,7 @@ class InitDesc(str):
     name : str
         Name of variable.
     attrs : dict of str to str
-        Attributes of this variable taken from ``Symbol.attr_dict``.
+        Attributes of this variable taken from :meth:`Symbol.attr_dict <mxnet.symbol.Symbol.attr_dict>`.
     global_init : Initializer
         Global initializer to fallback to.
     """
@@ -71,7 +71,7 @@ class Initializer(object):
         print_func : function
             A function that computes statistics of initialized arrays.
             Takes an `NDArray` and returns an `str`. Defaults to mean
-            absolute value str((abs(x)/size(x)).asscalar()).
+            absolute value ``str((abs(x)/size(x)).asscalar())``.
         """
         self._verbose = verbose
         if print_func is None:
@@ -278,14 +278,14 @@ create = registry.get_create_func(Initializer, 'initializer')
 def register(klass):
     """Registers a custom initializer.
 
-    Custom initializers can be created by extending `mx.init.Initializer` and implementing the
-    required functions like `_init_weight` and `_init_bias`. The created initializer must be
-    registered using `mx.init.register` before it can be called by name.
+    Custom initializers can be created by extending :class:`Initializer` and implementing
+    the required functions like ``_init_weight`` and ``_init_bias``. The created initializer
+    must be registered using this function before it can be called by name.
 
     Parameters
     ----------
     klass : class
-        A subclass of `mx.init.Initializer` that needs to be registered as a custom initializer.
+        A subclass of :class:`Initializer` that needs to be registered as a custom initializer.
 
     Example
     -------
@@ -314,15 +314,15 @@ def register(klass):
 class Load(object):
     """Initializes variables by loading data from file or dict.
 
-    **Note** Load will drop ``arg:`` or ``aux:`` from name and
+    .. note..  Load will drop ``arg:`` or ``aux:`` from name and
     initialize the variables that match with the prefix dropped.
 
     Parameters
     ----------
-    param: str or dict of str->`NDArray`
+    param: str or dict of str->NDArray
         Parameter file or dict mapping name to NDArray.
     default_init: Initializer
-        Default initializer when name is not found in `param`.
+        Default initializer when name is not found in :attr:`param`.
     verbose: bool
         Flag for enabling logging of source when initializing.
 
@@ -366,7 +366,7 @@ class Mixed(object):
     patterns: list of str
         List of regular expressions matching parameter names.
     initializers: list of Initializer
-        List of initializers corresponding to `patterns`.
+        List of initializers corresponding to :attr:`patterns`.
 
     Example
     -------
@@ -475,13 +475,13 @@ class Constant(Initializer):
 
 @register
 class Uniform(Initializer):
-    """Initializes weights with random values uniformly sampled from a given range.
+    r"""Initializes weights with random values uniformly sampled from a given range.
 
     Parameters
     ----------
     scale : float, optional
         The bound on the range of the generated random values.
-        Values are generated from the range [-`scale`, `scale`].
+        Values are generated from the range :math:`[-\text{scale}, \text{scale}]`.
         Default scale is 0.07.
 
     Example
@@ -510,7 +510,7 @@ class Uniform(Initializer):
 @register
 class Normal(Initializer):
     """Initializes weights with random values sampled from a normal distribution
-    with a mean of zero and standard deviation of `sigma`.
+    with a mean of zero and standard deviation of :attr:`sigma`.
 
     Parameters
     ----------
@@ -545,9 +545,9 @@ class Normal(Initializer):
 class Orthogonal(Initializer):
     """Initialize weight as orthogonal matrix.
 
-    This initializer implements *Exact solutions to the nonlinear dynamics of
-    learning in deep linear neural networks*, available at
-    https://arxiv.org/abs/1312.6120.
+    This initializer implements the paper:
+    `Exact solutions to the nonlinear dynamics of learning in deep linear neural networks
+    <https://arxiv.org/abs/1312.6120>`_.
 
     Parameters
     ----------
@@ -556,7 +556,6 @@ class Orthogonal(Initializer):
 
     rand_type: string optional
         Use "uniform" or "normal" random number to initialize weight.
-
     """
     def __init__(self, scale=1.414, rand_type="uniform"):
         super(Orthogonal, self).__init__(scale=scale, rand_type=rand_type)
@@ -580,35 +579,43 @@ class Orthogonal(Initializer):
 
 @register
 class Xavier(Initializer):
-    """Returns an initializer performing "Xavier" initialization for weights.
+    r"""Returns an initializer performing "Xavier" initialization for weights.
 
     This initializer is designed to keep the scale of gradients roughly the same
     in all layers.
 
-    By default, `rnd_type` is ``'uniform'`` and `factor_type` is ``'avg'``,
-    the initializer fills the weights with random numbers in the range
-    of :math:`[-c, c]`, where :math:`c = \\sqrt{\\frac{3.}{0.5 * (n_{in} + n_{out})}}`.
-    :math:`n_{in}` is the number of neurons feeding into weights, and :math:`n_{out}` is
-    the number of neurons the result is fed to.
+    Suppose :math:`n_{in}` is the number of neurons feeding into weights,
+    :math:`n_{out}` is the number of neurons the result is fed to, and
+    :math:`m` is the :attr:`magnitude` argument. The :attr:`factor_type`
+    decides how the scale factor :math:`c` is caculated. Three factor
+    types are supported:
 
-    If `rnd_type` is ``'uniform'`` and `factor_type` is ``'in'``,
-    the :math:`c = \\sqrt{\\frac{3.}{n_{in}}}`.
-    Similarly when `factor_type` is ``'out'``, the :math:`c = \\sqrt{\\frac{3.}{n_{out}}}`.
+    - **uniform**
 
-    If `rnd_type` is ``'gaussian'`` and `factor_type` is ``'avg'``,
-    the initializer fills the weights with numbers from normal distribution with
-    a standard deviation of :math:`\\sqrt{\\frac{3.}{0.5 * (n_{in} + n_{out})}}`.
+      .. math:: c = \sqrt{\frac{m}{0.5 * (n_{in} + n_{out})}}
+
+    - **in**
+
+      .. math:: c = \sqrt{\frac{m}{n_{in}}}
+
+    - **out**
+
+      .. math:: c = \sqrt{\frac{m}{n_{out}}}
+
+    Then the :attr:`rnd_type` decides the initialization method:
+
+    - **uniform** fills the weights with random numbers in the range of of :math:`[-c, c]`;
+    - **gaussian** fills the weights with numbers from normal distribution with a standard
+      deviation of :math:`c`.
 
     Parameters
     ----------
-    rnd_type: str, optional
-        Random generator type, can be ``'gaussian'`` or ``'uniform'``.
-
-    factor_type: str, optional
-        Can be ``'avg'``, ``'in'``, or ``'out'``.
-
-    magnitude: float, optional
-        Scale of random number.
+    rnd_type: str, optional, default 'uniform'
+        Random generator type, can be 'gaussian' or 'uniform'.
+    factor_type: str, optional, default 'avg'
+        Can be 'avg', 'in', or 'out'.
+    magnitude: float, optional, default 3.
+        Magnitude of random number.
     """
     def __init__(self, rnd_type="uniform", factor_type="avg", magnitude=3):
         super(Xavier, self).__init__(rnd_type=rnd_type, factor_type=factor_type,
@@ -650,9 +657,9 @@ class Xavier(Initializer):
 class MSRAPrelu(Xavier):
     """Initialize the weight according to a MSRA paper.
 
-    This initializer implements *Delving Deep into Rectifiers: Surpassing
-    Human-Level Performance on ImageNet Classification*, available at
-    https://arxiv.org/abs/1502.01852.
+    This initializer implements the paper:
+    `Delving Deep into Rectifiers: Surpassing Human-Level Performance on ImageNet Classification
+    <https://arxiv.org/abs/1502.01852>`_.
 
     This initializer is proposed for initialization related to ReLu activation,
     it makes some changes on top of Xavier method.

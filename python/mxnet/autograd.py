@@ -52,7 +52,7 @@ def set_recording(is_recording): #pylint: disable=redefined-outer-name
 def set_training(train_mode): #pylint: disable=redefined-outer-name
     """Set status to training/predicting. This affects ctx.is_train in operator
     running context. For example, Dropout will drop inputs randomly when
-    train_mode=True while simply passing through if train_mode=False.
+    ``train_mode=True`` while simply passing through if ``train_mode=False``.
 
     Parameters
     ----------
@@ -120,13 +120,22 @@ class _RecordingStateScope(object):
 
 
 def record(train_mode=True): #pylint: disable=redefined-outer-name
-    """Returns an autograd recording scope context to be used in 'with' statement
+    """Returns an autograd recording scope context to be used in ``with`` statement
     and captures code that needs gradients to be calculated.
 
-    .. note:: When forwarding with train_mode=False, the corresponding backward
-              should also use train_mode=False, otherwise gradient is undefined.
+    .. note:: When forwarding with ``train_mode=False``, the corresponding backward
+              should also use ``train_mode=False``, otherwise gradient is undefined.
 
-    Example::
+    Parameters
+    ----------
+    train_mode: bool, default True
+        Whether the forward pass is in training or predicting mode. This controls the behavior
+        of some layers such as Dropout, BatchNorm.
+
+    Example
+    -------
+
+    .. code-block:: python
 
         with autograd.record():
             y = model(x)
@@ -134,20 +143,23 @@ def record(train_mode=True): #pylint: disable=redefined-outer-name
         metric.update(...)
         optim.step(...)
 
-    Parameters
-    ----------
-    train_mode: bool, default True
-        Whether the forward pass is in training or predicting mode. This controls the behavior
-        of some layers such as Dropout, BatchNorm.
     """
     return _RecordingStateScope(True, train_mode)
 
 
 def pause(train_mode=False): #pylint: disable=redefined-outer-name
-    """Returns a scope context to be used in 'with' statement for codes that do not need
+    """Returns a scope context to be used in ``with`` statement for codes that do not need
     gradients to be calculated.
 
-    Example::
+    Parameters
+    ----------
+    train_mode: bool, default False
+        Whether to do forward for training or predicting.
+
+    Example
+    -------
+
+    .. code-block:: python
 
         with autograd.record():
             y = model(x)
@@ -155,20 +167,19 @@ def pause(train_mode=False): #pylint: disable=redefined-outer-name
             with autograd.pause():
                 # testing, IO, gradient updates...
 
-    Parameters
-    ----------
-    train_mode: bool, default False
-        Whether to do forward for training or predicting.
     """
     return _RecordingStateScope(False, train_mode)
 
 
 def train_mode():
-    """Returns a scope context to be used in 'with' statement
+    """Returns a scope context to be used in ``with`` statement
     in which forward pass behavior is set to training mode,
     without changing the recording states.
 
-    Example::
+    Example
+    -------
+
+    .. code-block:: python
 
         y = model(x)
         with autograd.train_mode():
@@ -179,11 +190,14 @@ def train_mode():
 
 
 def predict_mode():
-    """Returns a scope context to be used in 'with' statement
+    """Returns a scope context to be used in ``with`` statement
     in which forward pass behavior is set to inference mode,
     without changing the recording states.
 
-    Example::
+    Example
+    -------
+
+    .. code-block:: python
 
         with autograd.record():
             y = model(x)
@@ -197,14 +211,17 @@ def predict_mode():
 def mark_variables(variables, gradients, grad_reqs='write'):
     """Mark NDArrays as variables to compute gradient for autograd.
 
-    This is equivalent to the function .attach_grad() in a variable, but with this
-    call we can set the gradient to any value.
+    This is equivalent to the function :meth:`~mxnet.ndarray.NDArray.attach_grad` in a variable,
+    but with this call we can set the gradient to any value.
 
     Parameters
     ----------
-    variables: NDArray or list of NDArray
-    gradients: NDArray or list of NDArray
-    grad_reqs: str or list of str
+    variables : NDArray or list of NDArray
+        Input variables to compute gradients for.
+    gradients : NDArray or list of NDArray
+        Gradients to attach to :attr:`variables`.
+    grad_reqs : str or list of str
+        Gradient requirements.
     """
     if isinstance(variables, NDArray):
         assert isinstance(gradients, NDArray)
@@ -273,7 +290,7 @@ def backward(heads, head_grads=None, retain_graph=False, train_mode=True): #pyli
 def grad(heads, variables, head_grads=None, retain_graph=None, create_graph=False,
          train_mode=True):  #pylint: disable=redefined-outer-name
     """Compute the gradients of heads w.r.t variables. Gradients will be
-    returned as new NDArrays instead of stored into `variable.grad`.
+    returned as new NDArrays instead of stored into ``variable.grad``.
     Supports recording gradient graph for computing higher order gradients.
 
     .. note::
@@ -348,7 +365,7 @@ def grad(heads, variables, head_grads=None, retain_graph=None, create_graph=Fals
 
 
 def get_symbol(x):
-    """Retrieve recorded computation history as `Symbol`.
+    """Retrieve recorded computation history as :class:`~mxnet.symbol.Symbol`.
 
     Parameters
     ----------
@@ -377,7 +394,7 @@ class Function(object):
     You can also cast to numpy array and back for some operations in
     forward and backward.
 
-    For example, a stable sigmoid function can be defined as::
+    For example, a stable sigmoid function can be defined and used as follows::
 
         class sigmoid(mx.autograd.Function):
             def forward(self, x):
@@ -391,8 +408,8 @@ class Function(object):
                 y, = self.saved_tensors
                 return dy * y * (1-y)
 
-    Then, the function can be used in the following way::
 
+        # use the sigmoid function
         func = sigmoid()
         x = mx.nd.random.uniform(shape=(10,))
         x.attach_grad()
@@ -401,7 +418,6 @@ class Function(object):
             m = func(x)
             m.backward()
         dx = x.grad.asnumpy()
-
     """
     _bwd_functype = CFUNCTYPE(c_int, c_int, c_int, POINTER(c_void_p),
                               POINTER(c_int), c_int, c_void_p)
