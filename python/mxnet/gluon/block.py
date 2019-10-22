@@ -261,7 +261,7 @@ class Block(object):
         Prefix acts like a name space. All children blocks created in parent block's
         :meth:`name_scope` will have parent block's prefix in their name.
         Please refer to
-        `naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`_
+        `naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`__
         for more info on prefix and naming.
     params : ParameterDict or None
         :class:`~mxnet.gluon.ParameterDict` for sharing weights with the new Block.
@@ -357,7 +357,7 @@ class Block(object):
                 self.dense = nn.Dense(20)
 
         Please refer to
-        `the naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`_
+        `the naming tutorial <../../tutorials/packages/gluon/blocks/naming.html>`__
         for more info on prefix and naming.
         """
         return self._scope
@@ -427,7 +427,7 @@ class Block(object):
         References
         ----------
         `Saving and Loading Gluon Models
-        <../../tutorials/packages/gluon/blocks/save_load_params.html>`_
+        <../../tutorials/packages/gluon/blocks/save_load_params.html>`__
         """
         params = self._collect_params_with_prefix()
         arg_dict = {key : val._reduce() for key, val in params.items()}
@@ -482,7 +482,7 @@ class Block(object):
         References
         ----------
         `Saving and Loading Gluon Models
-        <https://mxnet.incubator.apache.org/tutorials/gluon/save_load_params.html>`_
+        <../../tutorials/packages/gluon/blocks/save_load_params.html>`__
         """
         if is_np_array():
             # failure may happen when loading parameters saved as NDArrays within

@@ -524,6 +524,7 @@ def use_np_array(func):
 def use_np(func):
     """A convenience decorator for wrapping user provided functions and classes in the scope of
     both NumPy-shape and NumPy-array semantics, which means that:
+
     - empty tuples ``()`` and tuples with zeros, such as ``(0, 1)``, ``(1, 0, 2)``, will be treated
       as scalar tensors' shapes and zero-size tensors' shapes in shape inference functions of operators,
       instead of as unknown in legacy mode;

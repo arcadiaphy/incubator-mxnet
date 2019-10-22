@@ -314,8 +314,9 @@ def register(klass):
 class Load(object):
     """Initializes variables by loading data from file or dict.
 
-    .. note..  Load will drop ``arg:`` or ``aux:`` from name and
-    initialize the variables that match with the prefix dropped.
+    .. note::
+        Load will drop ``arg:`` or ``aux:`` from name and
+        initialize the variables that match with the prefix dropped.
 
     Parameters
     ----------

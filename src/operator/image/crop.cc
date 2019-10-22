@@ -39,13 +39,12 @@ NNVM_REGISTER_OP(_image_crop)
 .describe(R"code(Crop an image NDArray of shape (H x W x C) or (N x H x W x C) 
 to the given size.
 
-Example
-------
+Examples
+-------
 >>> image = mx.nd.random.uniform(0, 255, (4, 4, 3)).astype(dtype=np.uint8)
 >>> mx.nd.image.crop(image, 1, 1, 2, 2)
 [[[144  34   4]
   [ 82 157  38]]
-
  [[156 111 230]
   [177  25  15]]]
 <NDArray 2x2x3 @cpu(0)>
@@ -53,14 +52,10 @@ Example
 >>> mx.nd.image.crop(image, 1, 1, 2, 2)
 [[[[ 35 198  50]
    [242  94 168]]
-
   [[223 119 129]
    [249  14 154]]]
-
-
   [[[137 215 106]
     [ 79 174 133]]
-
    [[116 142 109]
     [ 35 239  50]]]]
 <NDArray 2x2x2x3 @cpu(0)>

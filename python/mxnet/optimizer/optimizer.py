@@ -85,7 +85,7 @@ class Optimizer(object):
         such as lr_mult, wd_mult, etc. param_dict shall not be deep copied.
 
 
-    Properties
+    Attributes
     ----------
     learning_rate : float
         The current learning rate of the optimizer. Given an Optimizer object
