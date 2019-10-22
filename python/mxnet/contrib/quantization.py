@@ -446,12 +446,15 @@ def quantize_model(sym, arg_params, aux_params,
                    calib_data=None, num_calib_examples=None,
                    quantized_dtype='int8', quantize_mode='smart', logger=None):
     """User-level API for generating a quantized model from a FP32 model w/ or w/o calibration.
+
     The backend quantized operators are only enabled for Linux systems. Please do not run
     inference using the quantized models on Windows for now.
-    The quantization implementation adopts the TensorFlow's approach:
-    https://www.tensorflow.org/performance/quantization.
-    The calibration implementation borrows the idea of Nvidia's 8-bit Inference with TensorRT:
-    http://on-demand.gputechconf.com/gtc/2017/presentation/s7310-8-bit-inference-with-tensorrt.pdf
+
+    The quantization implementation adopts
+    `the TensorFlow's approach <https://www.tensorflow.org/performance/quantization>`_.
+    The calibration implementation borrows
+    `the idea of Nvidia's 8-bit Inference with TensorRT
+    <http://on-demand.gputechconf.com/gtc/2017/presentation/s7310-8-bit-inference-with-tensorrt.pdf>`_
     and adapts the method to MXNet.
 
     Parameters
@@ -459,9 +462,9 @@ def quantize_model(sym, arg_params, aux_params,
     sym : str or Symbol
         Defines the structure of a neural network for FP32 data types.
     arg_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     aux_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     data_names : a list of strs
         Data names required for creating a Module object to run forward propagation on the
         calibration dataset.
@@ -477,29 +480,31 @@ def quantize_model(sym, arg_params, aux_params,
     excluded_op_names : list of strings
         A list of strings representing the names of the operators that users want to excluding
         from being quantized.
-    calib_mode : str
-        If calib_mode='none', no calibration will be used and the thresholds for
-        requantization after the corresponding layers will be calculated at runtime by
-        calling min and max operators. The quantized models generated in this
-        mode are normally 10-20% slower than those with calibrations during inference.
-        If calib_mode='naive', the min and max values of the layer outputs from a calibration
-        dataset will be directly taken as the thresholds for quantization.
-        If calib_mode='entropy' (default mode), the thresholds for quantization will be
-        derived such that the KL divergence between the distributions of FP32 layer outputs and
-        quantized layer outputs is minimized based upon the calibration dataset.
+    calib_mode : str, default 'entropy'
+        The calibration mode:
+
+        - **none**: no calibration will be used and the thresholds for requantization after the
+          corresponding layers will be calculated at runtime by calling min and max operators.
+          The quantized models generated in this mode are normally 10-20% slower than those with
+          calibrations during inference.
+        - **naive**: the min and max values of the layer outputs from a calibration dataset will
+          be directly taken as the thresholds for quantization.
+        - **entropy**: the thresholds for quantization will be derived such that
+          the KL divergence between the distributions of FP32 layer outputs and quantized layer
+          outputs is minimized based upon the calibration dataset.
     calib_data : DataIter
         A data iterator initialized by the calibration dataset.
     num_calib_examples : int or None
         The maximum number of examples that user would like to use for calibration. If not provided,
         the whole calibration dataset will be used.
-    quantized_dtype : str
+    quantized_dtype : str, default 'int8'
         The quantized destination type for input data. Currently support 'int8', 'uint8' and 'auto'.
         'auto' means automatically select output type according to calibration result.
-        Default value is 'int8'.
-    quantize_mode : str
-        The mode that quantization pass to apply. Support 'full' and 'smart'.
-        'full' means quantize all operator if possible.
-        'smart' means quantization pass will smartly choice which operator should be quantized.
+    quantize_mode : str, default 'smart'
+        The mode that quantization pass to apply:
+
+        - **full**: quantize all operator if possible;
+        - **smart**: quantization pass will smartly choose which operator should be quantized.
     logger : Object
         A logging object for printing information during the process of quantization.
 
@@ -590,9 +595,9 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
     sym : str or Symbol
         Defines the structure of a neural network for FP32 data types.
     arg_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     aux_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     data_names : a list of strs
         Data names required for creating a Module object to run forward propagation on the
         calibration dataset.
@@ -608,29 +613,31 @@ def quantize_model_mkldnn(sym, arg_params, aux_params,
     excluded_op_names : list of strings
         A list of strings representing the names of the operators that users want to excluding
         from being quantized.
-    calib_mode : str
-        If calib_mode='none', no calibration will be used and the thresholds for
-        requantization after the corresponding layers will be calculated at runtime by
-        calling min and max operators. The quantized models generated in this
-        mode are normally 10-20% slower than those with calibrations during inference.
-        If calib_mode='naive', the min and max values of the layer outputs from a calibration
-        dataset will be directly taken as the thresholds for quantization.
-        If calib_mode='entropy' (default mode), the thresholds for quantization will be
-        derived such that the KL divergence between the distributions of FP32 layer outputs and
-        quantized layer outputs is minimized based upon the calibration dataset.
+    calib_mode : str, default 'entropy'
+        The calibration mode:
+
+        - **none**: no calibration will be used and the thresholds for requantization after the
+          corresponding layers will be calculated at runtime by calling min and max operators.
+          The quantized models generated in this mode are normally 10-20% slower than those with
+          calibrations during inference.
+        - **naive**: the min and max values of the layer outputs from a calibration dataset will
+          be directly taken as the thresholds for quantization.
+        - **entropy**: the thresholds for quantization will be derived such that
+          the KL divergence between the distributions of FP32 layer outputs and quantized layer
+          outputs is minimized based upon the calibration dataset.
     calib_data : DataIter
         A data iterator initialized by the calibration dataset.
     num_calib_examples : int or None
         The maximum number of examples that user would like to use for calibration. If not provided,
         the whole calibration dataset will be used.
-    quantized_dtype : str
+    quantized_dtype : str, default 'int8'
         The quantized destination type for input data. Currently support 'int8', 'uint8' and 'auto'.
         'auto' means automatically select output type according to calibration result.
-        Default value is 'int8'.
-    quantize_mode : str
-        The mode that quantization pass to apply. Support 'full' and 'smart'.
-        'full' means quantize all operator if possible.
-        'smart' means quantization pass will smartly choice which operator should be quantized.
+    quantize_mode : str, default 'smart'
+        The mode that quantization pass to apply:
+
+        - **full**: quantize all operator if possible;
+        - **smart**: quantization pass will smartly choose which operator should be quantized.
     logger : Object
         A logging object for printing information during the process of quantization.
 
@@ -676,28 +683,29 @@ def quantize_graph(sym, arg_params, aux_params, ctx=cpu(),
         Defines the device that users want to run forward propagation on the calibration
         dataset for collecting layer output statistics. Currently, only supports single context.
     arg_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     aux_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     excluded_sym_names : list of strings
         A list of strings representing the names of the symbols that users want to excluding
         from being quantized.
     excluded_op_names : list of strings
         A list of strings representing the names of the operators that users want to excluding
-    calib_mode : str
-        If calib_mode='none', no calibration will be used and the thresholds for
-        requantization after the corresponding layers will be calculated at runtime by
-        calling min and max operators. The quantized models generated in this
-        mode are normally 10-20% slower than those with calibrations during inference.
-        If calib_mode='naive', the min and max values of the layer outputs from a calibration
-        dataset will be directly taken as the thresholds for quantization.
-        If calib_mode='entropy' (default mode), the thresholds for quantization will be
-        derived such that the KL divergence between the distributions of FP32 layer outputs and
-        quantized layer outputs is minimized based upon the calibration dataset.
-    quantized_dtype : str
-        The quantized destination type for input data. Currently support 'int8'
-        , 'uint8' and 'auto'. 'auto' means automatically select output type according to
-        calibration result. Default value is 'int8'.
+    calib_mode : str, default 'entropy'
+        The calibration mode:
+
+        - **none**: no calibration will be used and the thresholds for requantization after the
+          corresponding layers will be calculated at runtime by calling min and max operators.
+          The quantized models generated in this mode are normally 10-20% slower than those with
+          calibrations during inference.
+        - **naive**: the min and max values of the layer outputs from a calibration dataset will
+          be directly taken as the thresholds for quantization.
+        - **entropy**: the thresholds for quantization will be derived such that
+          the KL divergence between the distributions of FP32 layer outputs and quantized layer
+          outputs is minimized based upon the calibration dataset.
+    quantized_dtype : str, default 'int8'
+        The quantized destination type for input data. Currently support 'int8', 'uint8' and 'auto'.
+        'auto' means automatically select output type according to calibration result.
     logger : Object
         A logging object for printing information during the process of quantization.
 
@@ -762,25 +770,26 @@ def calib_graph(qsym, arg_params, aux_params, collector,
     qsym : str or Symbol
         Defines the structure of a neural network for INT8 data types.
     arg_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     aux_params : dict
-        Dictionary of name to :class:`~mxnet.ndarray.NDArray`.
+        Dictionary of name -> NDArray.
     collector : function
         layer collector for naive or entropy calibration.
-    calib_mode : str
-        If calib_mode='none', no calibration will be used and the thresholds for
-        requantization after the corresponding layers will be calculated at runtime by
-        calling min and max operators. The quantized models generated in this
-        mode are normally 10-20% slower than those with calibrations during inference.
-        If calib_mode='naive', the min and max values of the layer outputs from a calibration
-        dataset will be directly taken as the thresholds for quantization.
-        If calib_mode='entropy' (default mode), the thresholds for quantization will be
-        derived such that the KL divergence between the distributions of FP32 layer outputs and
-        quantized layer outputs is minimized based upon the calibration dataset.
-    quantized_dtype : str
-        The quantized destination type for input data. Currently support 'int8'
-        , 'uint8' and 'auto'. 'auto' means automatically select output type according to calibration result.
-        Default value is 'int8'.
+    calib_mode : str, default 'entropy'
+        The calibration mode:
+
+        - **none**: no calibration will be used and the thresholds for requantization after the
+          corresponding layers will be calculated at runtime by calling min and max operators.
+          The quantized models generated in this mode are normally 10-20% slower than those with
+          calibrations during inference.
+        - **naive**: the min and max values of the layer outputs from a calibration dataset will
+          be directly taken as the thresholds for quantization.
+        - **entropy**: the thresholds for quantization will be derived such that
+          the KL divergence between the distributions of FP32 layer outputs and quantized layer
+          outputs is minimized based upon the calibration dataset.
+    quantized_dtype : str, default 'int8'
+        The quantized destination type for input data. Currently support 'int8', 'uint8' and 'auto'.
+        'auto' means automatically select output type according to calibration result.
     logger : Object
         A logging object for printing information during the process of quantization.
 
@@ -825,10 +834,9 @@ def quantize_net(network, quantized_dtype='auto',
     ----------
     network : gluon.HybridBlock
         Defines the structure of a neural network for FP32 data types.
-    quantized_dtype : str
-        The quantized destination type for input data. Currently support 'int8' ,
-        'uint8' and 'auto'. 'auto' means automatically select output type according to calibration
-        result. Default value is 'int8'.
+    quantized_dtype : str, default 'auto'
+        The quantized destination type for input data. Currently support 'int8' , 'uint8' and 'auto'.
+        'auto' means automatically select output type according to calibration result.
     exclude_layers : list of strings
         A list of strings representing the names of the symbols that users want to excluding
     exclude_layers_match : list of strings
@@ -838,18 +846,20 @@ def quantize_net(network, quantized_dtype='auto',
         A list of strings representing the names of the operators that users want to excluding
     calib_data : DataIter or DataLoader
         A iterable data loading object.
-    data_shapes : list
-        List of :class:`~mxnet.io.DataDesc`, required if :attr:`calib_data` is not provided
-    calib_mode : str
-        If calib_mode='none', no calibration will be used and the thresholds for
-        requantization after the corresponding layers will be calculated at runtime by
-        calling min and max operators. The quantized models generated in this
-        mode are normally 10-20% slower than those with calibrations during inference.
-        If calib_mode='naive', the min and max values of the layer outputs from a calibration
-        dataset will be directly taken as the thresholds for quantization.
-        If calib_mode='entropy' (default mode), the thresholds for quantization will be
-        derived such that the KL divergence between the distributions of FP32 layer outputs and
-        quantized layer outputs is minimized based upon the calibration dataset.
+    data_shapes : list of DataDesc
+        List of DataDesc, required if :attr:`calib_data` is not provided
+    calib_mode : str, default 'entropy'
+        The calibration mode:
+
+        - **none**: no calibration will be used and the thresholds for requantization after the
+          corresponding layers will be calculated at runtime by calling min and max operators.
+          The quantized models generated in this mode are normally 10-20% slower than those with
+          calibrations during inference.
+        - **naive**: the min and max values of the layer outputs from a calibration dataset will
+          be directly taken as the thresholds for quantization.
+        - **entropy**: the thresholds for quantization will be derived such that
+          the KL divergence between the distributions of FP32 layer outputs and quantized layer
+          outputs is minimized based upon the calibration dataset.
     num_calib_examples : int or None
         The maximum number of examples that user would like to use for calibration. If not provided,
         the whole calibration dataset will be used.

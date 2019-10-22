@@ -24,14 +24,15 @@ import logging
 
 class LogMetricsCallback(object):
     """Log metrics periodically in TensorBoard.
-    This callback works almost same as `callback.Speedometer`, but write TensorBoard event file
-    for visualization. For more usage, please refer https://github.com/dmlc/tensorboard
+    This callback works almost same as :class:`callback.Speedometer <mxnet.callback.Speedometer>`,
+    but write TensorBoard event file for visualization. For more usage, please refer
+    https://github.com/dmlc/tensorboard.
 
     Parameters
     ----------
     logging_dir : str
         TensorBoard event file directory.
-        After that, use `tensorboard --logdir=path/to/logs` to launch TensorBoard visualization.
+        After that, use ``tensorboard --logdir=path/to/logs`` to launch TensorBoard visualization.
     prefix : str
         Prefix for a metric name of `scalar` value.
         You might want to use this param to leverage TensorBoard plot feature,

@@ -35,34 +35,31 @@ from ._export_helper import load_module
 def export_model(sym, params, input_shape, input_type=np.float32,
                  onnx_file_path='model.onnx', verbose=False):
     """Exports the MXNet model file, passed as a parameter, into ONNX model.
-    Accepts both symbol,parameter objects as well as json and params filepaths as input.
-    Operator support and coverage -
-    https://cwiki.apache.org/confluence/display/MXNET/ONNX+Operator+Coverage
+    Accepts both symbol, parameter objects as well as json and params filepaths as input.
+
+    `Operator support and coverage
+    <https://cwiki.apache.org/confluence/display/MXNET/ONNX+Operator+Coverage>`_.
 
     Parameters
     ----------
     sym : str or symbol object
         Path to the json file or Symbol object
     params : str or symbol object
-        Path to the params file or params dictionary. (Including both arg_params and aux_params)
+        Path to the params file or params dictionary.
+        (Including both arg_params and aux_params)
     input_shape : List of tuple
-        Input shape of the model e.g [(1,3,224,224)]
+        Input shape of the model
     input_type : data type
-        Input data type e.g. np.float32
+        Input data type
     onnx_file_path : str
         Path where to save the generated onnx file
-    verbose : Boolean
+    verbose : bool
         If true will print logs of the model conversion
 
     Returns
     -------
     onnx_file_path : str
         Onnx file path
-
-    Notes
-    -----
-    This method is available when you ``import mxnet.contrib.onnx``
-
     """
 
     try:

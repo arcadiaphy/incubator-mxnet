@@ -39,28 +39,28 @@ class Vocabulary(object):
     ----------
     counter : collections.Counter or None, default None
         Counts text token frequencies in the text data. Its keys will be indexed according to
-        frequency thresholds such as `most_freq_count` and `min_freq`. Keys of `counter`,
-        `unknown_token`, and values of `reserved_tokens` must be of the same hashable type.
+        frequency thresholds such as :attr:`most_freq_count` and `min_freq`. Keys of :attr:`counter`,
+        :attr:`unknown_token`, and values of :attr:`reserved_tokens` must be of the same hashable type.
         Examples: str, int, and tuple.
     most_freq_count : None or int, default None
-        The maximum possible number of the most frequent tokens in the keys of `counter` that can be
-        indexed. Note that this argument does not count any token from `reserved_tokens`. Suppose
+        The maximum possible number of the most frequent tokens in the keys of :attr:`counter` that can be
+        indexed. Note that this argument does not count any token from :attr:`reserved_tokens`. Suppose
         that there are different keys of `counter` whose frequency are the same, if indexing all of
         them will exceed this argument value, such keys will be indexed one by one according to
-        their __cmp__() order until the frequency threshold is met. If this argument is None or
-        larger than its largest possible value restricted by `counter` and `reserved_tokens`, this
+        their ``__cmp__()`` order until the frequency threshold is met. If this argument is None or
+        larger than its largest possible value restricted by :attr:`counter` and :attr:`reserved_tokens`, this
         argument has no effect.
     min_freq : int, default 1
-        The minimum frequency required for a token in the keys of `counter` to be indexed.
+        The minimum frequency required for a token in the keys of :attr:`counter` to be indexed.
     unknown_token : hashable object, default '&lt;unk&gt;'
         The representation for any unknown token. In other words, any unknown token will be indexed
-        as the same representation. Keys of `counter`, `unknown_token`, and values of
-        `reserved_tokens` must be of the same hashable type. Examples: str, int, and tuple.
+        as the same representation. Keys of :attr:`counter`, :attr:`unknown_token`, and values of
+        :attr:`reserved_tokens` must be of the same hashable type. Examples: str, int, and tuple.
     reserved_tokens : list of hashable objects or None, default None
         A list of reserved tokens that will always be indexed, such as special symbols representing
-        padding, beginning of sentence, and end of sentence. It cannot contain `unknown_token`, or
-        duplicate reserved tokens. Keys of `counter`, `unknown_token`, and values of
-        `reserved_tokens` must be of the same hashable type. Examples: str, int, and tuple.
+        padding, beginning of sentence, and end of sentence. It cannot contain :attr:`unknown_token`, or
+        duplicate reserved tokens. Keys of :attr:`counter`, :attr:`unknown_token`, and values of
+        :attr:`reserved_tokens` must be of the same hashable type. Examples: str, int, and tuple.
 
 
     Attributes

@@ -18,6 +18,20 @@
 contrib.text
 ============
 
-.. automodule:: mxnet.contrib.text
+Text utils
+----------
+
+.. automodule:: mxnet.contrib.text.utils
     :members:
-    :autosummary:
+
+Text vocab
+----------
+
+.. automodule:: mxnet.contrib.text.vocab
+    :members:
+
+Text embedding
+--------------
+
+.. automodule:: mxnet.contrib.text.embedding
+    :members:

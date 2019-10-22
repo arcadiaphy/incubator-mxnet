@@ -23,12 +23,12 @@ from .. import ndarray as nd
 
 
 class DataLoaderIter(DataIter):
-    """Returns an iterator for ``mx.gluon.data.Dataloader`` so gluon dataloader
-    can be used in symbolic module.
+    """Returns an iterator for :class:`~mxnet.gluon.data.Dataloader` so gluo
+    dataloader can be used in symbolic module.
 
     Parameters
     ----------
-    loader : mxnet.gluon.data.Dataloader
+    loader : Dataloader
         Gluon dataloader instance
     data_name : str, optional
         The data name.

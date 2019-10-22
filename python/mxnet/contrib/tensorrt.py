@@ -21,26 +21,45 @@ import os
 def set_use_fp16(status):
     """
     Set an environment variable which will enable or disable the use of FP16 precision in
-    TensorRT
-    Note: The mode FP16 force the whole TRT node to be executed in FP16
-    :param status: Boolean, True if TensorRT should run in FP16, False for FP32
+    TensorRT.
+
+    .. note: The mode FP16 force the whole TRT node to be executed in FP16.
+
+    Parameters
+    ----------
+    status : bool
+        True if TensorRT should run in FP16, False for FP32.
     """
     os.environ["MXNET_TENSORRT_USE_FP16"] = str(int(status))
 
 def get_use_fp16():
     """
-    Get an environment variable which describes if TensorRT is currently running in FP16
-    :return: Boolean, true if TensorRT is running in FP16, False for FP32
+    Get an environment variable which describes if TensorRT is currently running in FP16.
+
+    Returns
+    -------
+    bool
+        True if TensorRT is running in FP16, False for FP32.
     """
     return bool(int(os.environ.get("MXNET_TENSORRT_USE_FP16", 1)) == 1)
 
 def init_tensorrt_params(sym, arg_params, aux_params):
     """
-    Set weights in attributes of TensorRT nodes
-    :param sym: Symbol, the symbol graph should contains some TensorRT nodes
-    :param arg_params: arg_params
-    :param aux_params: aux_params
-    :return arg_params, aux_params: remaining params that are not in TensorRT nodes
+    Set weights in attributes of TensorRT nodes.
+
+    Parameters
+    ----------
+    sym : Symbol
+        The symbol graph should contains some TensorRT nodes.
+    arg_params : dict
+        Dict of name -> NDArray.
+    aux_params : dict
+        Dict of name -> NDArray.
+
+    Returns
+    -------
+    (arg_params, aux_params)
+        Remaining params that are not in TensorRT nodes.
     """
     arg_params = arg_params.copy()
     aux_params = aux_params.copy()

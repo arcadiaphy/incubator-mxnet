@@ -69,8 +69,7 @@ def create(embedding_name, **kwargs):
 
     Creates a token embedding instance by loading embedding vectors from an externally hosted
     pre-trained token embedding file, such as those of GloVe and FastText. To get all the valid
-    `embedding_name` and `pretrained_file_name`, use
-    `mxnet.contrib.text.embedding.get_pretrained_file_names()`.
+    `embedding_name` and `pretrained_file_name`, use :func:`get_pretrained_file_names`.
 
 
     Parameters
@@ -81,7 +80,7 @@ def create(embedding_name, **kwargs):
 
     Returns
     -------
-    An instance of `mxnet.contrib.text.glossary._TokenEmbedding`:
+    _TokenEmbedding:
         A token embedding instance that loads embedding vectors from an externally hosted
         pre-trained token embedding file.
     """
@@ -96,7 +95,7 @@ def get_pretrained_file_names(embedding_name=None):
 
     To load token embedding vectors from an externally hosted pre-trained token embedding file,
     such as those of GloVe and FastText, one should use
-    `mxnet.contrib.text.embedding.create(embedding_name, pretrained_file_name)`.
+    :func:`text.embedding.create(embedding_name, pretrained_file_name) <create>`.
     This method returns all the valid names of `pretrained_file_name` for the specified
     `embedding_name`. If `embedding_name` is set to None, this method returns all the valid
     names of `embedding_name` with their associated `pretrained_file_name`.
@@ -115,8 +114,7 @@ def get_pretrained_file_names(embedding_name=None):
         for the specified token embedding name (`embedding_name`). If the text embeding name is
         set to None, returns a dict mapping each valid token embedding name to a list of valid
         pre-trained files (`pretrained_file_name`). They can be plugged into
-        `mxnet.contrib.text.embedding.create(embedding_name,
-        pretrained_file_name)`.
+        :func:`text.embedding.create(embedding_name, pretrained_file_name) <create>`.
     """
 
     text_embedding_reg = registry.get_registry(_TokenEmbedding)
@@ -323,7 +321,7 @@ class _TokenEmbedding(vocab.Vocabulary):
 
         Parameters
         ----------
-        token_embeddings : instance or list `mxnet.contrib.text.embedding._TokenEmbedding`
+        token_embeddings : _TokenEmbedding
             One or multiple pre-trained token embeddings to load. If it is a list of multiple
             embeddings, these embedding vectors will be concatenated for each token.
         vocab_len : int
@@ -387,9 +385,9 @@ class _TokenEmbedding(vocab.Vocabulary):
         Returns
         -------
         mxnet.ndarray.NDArray:
-            The embedding vector(s) of the token(s). According to numpy conventions, if `tokens` is
-            a string, returns a 1-D NDArray of shape `self.vec_len`; if `tokens` is a list of
-            strings, returns a 2-D NDArray of shape=(len(tokens), self.vec_len).
+            The embedding vector(s) of the token(s). According to numpy conventions, if :attr:`tokens` is
+            a string, returns a 1-D NDArray of shape ``self.vec_len``; if :attr:`tokens` is a list of
+            strings, returns a 2-D NDArray of shape ``(len(tokens), self.vec_len)``.
         """
 
         to_reduce = False
@@ -423,10 +421,10 @@ class _TokenEmbedding(vocab.Vocabulary):
         ----------
         tokens : str or a list of strs
             A token or a list of tokens whose embedding vector are to be updated.
-        new_vectors : mxnet.ndarray.NDArray
-            An NDArray to be assigned to the embedding vectors of `tokens`. Its length must be equal
-            to the number of `tokens` and its width must be equal to the dimension of embeddings of
-            the glossary. If `tokens` is a singleton, it must be 1-D or 2-D. If `tokens` is a list
+        new_vectors : NDArray
+            An NDArray to be assigned to the embedding vectors of :attr:`tokens`. Its length must be equal
+            to the number of :attr:`tokens` and its width must be equal to the dimension of embeddings of
+            the glossary. If :attr:`tokens` is a singleton, it must be 1-D or 2-D. If :attr:`tokens` is a list
             of multiple strings, it must be 2-D.
         """
 
@@ -490,25 +488,6 @@ class GloVe(_TokenEmbedding):
     the resulting representations showcase interesting linear substructures of the word vector
     space. (Source from https://nlp.stanford.edu/projects/glove/)
 
-    References
-    ----------
-
-    GloVe: Global Vectors for Word Representation.
-    Jeffrey Pennington, Richard Socher, and Christopher D. Manning.
-    https://nlp.stanford.edu/pubs/glove.pdf
-
-    Website:
-
-    https://nlp.stanford.edu/projects/glove/
-
-    To get the updated URLs to the externally hosted pre-trained token embedding
-    files, visit https://nlp.stanford.edu/projects/glove/
-
-    License for pre-trained embeddings:
-
-        https://fedoraproject.org/wiki/Licensing/PDDL
-
-
     Parameters
     ----------
     pretrained_file_name : str, default 'glove.840B.300d.txt'
@@ -522,6 +501,19 @@ class GloVe(_TokenEmbedding):
         embedding vectors, such as loaded from a pre-trained token embedding file. If None, all the
         tokens from the loaded embedding vectors, such as loaded from a pre-trained token embedding
         file, will be indexed.
+
+    References
+    ----------
+    GloVe: Global Vectors for Word Representation.
+    Jeffrey Pennington, Richard Socher, and Christopher D. Manning.
+    https://nlp.stanford.edu/pubs/glove.pdf
+
+    Website: https://nlp.stanford.edu/projects/glove/
+
+    To get the updated URLs to the externally hosted pre-trained token embedding
+    files, visit https://nlp.stanford.edu/projects/glove/
+
+    License for pre-trained embeddings: https://fedoraproject.org/wiki/Licensing/PDDL
     """
 
     # Map a pre-trained token embedding archive file and its SHA-1 hash.
@@ -556,10 +548,23 @@ class GloVe(_TokenEmbedding):
 class FastText(_TokenEmbedding):
     """The fastText word embedding.
 
-
     FastText is an open-source, free, lightweight library that allows users to learn text
     representations and text classifiers. It works on standard, generic hardware. Models can later
     be reduced in size to even fit on mobile devices. (Source from https://fasttext.cc/)
+
+    Parameters
+    ----------
+    pretrained_file_name : str, default 'wiki.en.vec'
+        The name of the pre-trained token embedding file.
+    embedding_root : str, default $MXNET_HOME/embeddings
+        The root directory for storing embedding-related files.
+    init_unknown_vec : callback
+        The callback used to initialize the embedding vector for the unknown token.
+    vocabulary : Vocabulary, default None
+        It contains the tokens to index. Each indexed token will be associated with the loaded
+        embedding vectors, such as loaded from a pre-trained token embedding file. If None, all the
+        tokens from the loaded embedding vectors, such as loaded from a pre-trained token embedding
+        file, will be indexed.
 
     References
     ----------
@@ -583,31 +588,12 @@ class FastText(_TokenEmbedding):
     and Herve Jegou.
     https://arxiv.org/abs/1710.04087
 
-    Website:
-
-    https://fasttext.cc/
+    Website: https://fasttext.cc/
 
     To get the updated URLs to the externally hosted pre-trained token embedding files, visit
     https://github.com/facebookresearch/fastText/blob/master/docs/pretrained-vectors.md
 
-    License for pre-trained embeddings:
-
-        https://creativecommons.org/licenses/by-sa/3.0/
-
-
-    Parameters
-    ----------
-    pretrained_file_name : str, default 'wiki.en.vec'
-        The name of the pre-trained token embedding file.
-    embedding_root : str, default $MXNET_HOME/embeddings
-        The root directory for storing embedding-related files.
-    init_unknown_vec : callback
-        The callback used to initialize the embedding vector for the unknown token.
-    vocabulary : :class:`~mxnet.contrib.text.vocab.Vocabulary`, default None
-        It contains the tokens to index. Each indexed token will be associated with the loaded
-        embedding vectors, such as loaded from a pre-trained token embedding file. If None, all the
-        tokens from the loaded embedding vectors, such as loaded from a pre-trained token embedding
-        file, will be indexed.
+    License for pre-trained embeddings: https://creativecommons.org/licenses/by-sa/3.0/
     """
 
     # Map a pre-trained token embedding archive file and its SHA-1 hash.
@@ -636,16 +622,15 @@ class FastText(_TokenEmbedding):
 
 
 class CustomEmbedding(_TokenEmbedding):
-    """User-defined token embedding.
+    r"""User-defined token embedding.
 
     This is to load embedding vectors from a user-defined pre-trained text embedding file.
 
-    Denote by '[ed]' the argument `elem_delim`. Denote by [v_ij] the j-th element of the token
+    Denote by '[ed]' the argument :attr:`elem_delim`. Denote by [v_ij] the j-th element of the token
     embedding vector for [token_i], the expected format of a custom pre-trained token embedding file
-    is:
+    is::
 
-    '[token_1][ed][v_11][ed][v_12][ed]...[ed][v_1k]\\\\n[token_2][ed][v_21][ed][v_22][ed]...[ed]
-    [v_2k]\\\\n...'
+        [token_1][ed][v_11][ed][v_12][ed]...[ed][v_1k]\n[token_2][ed][v_21][ed][v_22][ed]...[ed][v_2k]\n...
 
     where k is the length of the embedding vector `vec_len`.
 
@@ -680,19 +665,17 @@ class CustomEmbedding(_TokenEmbedding):
 class CompositeEmbedding(_TokenEmbedding):
     """Composite token embeddings.
 
-
     For each indexed token in a vocabulary, multiple embedding vectors, such as concatenated
     multiple embedding vectors, will be associated with it. Such embedding vectors can be loaded
     from externally hosted or custom pre-trained token embedding files, such as via token embedding
     instances.
 
-
     Parameters
     ----------
-    vocabulary : :class:`~mxnet.contrib.text.vocab.Vocabulary`
+    vocabulary : Vocabulary
         For each indexed token in a vocabulary, multiple embedding vectors, such as concatenated
         multiple embedding vectors, will be associated with it.
-    token_embeddings : instance or list of `mxnet.contrib.text.embedding._TokenEmbedding`
+    token_embeddings : _TokenEmbedding
         One or multiple pre-trained token embeddings to load. If it is a list of multiple
         embeddings, these embedding vectors will be concatenated for each token.
     """

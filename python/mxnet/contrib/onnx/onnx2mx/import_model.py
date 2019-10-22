@@ -23,8 +23,9 @@ from .import_onnx import GraphProto
 
 def import_model(model_file):
     """Imports the ONNX model file, passed as a parameter, into MXNet symbol and parameters.
-    Operator support and coverage -
-    https://cwiki.apache.org/confluence/display/MXNET/ONNX+Operator+Coverage
+
+    `Operator support and coverage
+    <https://cwiki.apache.org/confluence/display/MXNET/ONNX+Operator+Coverage>`_.
 
     Parameters
     ----------
@@ -33,19 +34,12 @@ def import_model(model_file):
 
     Returns
     -------
-    sym : :class:`~mxnet.symbol.Symbol`
+    sym : Symbol
         MXNet symbol object
-
-    arg_params : dict of ``str`` to :class:`~mxnet.ndarray.NDArray`
-        Dict of converted parameters stored in ``mxnet.ndarray.NDArray`` format
-
-    aux_params : dict of ``str`` to :class:`~mxnet.ndarray.NDArray`
-        Dict of converted parameters stored in ``mxnet.ndarray.NDArray`` format
-
-    Notes
-    -----
-    This method is available when you ``import mxnet.contrib.onnx``
-
+    arg_params : dict of str to NDArray
+        Dict of converted parameters stored in NDArray format
+    aux_params : dict of str to NDArray
+        Dict of converted parameters stored in NDArray format
     """
     graph = GraphProto()
 
@@ -63,10 +57,6 @@ def get_model_metadata(model_file):
     """
     Returns the name and shape information of input and output tensors of the given ONNX model file.
 
-    Notes
-    -----
-    This method is available when you ``import mxnet.contrib.onnx``
-
     Parameters
     ----------
     model_file : str
@@ -76,10 +66,10 @@ def get_model_metadata(model_file):
     -------
     model_metadata : dict
         A dictionary object mapping various metadata to its corresponding value.
-        The dictionary will have the following template::
+        The dictionary will have the following template:
 
-          'input_tensor_data' : list of tuples representing the shape of the input paramters
-          'output_tensor_data' : list of tuples representing the shape of the output of the model
+        - **input_tensor_data**: list of tuples representing the shape of the input paramters
+        - **output_tensor_data**: list of tuples representing the shape of the output of the model
     """
     graph = GraphProto()
 
