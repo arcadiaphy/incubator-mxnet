@@ -41,7 +41,7 @@ def module_checkpoint(mod, prefix, period=1, save_optimizer_states=False):
     Returns
     -------
     callback : function
-        The callback function that can be passed as iter_end_callback to fit.
+        The callback function that can be passed as ``iter_end_callback`` to fit.
     """
     period = int(max(1, period))
     # pylint: disable=unused-argument
@@ -56,19 +56,19 @@ def do_checkpoint(prefix, period=1):
     """A callback that saves a model checkpoint every few epochs.
     Each checkpoint is made up of a couple of binary files: a model description file and a
     parameters (weights and biases) file. The model description file is named
-    `prefix`--symbol.json and the parameters file is named `prefix`-`epoch_number`.params
+    :attr:`prefix`-symbol.json and the parameters file is named :attr:`prefix`-:attr:`epoch_number`.params
 
     Parameters
     ----------
     prefix : str
         Prefix for the checkpoint filenames.
-    period : int, optional
-        Interval (number of epochs) between checkpoints. Default `period` is 1.
+    period : int, optional, default 1
+        Interval (number of epochs) between checkpoints.
 
     Returns
     -------
     callback : function
-        A callback function that can be passed as `epoch_end_callback` to fit.
+        A callback function that can be passed as ``epoch_end_callback`` to fit.
 
     Example
     -------
@@ -103,7 +103,7 @@ def log_train_metric(period, auto_reset=False):
     Returns
     -------
     callback : function
-        The callback function that can be passed as iter_epoch_callback to fit.
+        The callback function that can be passed as ``iter_epoch_callback`` to fit.
     """
     def _callback(param):
         """The checkpoint function."""

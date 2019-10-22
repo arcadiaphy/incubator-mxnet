@@ -36,14 +36,12 @@ class Context(with_metaclass(_MXClassPropertyMetaClass, object)):
 
     See also
     ----------
-    `How to run MXNet on multiple CPU/GPUs <http://mxnet.incubator.apache.org/api/faq/distributed_training>`
-    for more details.
+    `How to run MXNet on multiple CPU/GPUs </api/faq/distributed_training>`_
 
     Parameters
     ----------
     device_type : {'cpu', 'gpu'} or Context.
         String representing the device type.
-
     device_id : int (default=0)
         The device id of the device, needed for GPU.
 
@@ -170,8 +168,19 @@ Context._default_ctx.value = Context('cpu', 0)
 def cpu(device_id=0):
     """Returns a CPU context.
 
-    This function is a short cut for ``Context('cpu', device_id)``.
+    This function is a shortcut for ``Context('cpu', device_id)``.
     For most operations, when no context is specified, the default context is `cpu()`.
+
+    Parameters
+    ----------
+    device_id : int, optional
+        The device id of the device. :attr:`device_id` is not needed for CPU.
+        This is included to make interface compatible with GPU.
+
+    Returns
+    -------
+    context : Context
+        The corresponding CPU context.
 
     Examples
     ----------
@@ -182,17 +191,6 @@ def cpu(device_id=0):
     >>> cpu_array = mx.nd.ones((2, 3), ctx=mx.cpu())
     >>> cpu_array.context
     cpu(0)
-
-    Parameters
-    ----------
-    device_id : int, optional
-        The device id of the device. `device_id` is not needed for CPU.
-        This is included to make interface compatible with GPU.
-
-    Returns
-    -------
-    context : Context
-        The corresponding CPU context.
     """
     return Context('cpu', device_id)
 
@@ -203,6 +201,17 @@ def cpu_pinned(device_id=0):
 
     This function is a short cut for ``Context('cpu_pinned', device_id)``.
 
+    Parameters
+    ----------
+    device_id : int, optional
+        The device id of the device. :attr:`device_id` is not needed for CPU.
+        This is included to make interface compatible with GPU.
+
+    Returns
+    -------
+    context : Context
+        The corresponding CPU pinned memory context.
+
     Examples
     ----------
     >>> with mx.cpu_pinned():
@@ -212,17 +221,6 @@ def cpu_pinned(device_id=0):
     >>> cpu_array = mx.nd.ones((2, 3), ctx=mx.cpu_pinned())
     >>> cpu_array.context
     cpu_pinned(0)
-
-    Parameters
-    ----------
-    device_id : int, optional
-        The device id of the device. `device_id` is not needed for CPU.
-        This is included to make interface compatible with GPU.
-
-    Returns
-    -------
-    context : Context
-        The corresponding CPU pinned memory context.
     """
     return Context('cpu_pinned', device_id)
 
@@ -230,8 +228,18 @@ def cpu_pinned(device_id=0):
 def gpu(device_id=0):
     """Returns a GPU context.
 
-    This function is a short cut for Context('gpu', device_id).
-    The K GPUs on a node are typically numbered as 0,...,K-1.
+    This function is a short cut for ``Context('gpu', device_id)``.
+    The K GPUs on a node are typically numbered as 0, ..., K-1.
+
+    Parameters
+    ----------
+    device_id : int, optional
+        The device id of the device, needed for GPU.
+
+    Returns
+    -------
+    context : Context
+        The corresponding GPU context.
 
     Examples
     ----------
@@ -245,16 +253,6 @@ def gpu(device_id=0):
     >>> gpu_array = mx.nd.ones((2, 3), ctx=mx.gpu(1))
     >>> gpu_array.context
     gpu(1)
-
-    Parameters
-    ----------
-    device_id : int, optional
-        The device id of the device, needed for GPU.
-
-    Returns
-    -------
-    context : Context
-        The corresponding GPU context.
     """
     return Context('gpu', device_id)
 
@@ -264,7 +262,8 @@ def num_gpus():
 
     Raises
     ------
-    Will raise an exception on any CUDA error.
+    MXNetError
+        Will raise an exception on any CUDA error.
 
     Returns
     -------
@@ -287,7 +286,8 @@ def gpu_memory_info(device_id=0):
 
     Raises
     ------
-    Will raise an exception on any CUDA error.
+    MXNetError
+        Will raise an exception on any CUDA error.
 
     Returns
     -------
@@ -303,9 +303,13 @@ def gpu_memory_info(device_id=0):
 def current_context():
     """Returns the current context.
 
-    By default, `mx.cpu()` is used for all the computations
-    and it can be overridden by using `with mx.Context(x)` statement where
-    x can be cpu(device_id) or gpu(device_id).
+    By default, ``mx.cpu()`` is used for all the computations
+    and it can be overridden by using ``with mx.Context(x)`` statement where
+    ``x`` can be ``cpu(device_id)`` or ``gpu(device_id)``.
+
+    Returns
+    -------
+    default_ctx : Context
 
     Examples
     -------
@@ -317,10 +321,6 @@ def current_context():
     gpu(1)
     >>> mx.current_context() # Back to default context.
     cpu(0)
-
-    Returns
-    -------
-    default_ctx : Context
     """
     if not hasattr(Context._default_ctx, "value"):
         Context._default_ctx.value = Context('cpu', 0)
