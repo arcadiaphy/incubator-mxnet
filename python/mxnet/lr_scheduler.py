@@ -85,11 +85,11 @@ class LRScheduler(object):
         raise NotImplementedError("must override this")
 
 class FactorScheduler(LRScheduler):
-    """Reduce the learning rate by a factor for every *n* steps.
+    """Reduce the learning rate by a factor for every ``n`` steps.
 
     It returns a new learning rate by::
 
-        base_lr * pow(factor, floor(num_update/step))
+        base_lr * pow(factor, floor(num_update / step))
 
     Parameters
     ----------
@@ -132,13 +132,13 @@ class FactorScheduler(LRScheduler):
 class MultiFactorScheduler(LRScheduler):
     """Reduce the learning rate by given a list of steps.
 
-    Assume there exists *k* such that::
+    Assume ``num_update`` is on step-``k``::
 
-       step[k] <= num_update and num_update < step[k+1]
+       step[k] <= num_update < step[k+1]
 
-    Then calculate the new learning rate by::
+    then calculate the new learning rate by::
 
-       base_lr * pow(factor, k+1)
+       base_lr * pow(factor, k + 1)
 
     Parameters
     ----------
@@ -190,23 +190,27 @@ class MultiFactorScheduler(LRScheduler):
         return self.base_lr
 
 class PolyScheduler(LRScheduler):
-    """Reduce the learning rate according to a polynomial of given power.
+    r"""Reduce the learning rate according to a polynomial of given power.
 
-    Calculate the new learning rate, after warmup if any, by::
+    Suppose learning rate is denoted by :math:`\eta`, then the updated learning rate is calculated as:
 
-       final_lr + (start_lr - final_lr) * (1-nup/max_nup)^pwr
-       if nup < max_nup, 0 otherwise.
+    .. math::
+        \eta_t = \eta_{min} + (\eta_{max} - \eta_{min}) (1 - \frac{t}{T})^p
+
+    where :math:`t` is the number of epochs since warmup, :math:`\eta_{max}` is the start
+    learning rate, :math:`\eta_{min}` is the final learning rate, :math:`T` is the maximum
+    number of epochs before the decay stops, and :math:`p` is the power term.
 
     Parameters
     ----------
     max_update: int
-        maximum number of updates before the decay reaches final learning rate.
+        maximum number of updates :math:`T` before the decay stops
     base_lr: float
-        base learning rate to start from
+        base learning rate :math:`\eta_{max}` to start from
     pwr:   int
-        power of the decay term as a function of the current number of updates.
+        power of the decay term :math:`p`
     final_lr:   float
-        final learning rate after all steps
+        final learning rate :math:`\eta_{min}` after all steps
     warmup_steps: int
         number of warmup steps used before this scheduler starts decay
     warmup_begin_lr: float
@@ -239,21 +243,25 @@ class PolyScheduler(LRScheduler):
         return self.base_lr
 
 class CosineScheduler(LRScheduler):
-    """Reduce the learning rate according to a cosine function
+    r"""Reduce the learning rate according to a cosine function.
 
-    Calculate the new learning rate by::
+    Suppose learning rate is denoted by :math:`\eta`, then the updated learning rate is calculated as:
 
-       final_lr + (start_lr - final_lr) * (1+cos(pi * nup/max_nup))/2
-       if nup < max_nup, 0 otherwise.
+    .. math::
+        \eta_t = \eta_{min} + \frac{1}{2} (\eta_{max} - \eta_{min}) (1 + \cos(\frac{t}{T} \pi))
+
+    where :math:`t` is the number of epochs since warmup, :math:`\eta_{max}` is the start
+    learning rate, :math:`\eta_{min}` is the final learning rate, and :math:`T` is the maximum
+    number of epochs before the decay stops.
 
     Parameters
     ----------
     max_update: int
-        maximum number of updates before the decay reaches 0
+        maximum number of updates :math:`T` before the decay stops
     base_lr: float
-        base learning rate
+        start learning rate :math:`\eta_{max}` to start from
     final_lr: float
-        final learning rate after all steps
+        final learning rate :math:`\eta_{min}` after all steps
     warmup_steps: int
         number of warmup steps used before this scheduler starts decay
     warmup_begin_lr: float
